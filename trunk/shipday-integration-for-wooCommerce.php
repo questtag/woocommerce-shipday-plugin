@@ -69,7 +69,6 @@ if (in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', ge
 
 			$shipday_key 		= 	sanitize_text_field($postdata['wc_settings_tab_shipday_shipday_key']);
 			$business_name 		= 	sanitize_text_field($postdata['wc_settings_tab_shipday_business_name']);
-			$pickup_address 	= 	sanitize_text_field($postdata['wc_settings_tab_shipday_pickup_address']);
 			$pickup_phone 		= 	sanitize_text_field($postdata['wc_settings_tab_shipday_pickup_phone']);
 
 			$webhook_name 		= 	"Shipday Webhook";
@@ -78,7 +77,7 @@ if (in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', ge
 			$api_version 		= 	"3";
 
                        $user = wp_get_current_user();
-			$delivery_url = wp_nonce_url("https://integration.shipday.com/integration/woocommerce/delegateOrder?key=$shipday_key&businessname=$business_name&pickupaddress=$pickup_address&pickupphone=$pickup_phone",'shipday-delivery-url'.$user->ID);
+			$delivery_url = wp_nonce_url("https://integration.shipday.com/integration/woocommerce/delegateOrder?key=$shipday_key&businessname=$business_name&pickupphone=$pickup_phone",'shipday-delivery-url'.$user->ID);
 
 			$errors  = array();
 
@@ -200,11 +199,6 @@ if (in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', ge
 					'name' => __( 'Business Name', 'woocommerce-settings-tab-shipday' ),
 					'type' => 'text',
 					'id'   => 'wc_settings_tab_shipday_business_name'
-				),
-				'pickup_address' => array(
-					'name' => __( 'Pickup Address', 'woocommerce-settings-tab-shipday' ),
-					'type' => 'text',
-					'id'   => 'wc_settings_tab_shipday_pickup_address'
 				),
 				'pickup_phone' => array(
 					'name' => __( 'Pickup Phone Number', 'woocommerce-settings-tab-shipday' ),

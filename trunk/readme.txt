@@ -12,6 +12,8 @@ Use the Shipday Integration for WooCommerce plugin to create connection with Shi
 
 After installation,add your Shipday API configuration in the plugin to allow your site to send order details to the Shipday dispatch dashoboard. You'll find the settings under: WooCommerce > Settings > Shipday
 
+*Currently we only support businesses with single pickup address. Multi-vendor support is coming soon(Send us an email for the support).*
+
 #### What is Shipday?
 [Shipday](https://www.shipday.com/) is an easy-to-use local delivery management software with driver app and live delivery tracking for customers.
 
@@ -27,12 +29,13 @@ Whether you are launching your own delivery service to fulfill orders locally, o
 
 Proof of Delivery with Photo and Signature: Drivers will take photo and signature proof of deliveries. No second-guessing whether an order was really delivered.
 
-
 Shipday is powering local deliveries globally. Already in use in over 80+ countries. 
 
 [youtube https://youtu.be/GCypZ45ZCQ4]
 
 Have a loot at our [terms of use](https://www.shipday.com/terms).
+
+If you face any issue at the time of installing, send an email to : <support@shipday.com>
 
 == Screenshots ==
 
