@@ -3,12 +3,14 @@ Contributors: shipdayinc
 Tags: delivery tracking, route-planning, delivery management, delivery dispatch, same day delivery, local pickup, local delivery, delivery tracking,  driver app
 Requires at least: 3.5
 Tested up to: 5.8
+WC requires at least: 3.0
+WC tested up to: 5.5.2
 Stable tag: 0.4.2
 License: GPLv2 or later
 
 == Description ==
 
-Use the Shipday Integration for WooCommerce plugin to create connection with Shipday(https://www.shipday.com/). 
+Use the Shipday Integration for WooCommerce plugin to create connection with [Shipday](https://www.shipday.com/).
 
 So that, when a customer places any delivery order on your WooCommerce website, the order will be automatically imported to Shipday for dispatch and delivery tracking. 
 
@@ -28,6 +30,12 @@ Shipday is ideal for managing fast on-demand or scheduled deliveries for your on
  - Local courier delivery
  - And many others we are learning everyday
 
+#### Currently we are compatible with following plugins:
+👉 [WooCommerce](https://wordpress.org/plugins/woocommerce/)
+👉 [Dokan](https://wordpress.org/plugins/dokan-lite/)
+👉 [WCFM Marketplace](https://wordpress.org/plugins/wc-multivendor-marketplace/)
+👉 [Delivery & Pickup Date Time for WooCommerce](https://wordpress.org/plugins/woo-delivery/)
+👉 [Order Delivery Date for WooCommerce](https://wordpress.org/plugins/order-delivery-date-for-woocommerce/)
 
 #### What is Shipday?
 [Shipday](https://www.shipday.com/) is an easy-to-use local delivery management software with driver app and live delivery tracking for customers with SMS notifications. 
@@ -58,16 +66,30 @@ If you face any issue at the time of installation, send an email to : <support@s
 
 
 == Installation ==
+You can install shipday plugin directly from wordpress plugin repository or manually upload to your site. Follow one of the following process.
+#### Wordpress Plugin directory
+1. In your wordpress admin dashboard, go to plugins and select add new plugins.
+2. Search for shipday in the search bar and install it.
+3. Activate the plugin.
+4. Go to Woocommerce settings tabs and select Shipday plugin tab.
+5. Enter your API key which is found in your dispatch accounts setting page.
+6. Confirm settings and you are done.
 
+[youtube https://www.youtube.com/watch?v=t5MdxiBfuks]
+
+#### Manual upload
 1. Upload `woocommerce-shipday` to the `/wp-content/plugins/` directory
 2. Activate the plugin through the 'Plugins' menu in WordPress
 3. Configure the options on the WooCommerce settings shipday tab.See in the screenshot https://prnt.sc/uxkksw
 3. Done
 
+
 == Changelog ==
 
 = 0.4.2 (04.08.2021) =
-* Fix - Adding Admin Notice "It seems REST API isn't enabled on your website. Shipday integration requires it to operate properly." if REST API is disabled.
 * Fix - Delivery Date Internal Server Issue.
-* Fix - Delivery fee. ( Shipping Total will be delivery fee)
+* Fix - Delivery fee. (Shipping Total will be delivery fee)
+* Fix - Shipping address. (Incorrect address in case of shipping to different location)
+* Fix - Adding Admin Notice "It seems REST API isn't enabled on your website. Shipday integration requires it to operate properly." if REST API is disabled.
+
 
