@@ -5,7 +5,7 @@ Requires at least: 3.5
 Tested up to: 5.8
 WC requires at least: 3.0
 WC tested up to: 5.5.2
-Stable tag: 0.4.2
+Stable tag: 0.4.3
 License: GPLv2 or later
 
 == Description ==
@@ -86,10 +86,8 @@ You can install shipday plugin directly from wordpress plugin repository or manu
 
 == Changelog ==
 
-= 0.4.2 (04.08.2021) =
-* Fix - Delivery Date Internal Server Issue.
-* Fix - Delivery fee. (Shipping Total will be delivery fee)
-* Fix - Shipping address. (Incorrect address in case of shipping to different location)
-* Fix - Adding Admin Notice "It seems REST API isn't enabled on your website. Shipday integration requires it to operate properly." if REST API is disabled.
+= 0.4.3 (17.08.2021) =
+* Fix: Delivery Date parsed from date picker
+* Fix: JSON anomaly that caused order failure in dispatch
 
 
