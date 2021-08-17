@@ -89,6 +89,6 @@ You can install shipday plugin directly from wordpress plugin repository or manu
 = 0.4.4 (17.08.2021) =
 * Fix: Delivery Date parsed from date picker
 * Fix: JSON anomaly that caused order failure in dispatch
-* Fix: Fixing Duplicate entry ( fisrt check if there is 'passed_top_shipday' in post_meta with value '1' if exist then it will run curl only once. )
+* Fix: Fixing Duplicate entry
 
 
