@@ -5,7 +5,7 @@ Requires at least: 3.5
 Tested up to: 5.8
 WC requires at least: 3.0
 WC tested up to: 5.5.2
-Stable tag: 0.4.3
+Stable tag: 0.4.4
 License: GPLv2 or later
 
 == Description ==
@@ -86,8 +86,9 @@ You can install shipday plugin directly from wordpress plugin repository or manu
 
 == Changelog ==
 
-= 0.4.3 (17.08.2021) =
+= 0.4.4 (17.08.2021) =
 * Fix: Delivery Date parsed from date picker
 * Fix: JSON anomaly that caused order failure in dispatch
+* Fix: Fixing Duplicate entry ( fisrt check if there is 'passed_top_shipday' in post_meta with value '1' if exist then it will run curl only once. )
 
 
