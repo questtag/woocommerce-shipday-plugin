@@ -2,7 +2,7 @@
 /*
 Plugin Name: Shipday Integration for WooCommerce
 Plugin URI: https://www.shipday.com/woocommerce
-Version: 0.4.6
+Version: 0.4.7
 Description:Allows you to add shipday API configuration and create connection with shipday. Then anyone places any order to the WooCommerce site it should also appear on your Shipday dispatch dashboard. Local Delivery App for WooCommerce by Shipday is compatible with Dokan Multivendor plugin, WCFM Market Place,Order Delivery Date For Woocommerce and Woo Delivery.
 Author URI: https://www.shipday.com/
 Text Domain: woocommerce-shipday
@@ -324,7 +324,7 @@ if ( is_plugin_active( 'woocommerce/woocommerce.php' ) ) {
 	add_action( 'woocommerce_thankyou', 'custom_content_thankyou', 10, 1 );
 	function custom_content_thankyou( $order_id ) {
 
-if ( ! metadata_exists('post', $order_id, 'passed_to_shipday') || true) {
+if ( ! metadata_exists('post', $order_id, 'passed_to_shipday')) {
 	
 	update_post_meta($order_id, 'passed_to_shipday','1');
 
@@ -682,7 +682,6 @@ if ( ! metadata_exists('post', $order_id, 'passed_to_shipday') || true) {
 						$vendor_phone = ( ! empty( $vendor_data['billing_phone'][0] ) ? $vendor_data['billing_phone'][0] : '' );
 
 						/**  wrong billing phone fix */
-                        echo '<h1>Start</h1>';
 						$vendor = new \WeDevs\Dokan\Vendor\Vendor($vendor_id);
 						$vendor_phone = '+'.$vendor->get_phone();
 
