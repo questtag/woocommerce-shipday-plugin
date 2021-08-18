@@ -2,7 +2,7 @@
 /*
 Plugin Name: Shipday Integration for WooCommerce
 Plugin URI: https://www.shipday.com/woocommerce
-Version: 0.4.5
+Version: 0.4.6
 Description:Allows you to add shipday API configuration and create connection with shipday. Then anyone places any order to the WooCommerce site it should also appear on your Shipday dispatch dashboard. Local Delivery App for WooCommerce by Shipday is compatible with Dokan Multivendor plugin, WCFM Market Place,Order Delivery Date For Woocommerce and Woo Delivery.
 Author URI: https://www.shipday.com/
 Text Domain: woocommerce-shipday
@@ -324,7 +324,7 @@ if ( is_plugin_active( 'woocommerce/woocommerce.php' ) ) {
 	add_action( 'woocommerce_thankyou', 'custom_content_thankyou', 10, 1 );
 	function custom_content_thankyou( $order_id ) {
 
-if ( ! metadata_exists('post', $order_id, 'passed_to_shipday') ) {
+if ( ! metadata_exists('post', $order_id, 'passed_to_shipday') || true) {
 	
 	update_post_meta($order_id, 'passed_to_shipday','1');
 
@@ -375,7 +375,7 @@ if ( ! metadata_exists('post', $order_id, 'passed_to_shipday') ) {
 			$customer_billing_phone     = ( ! empty( $order->billing_phone ) ? $order->billing_phone : '' );
 		}
 
-		$vendor_billing_phone       = '';
+		$vendor_phone       = '';
 		$woocommerce_store_address   = ( ! empty( get_option( 'woocommerce_store_address' ) ) ? get_option( 'woocommerce_store_address' ) : '' );
 		$woocommerce_store_address_2 = ( ! empty( get_option( 'woocommerce_store_address_2' ) ) ? get_option( 'woocommerce_store_address_2' ) : '' );
 		$woocommerce_default_country = ( ! empty( get_option( 'woocommerce_default_country' ) ) ? get_option( 'woocommerce_default_country' ) : '' );
@@ -509,7 +509,7 @@ if ( ! metadata_exists('post', $order_id, 'passed_to_shipday') ) {
 				$country              = ( ! empty( get_user_meta( $store_id, '_wcfm_country', true ) ) ? get_user_meta( $store_id, '_wcfm_country', true ) . ',' : $woocommerce_default_country );
 				$state                = ( ! empty( get_user_meta( $store_id, '_wcfm_state', true ) ) ? get_user_meta( $store_id, '_wcfm_state', true ) . ',' : '' );
 				$vendor_address       = $street1 . $street2 . $city . $country;
-				$vendor_billing_phone = get_user_meta( $store_id, 'billing_phone', true );
+				$vendor_phone = get_user_meta( $store_id, 'billing_phone', true );
 
 			}
 			$unique_store_ids = array_unique( $hold_store_id );
@@ -549,7 +549,7 @@ if ( ! metadata_exists('post', $order_id, 'passed_to_shipday') ) {
 					$pickupstore = get_user_meta( $store_id, 'store_name', true );
 
 					$store_profile          = get_user_meta( $store_id, 'wcfmmp_profile_settings', true );
-					$vendor_billing_phone   = $store_profile['phone'];
+					$vendor_phone   = $store_profile['phone'];
 					$customer_billing_email = $store_profile['store_email'];
 					/*  $orderItem1 = ( !empty( $SingleOrderItem ) ? $SingleOrderItem : $orderItem ); */
 					$_wcfm_find_address = get_user_meta( $store_id, '_wcfm_find_address', true );
@@ -563,7 +563,7 @@ if ( ! metadata_exists('post', $order_id, 'passed_to_shipday') ) {
 						$state          = ( ! empty( get_user_meta( $store_id, '_wcfm_state', true ) ) ? get_user_meta( $store_id, '_wcfm_state', true ) . ',' : '' );
 						$vendor_address = $street1 . $street2 . $city . $country;
 					}
-					$vendor_billing_phone = get_user_meta( $store_id, 'billing_phone', true );
+					$vendor_phone = get_user_meta( $store_id, 'billing_phone', true );
 					$total_amt            = $get_subtotal[ $runner ];
 
 					curl_setopt_array(
@@ -585,7 +585,7 @@ if ( ! metadata_exists('post', $order_id, 'passed_to_shipday') ) {
 						"customerPhoneNumber" : "' . $customer_billing_phone . '",
 						"restaurantName" : "' . $pickupstore . '",
 						"restaurantAddress" : "' . $vendor_address . '",
-						"restaurantPhoneNumber" : "' . $vendor_billing_phone . '",
+						"restaurantPhoneNumber" : "' . $vendor_phone . '",
 						"expectedDeliveryDate": "' . $del_date . '",
 						"totalOrderCost":"' . $total_amt . '",
 						"orderItem": ' . $orderItems[ $runner ] . ',
@@ -679,7 +679,13 @@ if ( ! metadata_exists('post', $order_id, 'passed_to_shipday') ) {
 						$billing_city         = ( ! empty( $vendor_data['billing_city'][0] ) ? $vendor_data['billing_city'][0] . ',' : $woocommerce_store_city );
 						$billing_country      = ( ! empty( $vendor_data['billing_country'][0] ) ? $vendor_data['billing_country'][0] : $woocommerce_default_country );
 						$vendor_address       = $billing_address_1 . $billing_address_2 . $billing_city . $billing_country;
-						$vendor_billing_phone = ( ! empty( $vendor_data['billing_phone'][0] ) ? $vendor_data['billing_phone'][0] : '' );
+						$vendor_phone = ( ! empty( $vendor_data['billing_phone'][0] ) ? $vendor_data['billing_phone'][0] : '' );
+
+						/**  wrong billing phone fix */
+                        echo '<h1>Start</h1>';
+						$vendor = new \WeDevs\Dokan\Vendor\Vendor($vendor_id);
+						$vendor_phone = '+'.$vendor->get_phone();
+
 
 						// code...
 						//$runner_vendor++;
@@ -724,7 +730,7 @@ if ( ! metadata_exists('post', $order_id, 'passed_to_shipday') ) {
 							"customerPhoneNumber" : "' . $customer_billing_phone . '",
 							"restaurantName" : "' . $pickupstore . '",
 							"restaurantAddress" : "' . $vendor_address . '",
-							"restaurantPhoneNumber" : "' . $vendor_billing_phone . '",
+							"restaurantPhoneNumber" : "' . $vendor_phone . '",
 							"expectedDeliveryDate": "' . $del_date . '",
 							"orderItem":' . $SingleOrderItem . ',
 							"totalOrderCost":"' . $total_amt . '",
@@ -744,13 +750,6 @@ if ( ! metadata_exists('post', $order_id, 'passed_to_shipday') ) {
 					$response = curl_exec( $curl );
 
 				}
-
-
-
-
-
-
-
 
 
 
@@ -789,7 +788,7 @@ if ( ! metadata_exists('post', $order_id, 'passed_to_shipday') ) {
 				$billing_city         = ( ! empty( $vendor_data['billing_city'][0] ) ? $vendor_data['billing_city'][0] . ',' : $woocommerce_store_city );
 				$billing_country      = ( ! empty( $vendor_data['billing_country'][0] ) ? $vendor_data['billing_country'][0] : $woocommerce_default_country );
 				$vendor_address       = $billing_address_1 . $billing_address_2 . $billing_city . $billing_country;
-				$vendor_billing_phone = ( ! empty( $vendor_data['billing_phone'][0] ) ? $vendor_data['billing_phone'][0] : '' );
+				$vendor_phone = ( ! empty( $vendor_data['billing_phone'][0] ) ? $vendor_data['billing_phone'][0] : '' );
 
 				/* $SingleOrderItem = "[{'name':'" . $product_name . "','unitPrice':'" . $product_price . "','quantity':'" . $quantity . "'}]"; */
 
@@ -814,7 +813,7 @@ if ( ! metadata_exists('post', $order_id, 'passed_to_shipday') ) {
 							"customerPhoneNumber" : "' . $customer_billing_phone . '",
 							"restaurantName" : "' . $pickupstore . '",
 							"restaurantAddress" : "' . $vendor_address . '",
-							"restaurantPhoneNumber" : "' . $vendor_billing_phone . '",
+							"restaurantPhoneNumber" : "' . $vendor_phone . '",
 							"expectedDeliveryDate": "' . $del_date . '",
 							"orderItem":' . $SingleOrderItem . ',
 							"totalOrderCost":"' . $total_amt . '",
@@ -860,7 +859,7 @@ if ( ! metadata_exists('post', $order_id, 'passed_to_shipday') ) {
 				"customerPhoneNumber" => $customer_billing_phone,
 				"restaurantName" => $pickupstore,
 				"restaurantAddress" => $default_store_address,
-				"restaurantPhoneNumber" => $vendor_billing_phone,
+				"restaurantPhoneNumber" => $vendor_phone,
 				"expectedDeliveryDate" => $del_date,
 				"orderItem" => $customer_items,
 				"totalOrderCost" => $total_amt,
