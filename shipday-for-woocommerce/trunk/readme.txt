@@ -5,7 +5,7 @@ Requires at least: 3.5
 Tested up to: 5.8
 WC requires at least: 3.0
 WC tested up to: 5.5.2
-Stable tag: 0.4.7
+Stable tag: 0.4.8
 License: GPLv2 or later
 
 == Description ==
@@ -86,7 +86,9 @@ You can install shipday plugin directly from wordpress plugin repository or manu
 
 == Changelog ==
 
-= 0.4.7 (19.08.2021) =
-* Fix: Dokan vendor phone
+= 0.4.8 (27.08.2021) =
+* Fix: WCFM order fail
+* Fix: Phone no country code
+* Integration: Webhook install onetime post added
 
 
