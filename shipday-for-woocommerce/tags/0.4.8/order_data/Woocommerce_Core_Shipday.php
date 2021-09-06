@@ -12,7 +12,11 @@ class Woocommerce_Core_Shipday {
 	}
 
 	public static function add_calling_country_code($phone_number, $country_code) {
-		return $phone_number;
+		if ($phone_number[0] == '+') return $phone_number;
+		if (substr($phone_number, 0, 2) == '00') return '+'.substr($phone_number, 2);
+		$calling_code = ( new WC_Countries() )->get_country_calling_code( $country_code );
+		if ($phone_number[0] == '0') $phone_number = substr($phone_number, 1);
+		return $calling_code.$phone_number;
 	}
 
 	function get_customer_info(): array {
@@ -62,35 +66,6 @@ class Woocommerce_Core_Shipday {
 		);
 
 		return $shipping_info;
-	}
-
-	function get_dropoff_object(): array {
-		$address = $this->order->has_shipping_address() ? $this->order->get_address( 'shipping' ) : $this->order->get_address('billing');
-
-		$name         = handle_null( $address['first_name'] ) . ' ' . handle_null( $address['last_name'] );
-		$company      = handle_null( $address['company'] );
-		$address1     = handle_null( $address['address_1'] );
-		$address2     = handle_null( $address['address_2'] );
-		$city         = handle_null( $address['city'] );
-		$state_code   = handle_null( $address['state'] );
-		$post_code    = handle_null( $address['postcode'] );
-		$country_code = handle_null( $address['country'] );
-
-		$state   = ! empty( $state_code ) ? WC()->countries->get_states( $country_code )[ $state_code ] : '';
-		$country = ! empty( $country_code ) ? ( new WC_Countries() )->get_countries()[ $country_code ] : '';
-
-		return array(
-			'dropoff' => array(
-				'address' => array(
-					'unit'    => $address2,
-					'street'  => $address1,
-					'city'    => $city,
-					'state'   => $state,
-					'zip'     => $post_code,
-					'country' => $country
-				)
-			)
-		);
 	}
 
 	function get_order_items($items = null) : array {

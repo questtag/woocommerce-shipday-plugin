@@ -85,6 +85,35 @@ class Woo_Order_Shipday extends Woocommerce_Core_Shipday {
 		);
 	}
 
+	function get_dropoff_object(): array {
+		$address = $this->order->get_address( 'shipping' );
+
+		$name         = handle_null( $address['first_name'] ) . ' ' . handle_null( $address['last_name'] );
+		$company      = handle_null( $address['company'] );
+		$address1     = handle_null( $address['address_1'] );
+		$address2     = handle_null( $address['address_2'] );
+		$city         = handle_null( $address['city'] );
+		$state_code   = handle_null( $address['state'] );
+		$post_code    = handle_null( $address['postcode'] );
+		$country_code = handle_null( $address['country'] );
+
+		$state   = ! empty( $state_code ) ? WC()->countries->get_states( $country_code )[ $state_code ] : '';
+		$country = ! empty( $country_code ) ? ( new WC_Countries() )->get_countries()[ $country_code ] : '';
+
+		return array(
+			'dropoff' => array(
+				'address' => array(
+					'unit'    => $address2,
+					'street'  => $address1,
+					'city'    => $city,
+					'state'   => $state,
+					'zip'     => $post_code,
+					'country' => $country
+				)
+			)
+		);
+	}
+
 	function get_uuid(): array {
 		return array(
 			'uuid' => get_option('shipday_registered_uuid')

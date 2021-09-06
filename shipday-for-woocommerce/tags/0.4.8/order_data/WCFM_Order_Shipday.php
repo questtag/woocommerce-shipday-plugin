@@ -48,7 +48,6 @@ class WCFM_Order_Shipday extends Woocommerce_Core_Shipday {
 				$this->get_order_items($items),
 				$this->get_costing($items),
 				$this->get_payment_info(),
-				$this->get_dropoff_object(),
 				$this->get_message(),
 				$this->get_signature($store_id),
 				get_times($this->order)
