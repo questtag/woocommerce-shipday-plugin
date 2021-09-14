@@ -38,19 +38,13 @@ class WC_Settings_Tab_Shipday
 	public static function get_settings()
 	{
 		$settings = array(
-			'section_title' => array(
-				'name' => __('Shipday Settings', 'woocommerce-settings-tab-shipday'),
+			array(
+				'name' => __('General Settings', 'woocommerce-settings-tab-shipday'),
 				'type' => 'title',
-				'desc' => 'Login to your Shipday account to get the API key. It’s in the following, My Account > Profile > Api key',
-				'id' => 'wc_settings_tab_shipday_section_title',
+				'desc' => '',
+				'id' => 'wc_settings_tab_shipday_general_section_title',
 			),
-			'shipday_key' => array(
-				'name' => __('Shipday API Key', 'woocommerce-settings-tab-shipday'),
-				'type' => 'text',
-				'custom_attributes' => array('required' => 'required'),
-				'id' => 'wc_settings_tab_shipday_api_key',
-			),
-			'shipday_location' => array(
+			array(
 				'name' => __('Pick up location settings', 'woocommerce-settings-tab-shipday'),
 				'type' => 'select',
 				'std' => 'Select Shipday Location',
@@ -58,11 +52,52 @@ class WC_Settings_Tab_Shipday
 					'single_pickup' => __('Single pick up location (single vendor)'),
 					'multiple_pickup' => __('Multiple pick up location (multi-vendor)'),
 				),
-				'id' => 'wc_settings_tab_shipday_location',
+				'id' => 'wc_settings_tab_shipday_vendor_type',
 			),
-			'section_end' => array(
+			array(
+				'name' => __('Order Management Settings for WCFM', 'woocommerce-settings-tab-shipday'),
+				'type' => 'radio',
+				'std' => 'admin_manage',
+				'default' => 'admin_manage',
+				'options' => array(
+					'admin_manage' => __('I am going to manage all the orders in Shipday'),
+					'vendor_manage' => __('Vendors manages their orders in Shipday'),
+				),
+				'id' => 'wc_settings_tab_shipday_order_manage',
+			),
+			array(
+				'name' => __('Shipday API Key', 'woocommerce-settings-tab-shipday'),
+				'type' => 'text',
+				'desc' => 'To get API Key, Login to your Shipday account and go to My Account > Profile > Api key',
+//				'custom_attributes' => array('required' => 'required'),
+				'id' => 'wc_settings_tab_shipday_api_key',
+			),
+			array(
 				'type' => 'sectionend',
-				'id' => 'wc_settings_tab_shipday_section_end',
+				'id' => 'wc_settings_tab_shipday_general_section_end',
+			),
+			array(
+				'name' => __('REST API Settings', 'woocommerce-settings-tab-shipday'),
+				'type' => 'title',
+				'desc' => 'To get REST API Keys, go to WooCommerce > Settings > Advanced > API Key. Then generate a new API key with any description, '.
+							'give Read/Write permissions and copy consumer key and consumer secret and take note of the keys as you will not see it after leaving the page.',
+				'id' => 'wc_settings_tab_shipday_rest_section_title',
+			),
+			array(
+				'name' => __('Consumer Key', 'woocommerce-settings-tab-shipday'),
+				'type' => 'text',
+				'value' => "",
+				'id' => 'wc_settings_tab_shipday_rest_api_consumer_key',
+			),
+			array(
+				'name' => __('Consumer Secret', 'woocommerce-settings-tab-shipday'),
+				'type' => 'text',
+				'value' => "",
+				'id' => 'wc_settings_tab_shipday_rest_api_consumer_secret',
+			),
+			array(
+				'type' => 'sectionend',
+				'id' => 'wc_settings_tab_shipday_rest_section_end',
 			),
 		);
 

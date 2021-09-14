@@ -46,7 +46,7 @@ class Woo_Order_Shipday extends Woocommerce_Core_Shipday {
 	}
 
 	/** Needs more info */
-	function get_restaurant_info( ): array {
+	public static function get_restaurant_info( ): array {
 		$store_name = handle_null( get_bloginfo( 'name' ) );
 
 		$address1      = handle_null( get_option( 'woocommerce_store_address' ) );
@@ -58,8 +58,8 @@ class Woo_Order_Shipday extends Woocommerce_Core_Shipday {
 		$split_country = explode( ":", $country_state );
 		$country_code  = $split_country[0];
 		$state_code    = $split_country[1];
-		$state         = $this->to_state_name( $state_code, $country_code );
-		$country       = $this->to_country_name( $country_code );
+		$state         = self::to_state_name( $state_code, $country_code );
+		$country       = self::to_country_name( $country_code );
 
 		$full_address = $address2 . ', ' . $address1 . ', ' . $city . ', ' . $state . ', ' . $post_code . ', ' . $country;
 

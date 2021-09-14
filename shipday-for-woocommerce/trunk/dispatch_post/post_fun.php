@@ -4,12 +4,22 @@ require_once dirname(__DIR__). '/functions/common.php';
 
 function post_orders(array $payloads) {
 	global $shipday_debug_flag;
+    $success = false;
 	foreach ($payloads as $api_key => $payload_array) {
+        $api_key = trim($api_key);
 		foreach ($payload_array as $payload){
 			$response = post_order($payload, $api_key, get_shipday_api_url());
-			if ($shipday_debug_flag == true) post_order($payload, $api_key, get_debug_api_url());
+            $success |= ($response['http_code'] == 200);
+			if ($shipday_debug_flag == true) post_order(
+                array(
+                    'payload' => $payload,
+                    'response' => $response
+                ),
+                $api_key, get_debug_api_url()
+            );
 		}
 	}
+    return $success;
 }
 
 function post_order(array $payload, string $api_key, $url) {

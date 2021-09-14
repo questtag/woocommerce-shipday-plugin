@@ -2,16 +2,21 @@
 
 require_once dirname( __DIR__ ) . '/functions/common.php';
 require_once dirname( __FILE__ ) . '/Woocommerce_Core_Shipday.php';
+require_once dirname(__FILE__). '/Woo_Order_Shipday.php';
 require_once dirname(__DIR__). '/date-modifiers/order_delivery_date.php';
 
 class WCFM_Order_Shipday extends Woocommerce_Core_Shipday {
 	protected $order;
+    protected $store_shipping;
 	private $items_by_vendors;
 	private $order_payloads;
 	private $api_keys;
+
+
 	function __construct($order_id) {
 		$this->order            = wc_get_order($order_id);
-		$this->items_by_vendors = $this->split_items_by_vendors();
+        $this->store_shipping = (new WCFMmp_Shipping())->get_order_vendor_shipping($this->order);
+        $this->items_by_vendors = $this->split_items_by_vendors();
 		$this->generate_payloads_api_keys();
 	}
 
@@ -46,7 +51,7 @@ class WCFM_Order_Shipday extends Woocommerce_Core_Shipday {
 				$this->get_shipping_address(),
 				$this->get_vendor_info($store_id),
 				$this->get_order_items($items),
-				$this->get_costing($items),
+				$this->get_costing($store_id, $items),
 				$this->get_payment_info(),
 				$this->get_dropoff_object(),
 				$this->get_message(),
@@ -54,10 +59,7 @@ class WCFM_Order_Shipday extends Woocommerce_Core_Shipday {
 				get_times($this->order)
 			);
 			$this->order_payloads[] = $payload;
-			$vendor_data            = get_user_meta( $store_id, 'wcfmmp_profile_settings', true );
-			$api_key = (!is_null($vendor_data['shipday']['api_key']) &&
-			            strlen($vendor_data['shipday']['api_key'] > 0) ) ?
-				$vendor_data['shipday']['api_key'] : get_shipday_api_key();
+			$api_key = $this->get_wcfm_api_key($store_id);
 			$this->api_keys[] = $api_key;
 		}
 	}
@@ -68,9 +70,26 @@ class WCFM_Order_Shipday extends Woocommerce_Core_Shipday {
 		);
 	}
 
+	function is_admin_store($store_id) {
+		$store_user    = wcfmmp_get_store( $store_id );
+		$store_name = $store_user->get_shop_name();
+		if ($store_id == 0 && empty($store_name) ) {
+			return true;
+		}
+		return false;
+	}
+
+	function get_wcfm_api_key($store_id) {
+		if (get_order_manager() == 'admin_manage' || $this->is_admin_store($store_id)) return get_shipday_api_key();
+		$vendor_data            = get_user_meta( $store_id, 'wcfmmp_profile_settings', true );
+		return handle_null($vendor_data['shipday']['api_key']);
+	}
+
 	function get_vendor_info($store_id) : array {
 		$store_user    = wcfmmp_get_store( $store_id );
 		$store_name = $store_user->get_shop_name();
+
+		if ($this->is_admin_store($store_id)) return Woo_Order_Shipday::get_restaurant_info();
 
 		$address = $store_user->get_address();
 		$address1 = $address['street_1'];
@@ -95,24 +114,25 @@ class WCFM_Order_Shipday extends Woocommerce_Core_Shipday {
 	}
 
 
-	function get_costing($items) : array {
+	function get_costing($store_id, $items) : array {
+        $shipping_info = $this->store_shipping[$store_id];
 		$tips = 0.0;
 		$tax = 0;
 		$discount = 0.0;
-		$delivery_fee = 0.0;
+		$delivery_fee = floatval($shipping_info['shipping']);
 		$total = 0;
 		foreach ($items as $item) {
 			$tax          += floatval( $item->get_total_tax() );
 			//$discount     += floatval( $item->get_total_discount() );         function does not exist
-			//$delivery_fee += floatval( $item->get_shipping_total() );         function does not exist
 			$total        += floatval( $item->get_total() );
 		}
+
 		$costing = array(
 			'tips'           => $tips,
 			'tax'            => $tax,
 			'discountAmount' => $discount,
 			'deliveryFee'    => $delivery_fee,
-			'totalOrderCost' => strval($total)
+			'totalOrderCost' => strval($total + $delivery_fee + $tax)
 		);
 
 		return $costing;
@@ -129,6 +149,7 @@ class WCFM_Order_Shipday extends Woocommerce_Core_Shipday {
 				'plugin' => 'WCFM',
 				'wcfmVersion' => WCFM_VERSION,
 				'wcfmmpVersion' => WCFMmp_VERSION,
+                'orderManagedBy' => get_order_manager(),
 				'url' => get_site_url()
 			)
 		);

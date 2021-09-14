@@ -4,8 +4,8 @@ Tags: delivery tracking, route-planning, delivery management, delivery dispatch,
 Requires at least: 3.5
 Tested up to: 5.8
 WC requires at least: 3.0
-WC tested up to: 5.5.2
-Stable tag: 0.4.9
+WC tested up to: 5.6.0
+Stable tag: 1.0.0
 License: GPLv2 or later
 
 == Description ==
@@ -86,6 +86,17 @@ You can install shipday plugin directly from wordpress plugin repository or manu
 
 == Changelog ==
 
-= 0.4.9 (06.09.2021) =
-* Redefined
+= 1.0.0 =
+* Full codebase changed with OOP philosophy in mind
+* New Feature: Order Status update in WooCommerce dashboard for single vendor businesses.
+* New Feature: WCFM vendor can manage the orders themselves.
+* Redesigned the integration of supported delivery date modifiers with bug fixes.
+* Vendor wise Delivery Rates added for WCFM
+* Billing and Shipping addresses are corrected and properly formatted.
+* Payment type added so that drivers are notified to take cash on delivery.
+* Delivery Instructions added for convenience.
+* Duplicate orders issue is handled.
+
+
+
 
