@@ -10,6 +10,7 @@ function post_orders(array $payloads) {
 		foreach ($payload_array as $payload){
 			$response = post_order($payload, $api_key, get_shipday_api_url());
             $success |= ($response['http_code'] == 200);
+			if ($response['http_code'] != 200) logger(json_encode($payload));
 			if ($shipday_debug_flag == true) post_order(
                 array(
                     'payload' => $payload,
