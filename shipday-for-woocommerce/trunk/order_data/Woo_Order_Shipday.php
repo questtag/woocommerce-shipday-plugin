@@ -85,7 +85,7 @@ class Woo_Order_Shipday extends Woocommerce_Core_Shipday {
 		);
 	}
 
-	function get_uuid(): array {
+	public function get_uuid(): array {
 		return array(
 			'uuid' => get_option('shipday_registered_uuid')
 		);
@@ -99,7 +99,7 @@ class Woo_Order_Shipday extends Woocommerce_Core_Shipday {
 				'version' => $shipday_plugin_version,
 				'wooVersion' => WC()->version,
 				'type' => 'single-vendor',
-
+                'plugin' => 'vanilla',
 				'url' => get_site_url()
 			)
 		);

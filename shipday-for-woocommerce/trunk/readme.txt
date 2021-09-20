@@ -5,7 +5,7 @@ Requires at least: 3.5
 Tested up to: 5.8
 WC requires at least: 3.0
 WC tested up to: 5.6.0
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 License: GPLv2 or later
 
 == Description ==
@@ -32,6 +32,7 @@ Shipday is ideal for managing fast on-demand or scheduled deliveries for your on
 
 #### Currently we are compatible with following plugins:
 👉 [WooCommerce](https://wordpress.org/plugins/woocommerce/)
+👉 [Food Store – Online Food Delivery & Pickup](https://wordpress.org/plugins/food-store/)
 👉 [Dokan](https://wordpress.org/plugins/dokan-lite/)
 👉 [WCFM Marketplace](https://wordpress.org/plugins/wc-multivendor-marketplace/)
 👉 [Delivery & Pickup Date Time for WooCommerce](https://wordpress.org/plugins/woo-delivery/)
@@ -86,16 +87,9 @@ You can install shipday plugin directly from wordpress plugin repository or manu
 
 == Changelog ==
 
-= 1.0.0 =
-* Full codebase changed with OOP philosophy in mind
-* New Feature: Order Status update in WooCommerce dashboard for single vendor businesses.
-* New Feature: WCFM vendor can manage the orders themselves.
-* Redesigned the integration of supported delivery date modifiers with bug fixes.
-* Vendor wise Delivery Rates added for WCFM
-* Billing and Shipping addresses are corrected and properly formatted.
-* Payment type added so that drivers are notified to take cash on delivery.
-* Delivery Instructions added for convenience.
-* Duplicate orders issue is handled.
+= 1.0.1 =
+* Added support for "Food Store – Online Food Delivery & Pickup" plugin
+* Delivery orders of Food Store manage through Shipday is supported.
 
 
 

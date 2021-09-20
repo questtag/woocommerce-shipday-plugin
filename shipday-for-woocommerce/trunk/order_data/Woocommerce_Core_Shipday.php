@@ -67,13 +67,15 @@ class Woocommerce_Core_Shipday {
 	function get_dropoff_object(): array {
 		$address = $this->order->has_shipping_address() ? $this->order->get_address( 'shipping' ) : $this->order->get_address('billing');
 
-		$name         = handle_null( $address['first_name'] ) . ' ' . handle_null( $address['last_name'] );
-		$company      = handle_null( $address['company'] );
 		$address1     = handle_null( $address['address_1'] );
 		$address2     = handle_null( $address['address_2'] );
 		$city         = handle_null( $address['city'] );
 		$state_code   = handle_null( $address['state'] );
-		$post_code    = handle_null( $address['postcode'] );
+        try {
+            $post_code    = handle_null( $address['postcode'] );
+        } catch (Exception $exception) {
+            ;
+        }
 		$country_code = handle_null( $address['country'] );
 
 		$state   = ! empty( $state_code ) ? WC()->countries->get_states( $country_code )[ $state_code ] : '';
