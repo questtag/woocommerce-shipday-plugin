@@ -6,6 +6,7 @@ require_once dirname( __FILE__ ) . '/Woo_Order_Shipday.php';
 class FoodStore_Order_Shipday extends Woo_Order_Shipday
 {
     function __construct($order_id) {
+        logger('info', 'Constructing FoodStore order from order id '.$order_id);
         parent::__construct($order_id);
     }
 

@@ -14,10 +14,27 @@ class WCFM_Order_Shipday extends Woocommerce_Core_Shipday {
 
 
 	function __construct($order_id) {
-		$this->order            = wc_get_order($order_id);
-        $this->store_shipping = (new WCFMmp_Shipping())->get_order_vendor_shipping($this->order);
-        $this->items_by_vendors = $this->split_items_by_vendors();
-		$this->generate_payloads_api_keys();
+        logger('info', 'Constructing WCFM order from order id '.$order_id);
+        try {
+            $this->order            = wc_get_order($order_id);
+        } catch (Exception $e) {
+            logger('error', $order_id.': WCFM construct wc_get_order failed');
+        }
+        try {
+            $this->store_shipping = (new WCFMmp_Shipping())->get_order_vendor_shipping($this->order);
+        } catch (Exception $e) {
+            logger('error', $order_id.': WCFM construct get_order_vendor_shipping failed');
+        }
+        try {
+            $this->items_by_vendors = $this->split_items_by_vendors();
+        } catch (Exception $e) {
+            logger('error', $order_id.': WCFM construct split_items_by_vendors failed');
+        }
+        try {
+            $this->generate_payloads_api_keys();
+        } catch (Exception $e) {
+            logger('error', $order_id.': WCFM construct generate_payloads_api_keys failed');
+        }
 	}
 
 	public function get_payloads() {

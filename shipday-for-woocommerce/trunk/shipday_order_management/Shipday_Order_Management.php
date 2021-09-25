@@ -1,15 +1,16 @@
 <?php
+require_once dirname(__DIR__). '/functions/logger.php';
 
-require_once dirname( __DIR__ ) . '/order_data/Woo_Order_Shipday.php';
+require_once dirname(__DIR__). '/order_data/Woo_Order_Shipday.php';
 require_once dirname(__DIR__). '/order_data/Dokan_Order_Shipday.php';
-require_once dirname( __DIR__ ) . '/order_data/WCFM_Order_Shipday.php';
+require_once dirname(__DIR__). '/order_data/WCFM_Order_Shipday.php';
 require_once dirname(__DIR__). '/order_data/FoodStore_Order_Shipday.php';
 
 require_once dirname(__DIR__). '/date-modifiers/order_delivery_date.php';
 
 class Shipday_Order_Management {
 	public static function init() {
-		add_action('woocommerce_order_status_processing', __CLASS__.'::checkout_process');
+		add_action('woocommerce_order_status_processing', __CLASS__.'::process_and_send');
 	}
     public static function map_to_transient($order_id) {
         return 'shipday_order_posted'.$order_id;
@@ -24,13 +25,13 @@ class Shipday_Order_Management {
         set_transient(self::map_to_transient($order_id), true, $persistance_time);
     }
 
-	public static function checkout_process($order_id) {
+	public static function process_and_send($order_id) {
 
         if (self::is_duplicate($order_id)) return ;
         $send = true;
-
+        logger('info', $order_id.': Shipday Order Management Process started');
 		if ( is_plugin_active( 'dokan-lite/dokan.php' ) )
-			$order_data_object = new Dokan_Order_Shipday( $order_id ) ;
+            $order_data_object = new Dokan_Order_Shipday( $order_id ) ;
 		elseif ( is_plugin_active( 'wc-multivendor-marketplace/wc-multivendor-marketplace.php' ) )
 			$order_data_object = new WCFM_Order_Shipday( $order_id ) ;
         elseif (is_plugin_active('food-store/food-store.php')){
@@ -40,8 +41,23 @@ class Shipday_Order_Management {
 			$order_data_object = new Woo_Order_Shipday( $order_id );
 
         if ($send) {
-            $success = post_orders($order_data_object->get_payloads());
-            if ($success) self::register_as_posted($order_id);
+            logger('info', $order_id.': Shipday Order Management Process post sending starts' );
+            try {
+                $payloads = $order_data_object->get_payloads();
+            } catch (Exception $exception) {
+                logger('error', $order_id.': Shipday Order Management Process get_payloads failed');
+            }
+            try {
+                $success = post_orders($payloads);
+            } catch (Exception $exception) {
+                logger('info', $order_id.': Shipday Order Management Process post sending failed');
+            }
+            if ($success) {
+                self::register_as_posted($order_id);
+                logger('info', $order_id.': Shipday Order Management Process post successfully sent');
+            } else logger('info', $order_id.': Shipday Order Management Process post sending failed');
+        } else {
+            logger('info', $order_id.': Shipday Order Management Process not a shipday order');
         }
 	}
 }

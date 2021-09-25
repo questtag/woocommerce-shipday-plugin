@@ -6,7 +6,9 @@ class Dokan_Order_Shipday {
 	private $post, $sub_orders;
 
 	function __construct($post) {
-		$this->post = $post;
+        logger('info', 'Constructing Dokan order from order id '.$post);
+
+        $this->post = $post;
 	}
 
 	public function get_payloads() {
