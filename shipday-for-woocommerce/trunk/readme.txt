@@ -88,8 +88,9 @@ You can install shipday plugin directly from wordpress plugin repository or manu
 == Changelog ==
 
 = 1.0.1 =
+* Manually entered orders are now fetched in Shipday Dispatch
 * Added support for "Food Store – Online Food Delivery & Pickup" plugin
-* Delivery orders of Food Store manage through Shipday is supported.
+
 
 
 

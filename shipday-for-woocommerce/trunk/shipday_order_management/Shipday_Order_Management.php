@@ -9,7 +9,7 @@ require_once dirname(__DIR__). '/date-modifiers/order_delivery_date.php';
 
 class Shipday_Order_Management {
 	public static function init() {
-		add_action('woocommerce_thankyou', __CLASS__.'::checkout_process');
+		add_action('woocommerce_order_status_processing', __CLASS__.'::checkout_process');
 	}
     public static function map_to_transient($order_id) {
         return 'shipday_order_posted'.$order_id;
@@ -37,7 +37,7 @@ class Shipday_Order_Management {
             $order_data_object = new FoodStore_Order_Shipday($order_id);
             $send = $order_data_object->is_shipday_order();
         } else
-			$order_data_object = ( new Woo_Order_Shipday( $order_id ) )->get_payloads();
+			$order_data_object = new Woo_Order_Shipday( $order_id );
 
         if ($send) {
             $success = post_orders($order_data_object->get_payloads());
