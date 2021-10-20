@@ -3,8 +3,8 @@
 /*
 Plugin Name: Shipday Integration for WooCommerce
 Plugin URI: https://www.shipday.com/woocommerce
-Version: 1.0.2
-Description:Allows you to add shipday API configuration and create connection with shipday. Then anyone places any order to the WooCommerce site it should also appear on your Shipday dispatch dashboard. Local Delivery App for WooCommerce by Shipday is compatible with Dokan Multivendor plugin, WCFM Market Place,Order Delivery Date For Woocommerce and Woo Delivery.
+Version: 1.0.3
+Description: Enable fast local deliveries for your online store or marketplace with Shipday. Easy driver and dispatch app with live delivery tracking. Built-in connection with on-demand delivery services like DoorDash and Uber in the US.
 Author URI: https://www.shipday.com/
 Text Domain: woocommerce-shipday
 */
@@ -16,7 +16,7 @@ defined('ABSPATH') || exit;
 
 /** Functions end */
 global $shipday_plugin_version;
-$shipday_plugin_version = '1.0.2';
+$shipday_plugin_version = '1.0.3';
 
 require_once ABSPATH.'wp-admin/includes/plugin.php';
 require_once dirname( __FILE__ ) . '/views/WC_Settings_Tab_Shipday.php';

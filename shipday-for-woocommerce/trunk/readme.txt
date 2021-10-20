@@ -5,10 +5,11 @@ Requires at least: 3.5
 Tested up to: 5.8.1
 WC requires at least: 3.0
 WC tested up to: 5.7.1
-Stable tag: 1.0.2
+Stable tag: 1.0.3
 License: GPLv2 or later
 
 == Description ==
+Enable fast local deliveries for your online store or marketplace with Shipday. Easy driver and dispatch app with live delivery tracking. Built-in connection with on-demand delivery services like DoorDash and Uber in the US.
 
 Use the Shipday Integration for WooCommerce plugin to create connection with [Shipday](https://www.shipday.com/).
 
@@ -87,10 +88,10 @@ You can install shipday plugin directly from wordpress plugin repository or manu
 
 == Changelog ==
 
-= 1.0.2 =
+= 1.0.3 =
 * Dokan multivendor support enhanced.
 * Dokan vendors can manage their orders in Shipday with their own drivers.
-
+* Delivery tab added in dokan vendor specific settigns.
 
 
 

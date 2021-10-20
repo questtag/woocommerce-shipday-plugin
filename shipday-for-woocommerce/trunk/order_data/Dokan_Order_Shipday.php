@@ -20,24 +20,25 @@ class Dokan_Order_Shipday {
 	public function get_payloads() {
 		$this->create_suborders();
 		if ($this->sub_orders) {
-			foreach ($this->sub_orders as $sub_order) {
-				$sub_order = wc_get_order($sub_order);
-				$vendor_id   = dokan_get_seller_id_by_order( $sub_order );
-				$wc_order = wc_get_order($this->post);
-                $api_key = $this->get_dokan_api_key($vendor_id);
-                echo $api_key;
-				$payloads[$api_key][] = array_merge(
-					(new Woo_Order_Shipday($sub_order))->get_payload_without_dependant_info(),
-					$this->get_vendor_info($vendor_id),
-					get_times($wc_order),
-					$this->get_signature($vendor_id)
-				);
-			}
+//			foreach ($this->sub_orders as $sub_order) {
+//				$sub_order = wc_get_order($sub_order);
+//				$vendor_id   = dokan_get_seller_id_by_order( $sub_order );
+//				$wc_order = wc_get_order($this->post);
+//                $api_key = $this->get_dokan_api_key($vendor_id);
+//                echo $api_key;
+//				$payloads[$api_key][] = array_merge(
+//					(new Woo_Order_Shipday($sub_order))->get_payload_without_dependant_info(),
+//					$this->get_vendor_info($vendor_id),
+//					get_times($wc_order),
+//					$this->get_signature($vendor_id)
+//				);
+//			}
+            $payloads = [];
 		} else {
 			$order = wc_get_order($this->post);
 			$vendor_id   = dokan_get_seller_id_by_order( $order );
             $api_key = $this->get_dokan_api_key($vendor_id);
-            logger('INFO', $vendor_id. '+'.$api_key);
+            logger('INFO', 'Vendor Id:'.$vendor_id. ', API Key:'.$api_key);
 			$payloads[$api_key][] = array_merge(
 				(new Woo_Order_Shipday($order))->get_payload_without_dependant_info(),
 				$this->get_vendor_info($vendor_id),
