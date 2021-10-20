@@ -2,10 +2,10 @@
 Contributors: shipdayinc
 Tags: delivery tracking, route-planning, delivery management, delivery dispatch, same day delivery, local pickup, local delivery, delivery tracking,  driver app
 Requires at least: 3.5
-Tested up to: 5.8
+Tested up to: 5.8.1
 WC requires at least: 3.0
-WC tested up to: 5.6.0
-Stable tag: 1.0.1
+WC tested up to: 5.7.1
+Stable tag: 1.0.2
 License: GPLv2 or later
 
 == Description ==
@@ -87,9 +87,9 @@ You can install shipday plugin directly from wordpress plugin repository or manu
 
 == Changelog ==
 
-= 1.0.1 =
-* Manually entered orders are now fetched in Shipday Dispatch
-* Added support for "Food Store – Online Food Delivery & Pickup" plugin
+= 1.0.2 =
+* Dokan multivendor support enhanced.
+* Dokan vendors can manage their orders in Shipday with their own drivers.
 
 
 
