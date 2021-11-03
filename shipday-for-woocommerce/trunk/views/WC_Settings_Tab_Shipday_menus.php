@@ -43,6 +43,24 @@ function get_woocommerce_settings()
             'type' => 'sectionend',
             'id' => 'wc_settings_tab_shipday_rest_section_end',
         ),
+        array(
+            'name' => __('Orders Settings', 'woocommerce-settings-tab-shipday'),
+            'type' => 'title',
+            'desc' => '',
+            'id' => 'wc_settings_tab_shipday_general_section_title',
+        ),
+        array(
+            'title'       => __( 'Sync previous orders', 'woocommerce-settings-tab-shipday' ),
+            'label'       => __( 'Sync previous orders', 'woocommerce-settings-tab-shipday'),
+            'type'        => 'checkbox',
+            'description' => '',
+            'default'     => 'no',
+            'id' => 'wc_settings_tab_shipday_sync'
+        ),
+        array(
+            'type' => 'sectionend',
+            'id' => 'wc_settings_tab_shipday_rest_section_end',
+        ),
     );
 
     return apply_filters('wc_settings_tab_shipday_settings_single_vendor', $settings);

@@ -21,6 +21,10 @@ class Notices {
 	}
 
 	public static function rest_api_key_notice() {
+        if ( is_plugin_active( 'dokan-lite/dokan.php' ) ||
+            is_plugin_active( 'wc-multivendor-marketplace/wc-multivendor-marketplace.php' )
+        ) return;
+
 		$rest_api_section_url = 'admin.php?page=wc-settings&tab=advanced&section=keys&create-key=1';
 		$shipday_tab_url = 'admin.php?page=wc-settings&tab=settings_tab_shipday';
 		if (!WooCommerce_REST_API::is_consumer_secret_valid(get_option('wc_settings_tab_shipday_rest_api_consumer_secret')))
