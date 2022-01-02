@@ -5,26 +5,23 @@ Requires at least: 3.5
 Tested up to: 5.8.1
 WC requires at least: 3.0
 WC tested up to: 5.7.1
-Stable tag: 1.0.4
+Stable tag: 1.0.7
 License: GPLv2 or later
 
 == Description ==
-Enable fast local deliveries for your online store or marketplace with Shipday. Easy driver and dispatch app with live delivery tracking. Built-in connection with on-demand delivery services like DoorDash and Uber in the US.
+Support fast, efficient, and affordable local deliveries for your WooCommerce store with Shipday. Our intuitive mobile apps and dashboard make it easy for you to automatically dispatch on-demand or scheduled orders, identify the best delivery route, and track drivers in real time.
 
-Use the Shipday Integration for WooCommerce plugin to create connection with [Shipday](https://www.shipday.com/).
+You can use your own delivery drivers or leverage a third-party delivery service like **DoorDash** and **Uber** (only available in the US)—all from one unified platform. It’s free to start and works anywhere in the world with internet connectivity.
 
-So that, when a customer places any delivery order on your WooCommerce website, the order will be automatically imported to Shipday for dispatch and delivery tracking. 
-
-After installation, add your Shipday API configuration in the plugin to allow your site to send order details to the Shipday dispatch dashboard. You'll find the settings under: WooCommerce > Settings > Shipday
-
-We support both single vendor and multi-vendor marketplace setup (built with Dokan and WCFM).	
-
-Shipday is ideal for managing fast on-demand or scheduled deliveries for your online business. 
+Shipday integrates directly with WooCommerce. When a customer places any delivery order on your WooCommerce store, the order will be automatically sent to Shipday for dispatch and delivery tracking. We support both single vendor and multi-vendor marketplace setup (built with Dokan and WCFM).
+``
+Shipday is ideal for managing fast on-demand or scheduled deliveries for your online business.
 
  - Restaurant delivery
  - Prepared meal delivery 
  - Quick convenience delivery 
  - Grocery delivery
+ - 15 mins grocery delivery
  - Pharmacy delivery 
  - Other food deliveries 
  - Flower delivery 
@@ -40,28 +37,19 @@ Shipday is ideal for managing fast on-demand or scheduled deliveries for your on
 👉 [Order Delivery Date for WooCommerce](https://wordpress.org/plugins/order-delivery-date-for-woocommerce/)
 
 #### What is Shipday?
-[Shipday](https://www.shipday.com/) is an easy-to-use local delivery management software with driver app and live delivery tracking for customers with SMS notifications. 
+[Shipday](https://www.shipday.com/) offers simple, easy-to-use software and apps to automate local deliveries in minutes. Thousands of users from 50+ countries use Shipday to track their delivery orders and get their product in the hands of customers, fast. It’s free to start and works anywhere in the world with internet connectivity.
 
-It’s a cloud based local delivery dispatch and tracking software for small businesses with existing drivers. Track your delivery orders easily and get your product in the hands of customers, fast. It’s free to start and works anywhere in the world with internet connectivity.
+Whether you are launching your own delivery service to fulfill orders locally or you are a third-party courier service helping other businesses deliver locally, you can use this plugin.
 
-Whether you are launching your own delivery service to fulfill orders locally, or you are a third party courier service helping other businesses deliver locally – you can use this plugin. 
+ - All-in-one dispatch app: When a customer places an order, you can immediately see pick-up and delivery information, easily dispatch drivers, and track real-time driver locations.
 
+ - Easy driver management with the driver app: With the Shipday driver app, your drivers can automatically receive order notifications, communicate with customers via text or phone, and record proof of delivery with photos or signatures.
 
- - All-in-one easy dispatch dashboard: When a customer places an order, you’ll immediately see pick-up and delivery information and can easily dispatch drivers.
+ - Real-time delivery tracking for customers: Shipday will send your customers a live delivery tracking link via text message to share an up-to-the-minute ETA as well as the live location of their driver.
 
- - Easy driver management with Driver App: With the Shipday Driver App, your drivers will automatically receive order notifications, the required delivery time, and any special delivery instructions. You can also track their real time location on the map during deliveries. 
-
- - Real-time delivery tracking for customers: Once they place an order, your customers will see real-time tracking information so they know exactly when to expect their delivery. 
-
-Proof of Delivery with Photo and Signature: Drivers will take photo and signature proof of deliveries. No second-guessing whether an order was really delivered.
-
-Shipday is powering local deliveries globally. Already in use in over 80+ countries. 
+If you need assistance or have any questions, contact us at <support@shipday.com>. You can also read our [terms of use](https://www.shipday.com/terms).
 
 [youtube https://youtu.be/GCypZ45ZCQ4]
-
-Have a look at our [terms of use](https://www.shipday.com/terms).
-
-If you face any issue at the time of installation, send an email to : <support@shipday.com>
 
 == Screenshots ==
 
@@ -88,8 +76,8 @@ You can install shipday plugin directly from wordpress plugin repository or manu
 
 == Changelog ==
 
-= 1.0.4 =
-* Previous orders sync settings added
+= 1.0.7 =
+* Update for food store
 
 
 
