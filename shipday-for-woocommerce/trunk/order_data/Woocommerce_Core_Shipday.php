@@ -19,7 +19,7 @@ class Woocommerce_Core_Shipday {
 		$name = sanitize_user( handle_null( $this->order->get_billing_first_name() ) ) . ' ' . sanitize_user( handle_null( $this->order->get_billing_last_name() ) );
 
 		$address1     = handle_null( $this->order->get_billing_address_1() );
-		$address2     = handle_null( $this->order->get_billing_address_2() );
+//		$address2     = handle_null( $this->order->get_billing_address_2() );
 		$city         = handle_null( $this->order->get_billing_city() );
 		$state_code   = handle_null( $this->order->get_billing_state() );
 		$post_code    = handle_null( $this->order->get_billing_postcode() );
@@ -27,7 +27,7 @@ class Woocommerce_Core_Shipday {
 
 		$state        = $this->to_state_name( $state_code, $country_code );
 		$country      = $this->to_country_name( $country_code );
-		$full_address = $address2 . ', ' . $address1 . ', ' . $city . ', ' . $state . ', ' . $post_code . ', ' . $country;
+		$full_address = $address1 . ', ' . $city . ', ' . $state . ', ' . $post_code . ', ' . $country;
 
 		$phoneNumber  = $this->add_calling_country_code(handle_null( $this->order->get_billing_phone() ), $country_code);
 
@@ -49,8 +49,7 @@ class Woocommerce_Core_Shipday {
 		}
 		$shipping_info = array(
 			"customerName"        => sanitize_user( handle_null( $this->order->get_shipping_first_name() ) ) . ' ' . sanitize_user( handle_null( $this->order->get_shipping_last_name() ) ),
-			"customerAddress"     => handle_null( $this->order->get_shipping_address_2() ) . ', ' .
-			                         handle_null( $this->order->get_shipping_address_1() ) . ', ' .
+			"customerAddress"     => handle_null( $this->order->get_shipping_address_1() ) . ', ' .
 			                         handle_null( $this->order->get_shipping_city() ) . ', ' .
 			                         $this->to_state_name( handle_null( $this->order->get_shipping_state() ), handle_null( $this->order->get_shipping_country() ) ) . ', ' .
 			                         handle_null( $this->order->get_shipping_postcode() ) . ', ' .
@@ -118,8 +117,13 @@ class Woocommerce_Core_Shipday {
 
 
 	function get_message() : array {
+        $address2 = handle_null($this->order->get_shipping_address_2());
+        $notes = handle_null($this->order->get_customer_note());
 		return array(
-			'deliveryInstruction' => handle_null($this->order->get_customer_note())
+			'deliveryInstruction' => implode('. ', array(
+                $address2,
+                $notes
+            ))
 		);
 	}
 
