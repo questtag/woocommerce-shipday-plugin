@@ -10,9 +10,9 @@ class FoodStore_Order_Shipday extends Woo_Order_Shipday
         parent::__construct($order_id);
     }
 
-    public function is_shipday_order() {
+    public function prevent_order_sync() {
         $service_type = get_post_meta($this->order->get_id(), '_wfs_service_type', true);
-        return $service_type == 'delivery';
+        return $service_type == 'delivery' ? true : parent::prevent_order_sync();
     }
 
     function get_signature(): array {
