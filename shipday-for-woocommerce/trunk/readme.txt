@@ -5,7 +5,7 @@ Requires at least: 3.5
 Tested up to: 5.8.3
 WC requires at least: 3.0
 WC tested up to: 6.1.0
-Stable tag: 1.0.10
+Stable tag: 1.0.11
 License: GPLv2 or later
 
 == Description ==
@@ -76,7 +76,7 @@ You can install shipday plugin directly from wordpress plugin repository or manu
 
 == Changelog ==
 
-= 1.0.10 =
+= 1.0.11 =
 * _shipday_order_sync_prevent post_meta added to prevent orders to sync
 * bug fix for dokan
 

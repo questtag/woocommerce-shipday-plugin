@@ -5,7 +5,7 @@ require_once dirname(__DIR__). '/functions/common.php';
 class WooCommerce_REST_API {
 
 	public static function init() {
-		add_action('admin_notices', __CLASS__ . '::register_in_server');
+		add_action('shipday_settings_updated', __CLASS__ . '::register_in_server');
 	}
 
 	public static function is_consumer_secret_valid($consumer_secret) {
@@ -29,16 +29,21 @@ class WooCommerce_REST_API {
 
 	public static function register_in_server() {
 		$key_size = 43;
-		if ( get_option( 'shipday_registered_uuid' ) ) return;
 		$consumer_key = trim(get_option('wc_settings_tab_shipday_rest_api_consumer_key'));
 		$consumer_secret = trim(get_option('wc_settings_tab_shipday_rest_api_consumer_secret'));
 		if (strlen($consumer_key) != $key_size ||
 		    strlen($consumer_secret) != $key_size ||
-		    !self::is_consumer_secret_valid($consumer_secret))
-			return;
+		    !self::is_consumer_secret_valid($consumer_secret)
+        ){
+            delete_option('shipday_registered_uuid');
+            return;
+        }
 		$uuid = self::post_payload($consumer_key, $consumer_secret);
-		if (is_null($uuid)) return;
-		delete_option('wc_settings_tab_shipday_rest_api_consumer_key');
+		if (is_null($uuid)) {
+            delete_option('shipday_registered_uuid');
+            return;
+        }
+//		delete_option('wc_settings_tab_shipday_rest_api_consumer_key');
 		update_option('shipday_registered_uuid', $uuid);
 	}
 

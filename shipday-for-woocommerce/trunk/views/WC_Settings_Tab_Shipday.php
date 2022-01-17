@@ -32,6 +32,7 @@ class WC_Settings_Tab_Shipday
 	public static function update_settings()
 	{
 		woocommerce_update_options(self::get_settings());
+        do_action('shipday_settings_updated');
 	}
 
 	public static function get_settings()
