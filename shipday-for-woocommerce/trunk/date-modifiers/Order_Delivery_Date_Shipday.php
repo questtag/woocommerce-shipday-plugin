@@ -16,7 +16,9 @@ class Order_Delivery_Date_Shipday extends  Date_Picker_Object {
 		//See Orddd_Lite_Common::orddd_lite_get_order_delivery_date($order_id) in includes/class-orddd-lite-common.php
 
 		$data = get_post_meta( $order_id );
-		if ( isset( $data['_orddd_lite_timestamp'] ) ) {
+        if (isset($data['_orddd_lite_timeslot_timestamp'])) {
+            $delivery_timestamp = $data['_orddd_lite_timeslot_timestamp'][0];
+        } elseif ( isset( $data['_orddd_lite_timestamp'] ) ) {
 			$delivery_timestamp = $data['_orddd_lite_timestamp'][0];
 		} elseif ( array_key_exists( get_option( 'orddd_lite_delivery_date_field_label' ), $data ) ) {
 			$delivery_timestamp = strtotime( $data[ get_option( 'orddd_lite_delivery_date_field_label' ) ][0] );

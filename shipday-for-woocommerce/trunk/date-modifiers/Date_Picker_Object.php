@@ -10,7 +10,7 @@ class Date_Picker_Object {
 
 	protected $utc;
 	protected $date_format = 'Y-m-d';
-	protected $time_format = 'h:i:s';
+	protected $time_format = 'H:i:s';
 
 
 	public function has_pickup_date() {
