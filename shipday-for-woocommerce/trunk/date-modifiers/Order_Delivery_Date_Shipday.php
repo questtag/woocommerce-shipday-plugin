@@ -36,6 +36,13 @@ class Order_Delivery_Date_Shipday extends  Date_Picker_Object {
 
 		$delivery_timestamp = get_post_meta( $order_id, '_orddd_timestamp', true );
 		$this->delivery_date_time = (new DateTime())->setTimestamp($delivery_timestamp);
+        $time_slot= (new orddd_common())->orddd_get_order_timeslot($order_id);
+        if (isset($time_slot) and !is_null($time_slot)) {
+            $times = explode('-', $time_slot);
+            $hr_min = explode(':', $times[0]);
+            $this->delivery_date_time->setTime(intval($hr_min[0]), intval($hr_min[1]));
+            $this->delivery_date_time->setTimezone(wp_timezone());
+        }
 		$this->delivery_time_flag = true;
 
 	}
