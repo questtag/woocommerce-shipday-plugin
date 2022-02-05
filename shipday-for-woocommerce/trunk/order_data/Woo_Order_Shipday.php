@@ -89,7 +89,7 @@ class Woo_Order_Shipday extends Woocommerce_Core_Shipday {
 
 	public function get_uuid(): array {
 		return array(
-			'uuid' => get_option('shipday_registered_uuid')
+			'uuid' => get_option('wc_settings_tab_shipday_registered_uuid')
 		);
 	}
 

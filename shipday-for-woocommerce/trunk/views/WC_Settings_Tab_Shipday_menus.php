@@ -13,7 +13,7 @@ function get_woocommerce_settings()
             'name' => __('Shipday API Key', 'woocommerce-settings-tab-shipday'),
             'type' => 'text',
             'desc' => 'To get API Key, Login to your Shipday account and go to My Account > Profile > Api key',
-				'custom_attributes' => array('required' => 'required'),
+            'custom_attributes' => array('required' => 'required'),
             'id' => 'wc_settings_tab_shipday_api_key',
         ),
         array(
@@ -30,14 +30,18 @@ function get_woocommerce_settings()
         array(
             'name' => __('Consumer Key', 'woocommerce-settings-tab-shipday'),
             'type' => 'text',
-            'value' => "",
+//            'value' => "",
             'id' => 'wc_settings_tab_shipday_rest_api_consumer_key',
         ),
         array(
             'name' => __('Consumer Secret', 'woocommerce-settings-tab-shipday'),
             'type' => 'text',
-            'value' => "",
+//            'value' => "",
             'id' => 'wc_settings_tab_shipday_rest_api_consumer_secret',
+        ),
+        array(
+            'type'  => 'hidden',
+            'id'    => 'wc_settings_tab_shipday_registered_uuid',
         ),
         array(
             'type' => 'sectionend',
@@ -59,7 +63,7 @@ function get_woocommerce_settings()
         ),
         array(
             'type' => 'sectionend',
-            'id' => 'wc_settings_tab_shipday_rest_section_end',
+            'id' => 'wc_settings_tab_shipday_sync_section_end',
         ),
     );
 

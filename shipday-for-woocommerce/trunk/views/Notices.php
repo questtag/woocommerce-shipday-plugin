@@ -1,5 +1,8 @@
 <?php
 
+require_once dirname(__DIR__). '/functions/common.php';
+
+
 class Notices {
 	public static function init() {
 		add_action( 'admin_notices', __CLASS__ . '::shipday_api_key_notice' );
@@ -27,10 +30,12 @@ class Notices {
 
 		$rest_api_section_url = 'admin.php?page=wc-settings&tab=advanced&section=keys&create-key=1';
 		$shipday_tab_url = 'admin.php?page=wc-settings&tab=settings_tab_shipday';
-		if (!WooCommerce_REST_API::is_consumer_secret_valid(get_option('wc_settings_tab_shipday_rest_api_consumer_secret')))
-			delete_option('shipday_registered_uuid');
+		if (!WooCommerce_REST_API::is_consumer_secret_valid(get_option('wc_settings_tab_shipday_rest_api_consumer_secret'))){
+            logger('info', 'Rest api key: consumer secret does not exist during notice');
+            delete_option('wc_settings_tab_shipday_registered_uuid');
+        }
 
-		if ( empty( get_option( 'shipday_registered_uuid' ) ) ) {
+		if ( empty( get_option( 'wc_settings_tab_shipday_registered_uuid' ) ) ) {
 			?>
                 <div class='notice notice-warning is-dismissible'>
                     <p>REST API key is essential for order status update in WooCommerce dashboard. To add REST API Key,
