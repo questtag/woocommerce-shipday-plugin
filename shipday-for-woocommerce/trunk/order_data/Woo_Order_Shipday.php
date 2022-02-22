@@ -50,7 +50,7 @@ class Woo_Order_Shipday extends Woocommerce_Core_Shipday {
 		$store_name = handle_null( get_bloginfo( 'name' ) );
 
 		$address1      = handle_null( get_option( 'woocommerce_store_address' ) );
-		$address2      = handle_null( get_option( 'woocommerce_store_address_2' ) );
+//		$address2      = handle_null( get_option( 'woocommerce_store_address_2' ) );
 		$city          = handle_null( get_option( 'woocommerce_store_city' ) );
 		$post_code     = handle_null( get_option( 'woocommerce_store_postcode' ) );
 		$country_state = handle_null( get_option( 'woocommerce_default_country' ) );
@@ -61,7 +61,7 @@ class Woo_Order_Shipday extends Woocommerce_Core_Shipday {
 		$state         = self::to_state_name( $state_code, $country_code );
 		$country       = self::to_country_name( $country_code );
 
-		$full_address = $address2 . ', ' . $address1 . ', ' . $city . ', ' . $state . ', ' . $post_code . ', ' . $country;
+		$full_address = $address1 . ', ' . $city . ', ' . $state . ', ' . $post_code . ', ' . $country;
 
 		return array(
 			"restaurantName"    => $store_name,

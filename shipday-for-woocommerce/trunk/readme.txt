@@ -5,7 +5,7 @@ Requires at least: 3.5
 Tested up to: 5.9
 WC requires at least: 3.0
 WC tested up to: 6.1.1
-Stable tag: 1.0.17
+Stable tag: 1.0.18
 License: GPLv2 or later
 
 == Description ==
@@ -76,8 +76,8 @@ You can install shipday plugin directly from wordpress plugin repository or manu
 
 == Changelog ==
 
-= 1.0.17 =
-* Legacy Code Removed
+= 1.0.18 =
+* Pickup address format fix
 
 
 
