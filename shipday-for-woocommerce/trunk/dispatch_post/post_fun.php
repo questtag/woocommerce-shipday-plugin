@@ -2,34 +2,34 @@
 require_once dirname(__DIR__). '/functions/logger.php';
 require_once dirname(__DIR__). '/functions/common.php';
 
-function post_orders(array $payloads) {
+function shipday_post_orders(array $payloads) {
 	global $shipday_debug_flag;
     $success = false;
-    logger('INFO', json_encode($payloads));
+    shipday_logger('INFO', json_encode($payloads));
 
     foreach ($payloads as $api_key => $payload_array) {
         $api_key = trim($api_key);
 		foreach ($payload_array as $payload){
-			$response = post_order($payload, $api_key, get_shipday_api_url());
+			$response = shipday_post_order($payload, $api_key, get_shipday_api_url());
             $success |= ($response['http_code'] == 200);
 			if ($response['http_code'] != 200) {
-                logger('error', 'Post failed for API key: '.$api_key );
+                shipday_logger('error', 'Post failed for API key: '.$api_key );
             }
-			if ($shipday_debug_flag == true) post_order(
+			if ($shipday_debug_flag == true) shipday_post_order(
                 array(
                     'payload' => $payload,
                     'response' => $response
                 ),
-                $api_key, get_debug_api_url()
+                $api_key, get_shipday_debug_api_url()
             );
 		}
 	}
     return $success;
 }
 
-function post_order(array $payload, string $api_key, $url) {
+function shipday_post_order(array $payload, string $api_key, $url) {
 	if (strlen($api_key) < 3) return false;
-	$response = curl_post_order($payload, $api_key, $url);
+	$response = shipday_curl_post_order($payload, $api_key, $url);
 	return $response;
 }
 
@@ -49,7 +49,7 @@ function streams_post_order(array $payload, string $api_key, $url) {
 	return $http_response_header;
 }
 
-function curl_post_order(array $payload, string $api_key, $url) {
+function shipday_curl_post_order(array $payload, string $api_key, $url) {
 	$curl = curl_init();
 	curl_setopt_array(
 		$curl,

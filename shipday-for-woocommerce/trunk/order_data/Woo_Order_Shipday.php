@@ -20,7 +20,7 @@ class Woo_Order_Shipday extends Woocommerce_Core_Shipday {
 		return array_merge(
 			$this->get_payload_without_dependant_info(),
 			$this->get_restaurant_info(),
-			get_times($this->order),
+			get_shipday_pickup_delivery_times($this->order),
 			$this->get_signature(),
 			$this->get_uuid()
 		);
@@ -47,13 +47,13 @@ class Woo_Order_Shipday extends Woocommerce_Core_Shipday {
 
 	/** Needs more info */
 	public static function get_restaurant_info( ): array {
-		$store_name = handle_null( get_bloginfo( 'name' ) );
+		$store_name = shipday_handle_null( get_bloginfo( 'name' ) );
 
-		$address1      = handle_null( get_option( 'woocommerce_store_address' ) );
+		$address1      = shipday_handle_null( get_option( 'woocommerce_store_address' ) );
 //		$address2      = handle_null( get_option( 'woocommerce_store_address_2' ) );
-		$city          = handle_null( get_option( 'woocommerce_store_city' ) );
-		$post_code     = handle_null( get_option( 'woocommerce_store_postcode' ) );
-		$country_state = handle_null( get_option( 'woocommerce_default_country' ) );
+		$city          = shipday_handle_null( get_option( 'woocommerce_store_city' ) );
+		$post_code     = shipday_handle_null( get_option( 'woocommerce_store_postcode' ) );
+		$country_state = shipday_handle_null( get_option( 'woocommerce_default_country' ) );
 
 		$split_country = explode( ":", $country_state );
 		$country_code  = $split_country[0];
@@ -94,17 +94,11 @@ class Woo_Order_Shipday extends Woocommerce_Core_Shipday {
 	}
 
 	function get_signature(): array {
-		global $shipday_plugin_version;
-		return array(
-			'orderSource' => 'woocommerce',
-			'signature' => array(
-				'version' => $shipday_plugin_version,
-				'wooVersion' => WC()->version,
-				'type' => 'single-vendor',
-                'plugin' => 'vanilla',
-				'url' => get_site_url()
-			)
-		);
+        $data = parent::get_signature();
+        $data['signature']['type'] = 'single-vendor';
+        $data['signature']['plugin'] = 'vanilla';
+
+        return $data;
 	}
 
 }

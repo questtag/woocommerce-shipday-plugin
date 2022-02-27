@@ -14,26 +14,26 @@ class WCFM_Order_Shipday extends Woocommerce_Core_Shipday {
 
 
 	function __construct($order_id) {
-        logger('info', 'Constructing WCFM order from order id '.$order_id);
+        shipday_logger('info', 'Constructing WCFM order from order id '.$order_id);
         try {
             $this->order            = wc_get_order($order_id);
         } catch (Exception $e) {
-            logger('error', $order_id.': WCFM construct wc_get_order failed');
+            shipday_logger('error', $order_id.': WCFM construct wc_get_order failed');
         }
         try {
             $this->store_shipping = (new WCFMmp_Shipping())->get_order_vendor_shipping($this->order);
         } catch (Exception $e) {
-            logger('error', $order_id.': WCFM construct get_order_vendor_shipping failed');
+            shipday_logger('error', $order_id.': WCFM construct get_order_vendor_shipping failed');
         }
         try {
             $this->items_by_vendors = $this->split_items_by_vendors();
         } catch (Exception $e) {
-            logger('error', $order_id.': WCFM construct split_items_by_vendors failed');
+            shipday_logger('error', $order_id.': WCFM construct split_items_by_vendors failed');
         }
         try {
             $this->generate_payloads_api_keys();
         } catch (Exception $e) {
-            logger('error', $order_id.': WCFM construct generate_payloads_api_keys failed');
+            shipday_logger('error', $order_id.': WCFM construct generate_payloads_api_keys failed');
         }
 	}
 
@@ -72,8 +72,8 @@ class WCFM_Order_Shipday extends Woocommerce_Core_Shipday {
 				$this->get_payment_info(),
 				$this->get_dropoff_object(),
 				$this->get_message(),
-				$this->get_signature($store_id),
-				get_times($this->order)
+				$this->get_signature_for_store($store_id),
+				get_shipday_pickup_delivery_times($this->order)
 			);
 			$this->order_payloads[] = $payload;
 			$api_key = $this->get_wcfm_api_key($store_id);
@@ -97,9 +97,9 @@ class WCFM_Order_Shipday extends Woocommerce_Core_Shipday {
 	}
 
 	function get_wcfm_api_key($store_id) {
-		if (get_order_manager() == 'admin_manage' || $this->is_admin_store($store_id)) return get_shipday_api_key();
+		if (get_shipday_order_manager() == 'admin_manage' || $this->is_admin_store($store_id)) return get_shipday_api_key();
 		$vendor_data            = get_user_meta( $store_id, 'wcfmmp_profile_settings', true );
-		return handle_null($vendor_data['shipday']['api_key']);
+		return shipday_handle_null($vendor_data['shipday']['api_key']);
 	}
 
 	function get_vendor_info($store_id) : array {
@@ -154,22 +154,19 @@ class WCFM_Order_Shipday extends Woocommerce_Core_Shipday {
 
 		return $costing;
 	}
-	function get_signature($store_id): array {
-		global $shipday_plugin_version;
-		return array(
-			'orderSource' => 'woocommerce',
-			'signature' => array(
-				'version' => $shipday_plugin_version,
-				'wooVersion' => WC()->version,
-				'type' => 'multi-vendor',
-				'vendorId' => $store_id,
-				'plugin' => 'WCFM',
-				'wcfmVersion' => WCFM_VERSION,
-				'wcfmmpVersion' => WCFMmp_VERSION,
-                'orderManagedBy' => get_order_manager(),
-				'url' => get_site_url()
-			)
-		);
+    function get_signature_for_store($store_id): array {
+        $data = $this->get_signature();
+        $data['signature']['vendor id'] = $store_id;
+        return $data;
+    }
+	function get_signature(): array {
+        $data = parent::get_signature();
+        $data['signature']['type'] = 'multi-vendor';
+        $data['signature']['Order Managed By'] = get_shipday_order_manager();
+        $data['signature']['plugin'] = 'WCFM';
+        $data['signature']['WCFM version'] = WCFM_VERSION;
+        $data['signature']['WCFMmp version'] = WCFMmp_VERSION;
+        return $data;
 	}
 
 }

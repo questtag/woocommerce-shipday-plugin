@@ -28,7 +28,7 @@ class Shipday_Order_Management {
 	public static function process_and_send($order_id) {
 
         if (self::is_duplicate($order_id)) return ;
-        logger('info', $order_id.': Shipday Order Management Process started');
+        shipday_logger('info', $order_id.': Shipday Order Management Process started');
 		if ( is_plugin_active( 'dokan-lite/dokan.php' ) )
             $order_data_object = new Dokan_Order_Shipday( $order_id ) ;
 		elseif ( is_plugin_active( 'wc-multivendor-marketplace/wc-multivendor-marketplace.php' ) )
@@ -39,25 +39,25 @@ class Shipday_Order_Management {
 			$order_data_object = new Woo_Order_Shipday( $order_id );
 
         if ($order_data_object->prevent_order_sync()) {
-            logger('info', $order_id.': Shipday Order Management Process not a shipday order');
+            shipday_logger('info', $order_id.': Shipday Order Management Process not a shipday order');
             return;
         }
 
-        logger('info', $order_id.': Shipday Order Management Process post sending starts' );
+        shipday_logger('info', $order_id.': Shipday Order Management Process post sending starts' );
         try {
             $payloads = $order_data_object->get_payloads();
         } catch (Exception $exception) {
-            logger('error', $order_id.': Shipday Order Management Process get_payloads failed');
+            shipday_logger('error', $order_id.': Shipday Order Management Process get_payloads failed');
         }
         try {
-            $success = post_orders($payloads);
+            $success = shipday_post_orders($payloads);
         } catch (Exception $exception) {
-            logger('info', $order_id.': Shipday Order Management Process post sending failed');
+            shipday_logger('info', $order_id.': Shipday Order Management Process post sending failed');
         }
         if ($success) {
             self::register_as_posted($order_id);
-            logger('info', $order_id.': Shipday Order Management Process post successfully sent');
-        } else logger('info', $order_id.': Shipday Order Management Process post sending failed');
+            shipday_logger('info', $order_id.': Shipday Order Management Process post successfully sent');
+        } else shipday_logger('info', $order_id.': Shipday Order Management Process post sending failed');
 
 	}
 }

@@ -1,11 +1,12 @@
 === Local Delivery App for WooCommerce by Shipday ===
 Contributors: shipdayinc
 Tags: delivery tracking, route-planning, delivery management, delivery dispatch, same day delivery, local pickup, local delivery, delivery tracking,  driver app
-Requires at least: 3.5
-Tested up to: 5.9
-WC requires at least: 3.0
-WC tested up to: 6.1.1
-Stable tag: 1.0.18
+Requires at least: 5.0
+Tested up to: 5.9.1
+WC requires at least: 4.0
+WC tested up to: 6.2.1
+Requires PHP: 7.0
+Stable tag: 1.0.19
 License: GPLv2 or later
 
 == Description ==
@@ -76,8 +77,9 @@ You can install shipday plugin directly from wordpress plugin repository or manu
 
 == Changelog ==
 
-= 1.0.18 =
-* Pickup address format fix
+= 1.0.19 =
+* Naming mismatch fixed
+* Date time signature enhanced
 
 
 

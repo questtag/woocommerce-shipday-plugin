@@ -6,8 +6,8 @@ require_once dirname(__FILE__). '/Shipday_Order_Management.php';
 class Woo_Sync_Order
 {
     public static function init(){
-        if (!get_sync_status()) return;
-        reset_sync_status();
+        if (!get_shipday_sync_status()) return;
+        reset_shipday_sync_status();
         add_action('woocommerce_after_register_post_type', __CLASS__.'::sync');
     }
     public static function get_processing_orders() {

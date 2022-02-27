@@ -25,7 +25,7 @@ class WooCommerce_REST_API {
 		return !is_null($rest_api_key);
 	}
 
-    function str_ends_with( $haystack, $needle ) {
+    public static function str_ends_with( $haystack, $needle ) {
         $length = strlen( $needle );
         if( !$length ) {
             return true;
@@ -58,13 +58,13 @@ class WooCommerce_REST_API {
             is_null($consumer_secret) ||
             !self::is_consumer_keys_valid($consumer_key, $consumer_secret)
         ){
-            logger('info', 'Rest api key: invalid keys');
+            shipday_logger('info', 'Rest api key: invalid keys');
             delete_option('wc_settings_tab_shipday_registered_uuid');
             return;
         }
 		$uuid = self::post_payload($consumer_key, $consumer_secret);
 		if (is_null($uuid)) {
-            logger('info', 'Rest api key: null uuid');
+            shipday_logger('info', 'Rest api key: null uuid');
             delete_option('wc_settings_tab_shipday_registered_uuid');
             return;
         }
@@ -81,7 +81,7 @@ class WooCommerce_REST_API {
 		curl_setopt_array(
 			$curl,
 			array(
-				CURLOPT_URL            => get_rest_key_install_url(),
+				CURLOPT_URL            => get_shipday_rest_key_install_url(),
 				CURLOPT_RETURNTRANSFER => true,
 				CURLOPT_ENCODING       => '',
 				CURLOPT_MAXREDIRS      => 10,

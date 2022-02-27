@@ -31,7 +31,7 @@ class Notices {
 		$rest_api_section_url = 'admin.php?page=wc-settings&tab=advanced&section=keys&create-key=1';
 		$shipday_tab_url = 'admin.php?page=wc-settings&tab=settings_tab_shipday';
 		if (!WooCommerce_REST_API::is_consumer_secret_valid(get_option('wc_settings_tab_shipday_rest_api_consumer_secret'))){
-            logger('info', 'Rest api key: consumer secret does not exist during notice');
+            shipday_logger('info', 'Rest api key: consumer secret does not exist during notice');
             delete_option('wc_settings_tab_shipday_registered_uuid');
         }
 

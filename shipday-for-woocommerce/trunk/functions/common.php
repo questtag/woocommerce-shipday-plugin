@@ -12,37 +12,37 @@ function get_shipday_api_url(): string {
 	return $api_url;
 }
 
-function get_debug_api_url(): string {
+function get_shipday_debug_api_url(): string {
 	global $debug_url;
 	return $debug_url;
 }
 
-function get_rest_key_install_url() {
+function get_shipday_rest_key_install_url() {
 	global $rest_key_install_url;
 	return $rest_key_install_url;
 }
 
-function handle_null($text) {
+function shipday_handle_null($text) {
 	return !isset($text) ? "" : $text;
 }
 
 function get_shipday_api_key() {
 	$key = get_option('wc_settings_tab_shipday_api_key');
-	return handle_null($key);
+	return shipday_handle_null($key);
 }
 
-function get_sync_status() {
+function get_shipday_sync_status() {
 	$key = get_option('wc_settings_tab_shipday_sync');
-	return handle_null($key) == 'yes';
+	return shipday_handle_null($key) == 'yes';
 }
 
-function reset_sync_status() {
+function reset_shipday_sync_status() {
 	update_option('wc_settings_tab_shipday_sync', 'no');
 }
 
-function get_order_manager() {
+function get_shipday_order_manager() {
 	$key = get_option('wc_settings_tab_shipday_order_manage');
-	return handle_null($key);
+	return shipday_handle_null($key);
 }
 
 ?>

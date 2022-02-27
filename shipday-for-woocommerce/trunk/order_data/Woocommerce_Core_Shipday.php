@@ -16,22 +16,22 @@ class Woocommerce_Core_Shipday {
 	}
 
 	function get_customer_info(): array {
-		$name = sanitize_user( handle_null( $this->order->get_billing_first_name() ) ) . ' ' . sanitize_user( handle_null( $this->order->get_billing_last_name() ) );
+		$name = sanitize_user( shipday_handle_null( $this->order->get_billing_first_name() ) ) . ' ' . sanitize_user( shipday_handle_null( $this->order->get_billing_last_name() ) );
 
-		$address1     = handle_null( $this->order->get_billing_address_1() );
+		$address1     = shipday_handle_null( $this->order->get_billing_address_1() );
 //		$address2     = handle_null( $this->order->get_billing_address_2() );
-		$city         = handle_null( $this->order->get_billing_city() );
-		$state_code   = handle_null( $this->order->get_billing_state() );
-		$post_code    = handle_null( $this->order->get_billing_postcode() );
-		$country_code = handle_null( $this->order->get_billing_country() );
+		$city         = shipday_handle_null( $this->order->get_billing_city() );
+		$state_code   = shipday_handle_null( $this->order->get_billing_state() );
+		$post_code    = shipday_handle_null( $this->order->get_billing_postcode() );
+		$country_code = shipday_handle_null( $this->order->get_billing_country() );
 
 		$state        = $this->to_state_name( $state_code, $country_code );
 		$country      = $this->to_country_name( $country_code );
 		$full_address = $address1 . ', ' . $city . ', ' . $state . ', ' . $post_code . ', ' . $country;
 
-		$phoneNumber  = $this->add_calling_country_code(handle_null( $this->order->get_billing_phone() ), $country_code);
+		$phoneNumber  = $this->add_calling_country_code(shipday_handle_null( $this->order->get_billing_phone() ), $country_code);
 
-		$emailAddress = handle_null( $this->order->get_billing_email() );
+		$emailAddress = shipday_handle_null( $this->order->get_billing_email() );
 
 		$customer_info = array(
 			"customerName"        => $name,
@@ -48,16 +48,16 @@ class Woocommerce_Core_Shipday {
 			return $this->get_customer_info();
 		}
 		$shipping_info = array(
-			"customerName"        => sanitize_user( handle_null( $this->order->get_shipping_first_name() ) ) . ' ' . sanitize_user( handle_null( $this->order->get_shipping_last_name() ) ),
-			"customerAddress"     => handle_null( $this->order->get_shipping_address_1() ) . ', ' .
-			                         handle_null( $this->order->get_shipping_city() ) . ', ' .
-			                         $this->to_state_name( handle_null( $this->order->get_shipping_state() ), handle_null( $this->order->get_shipping_country() ) ) . ', ' .
-			                         handle_null( $this->order->get_shipping_postcode() ) . ', ' .
-			                         $this->to_country_name( handle_null( $this->order->get_shipping_country() ) ),
+			"customerName"        => sanitize_user( shipday_handle_null( $this->order->get_shipping_first_name() ) ) . ' ' . sanitize_user( shipday_handle_null( $this->order->get_shipping_last_name() ) ),
+			"customerAddress"     => shipday_handle_null( $this->order->get_shipping_address_1() ) . ', ' .
+			                         shipday_handle_null( $this->order->get_shipping_city() ) . ', ' .
+			                         $this->to_state_name( shipday_handle_null( $this->order->get_shipping_state() ), shipday_handle_null( $this->order->get_shipping_country() ) ) . ', ' .
+			                         shipday_handle_null( $this->order->get_shipping_postcode() ) . ', ' .
+			                         $this->to_country_name( shipday_handle_null( $this->order->get_shipping_country() ) ),
 			"customerPhoneNumber" => ! empty( $this->order->shipping_phone ) ?
 				self::add_calling_country_code($this->order->shipping_phone, $this->order->get_shipping_country()) :
-				$this->add_calling_country_code(handle_null( $this->order->get_billing_phone() ), $this->order->get_billing_country()),
-			"customerEmail"       => ! empty( $this->order->shipping_email ) ? $this->order->shipping_email : handle_null( $this->order->get_billing_email() )
+				$this->add_calling_country_code(shipday_handle_null( $this->order->get_billing_phone() ), $this->order->get_billing_country()),
+			"customerEmail"       => ! empty( $this->order->shipping_email ) ? $this->order->shipping_email : shipday_handle_null( $this->order->get_billing_email() )
 		);
 
 		return $shipping_info;
@@ -66,16 +66,16 @@ class Woocommerce_Core_Shipday {
 	function get_dropoff_object(): array {
 		$address = $this->order->has_shipping_address() ? $this->order->get_address( 'shipping' ) : $this->order->get_address('billing');
 
-		$address1     = handle_null( $address['address_1'] );
-		$address2     = handle_null( $address['address_2'] );
-		$city         = handle_null( $address['city'] );
-		$state_code   = handle_null( $address['state'] );
+		$address1     = shipday_handle_null( $address['address_1'] );
+		$address2     = shipday_handle_null( $address['address_2'] );
+		$city         = shipday_handle_null( $address['city'] );
+		$state_code   = shipday_handle_null( $address['state'] );
         try {
-            $post_code    = handle_null( $address['postcode'] );
+            $post_code    = shipday_handle_null( $address['postcode'] );
         } catch (Exception $exception) {
             ;
         }
-		$country_code = handle_null( $address['country'] );
+		$country_code = shipday_handle_null( $address['country'] );
 
 		$state   = ! empty( $state_code ) ? WC()->countries->get_states( $country_code )[ $state_code ] : '';
 		$country = ! empty( $country_code ) ? ( new WC_Countries() )->get_countries()[ $country_code ] : '';
@@ -117,8 +117,8 @@ class Woocommerce_Core_Shipday {
 
 
 	function get_message() : array {
-        $address2 = handle_null($this->order->get_shipping_address_2());
-        $notes = handle_null($this->order->get_customer_note());
+        $address2 = shipday_handle_null($this->order->get_shipping_address_2());
+        $notes = shipday_handle_null($this->order->get_customer_note());
 		return array(
 			'deliveryInstruction' => implode('. ', array(
                 $address2,
@@ -126,6 +126,20 @@ class Woocommerce_Core_Shipday {
             ))
 		);
 	}
+
+    function get_signature(): array {
+        global $shipday_plugin_version;
+        return array(
+            'orderSource' => 'woocommerce',
+            'signature' => array(
+                'version' => $shipday_plugin_version,
+                'wooVersion' => WC()->version,
+                'url' => get_site_url(),
+                'datetime modifiers' => get_shipday_datetime_plugins(),
+                'timezone' => get_shipday_datetime_timezone()
+            )
+        );
+    }
 
     function prevent_order_sync() {
         $flag = get_post_meta($this->order->get_id(), '_shipday_order_sync_prevent', true);

@@ -18,7 +18,7 @@ class Dokan_vendor_settings_shipday
 
     public static function get_api_key() {
         $api_key            = get_user_meta( wp_get_current_user()->ID, 'shipday_api_key', true );
-        return handle_null($api_key);
+        return shipday_handle_null($api_key);
     }
 
     public static function dokan_load_document_menu( $query_vars ) {
