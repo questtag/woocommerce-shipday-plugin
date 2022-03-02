@@ -140,8 +140,9 @@ class WCFM_Order_Shipday extends Woocommerce_Core_Shipday {
 		$total = 0;
 		foreach ($items as $item) {
 			$tax          += floatval( $item->get_total_tax() );
-			//$discount     += floatval( $item->get_total_discount() );         function does not exist
 			$total        += floatval( $item->get_total() );
+            $product       = wc_get_product($item->get_product_id());
+            $discount     += floatval($item->get_total()) - floatval($product->get_price()) * intval($item->get_quantity());
 		}
 
 		$costing = array(
@@ -149,7 +150,7 @@ class WCFM_Order_Shipday extends Woocommerce_Core_Shipday {
 			'tax'            => $tax,
 			'discountAmount' => $discount,
 			'deliveryFee'    => $delivery_fee,
-			'totalOrderCost' => strval($total + $delivery_fee + $tax)
+			'totalOrderCost' => strval($total + $delivery_fee + $tax + $tips)
 		);
 
 		return $costing;

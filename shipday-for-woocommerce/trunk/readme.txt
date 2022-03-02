@@ -6,7 +6,7 @@ Tested up to: 5.9.1
 WC requires at least: 4.0
 WC tested up to: 6.2.1
 Requires PHP: 7.0
-Stable tag: 1.0.19
+Stable tag: 1.1.0
 License: GPLv2 or later
 
 == Description ==
@@ -77,9 +77,8 @@ You can install shipday plugin directly from wordpress plugin repository or manu
 
 == Changelog ==
 
-= 1.0.19 =
-* Naming mismatch fixed
-* Date time signature enhanced
+= 1.1.0 =
+* Product price updated
 
 
 
