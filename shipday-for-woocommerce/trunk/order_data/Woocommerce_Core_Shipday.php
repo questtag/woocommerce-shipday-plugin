@@ -148,4 +148,8 @@ class Woocommerce_Core_Shipday {
         return $flag == "yes" ? true : false;
     }
 
+    public function get_user_filterd_payload($payload) {
+        return apply_filters('shipday_order_data_filter', $payload, $this->order->get_id());
+    }
+
 }

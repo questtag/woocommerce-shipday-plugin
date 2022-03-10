@@ -41,7 +41,7 @@ class WCFM_Order_Shipday extends Woocommerce_Core_Shipday {
 		for ($i = 0; $i < count($this->api_keys); $i++) {
 			$api_key = $this->api_keys[$i];
 			$payload = $this->order_payloads[$i];
-			$payloads[$api_key][] = $payload;
+			$payloads[$api_key][] = $this->get_user_filterd_payload($payload);
 		}
 
 		return $payloads;

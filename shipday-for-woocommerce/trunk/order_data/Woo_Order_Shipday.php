@@ -12,7 +12,7 @@ class Woo_Order_Shipday extends Woocommerce_Core_Shipday {
 	}
 	public function get_payloads() {
 		return array(
-			get_shipday_api_key() => [$this->get_payload()]
+			get_shipday_api_key() => [$this->get_user_filterd_payload($this->get_payload())]
 		);
 	}
 
@@ -50,7 +50,6 @@ class Woo_Order_Shipday extends Woocommerce_Core_Shipday {
 		$store_name = shipday_handle_null( get_bloginfo( 'name' ) );
 
 		$address1      = shipday_handle_null( get_option( 'woocommerce_store_address' ) );
-//		$address2      = handle_null( get_option( 'woocommerce_store_address_2' ) );
 		$city          = shipday_handle_null( get_option( 'woocommerce_store_city' ) );
 		$post_code     = shipday_handle_null( get_option( 'woocommerce_store_postcode' ) );
 		$country_state = shipday_handle_null( get_option( 'woocommerce_default_country' ) );
