@@ -4,7 +4,7 @@ require_once dirname( __DIR__ ) . '/functions/common.php';
 
 function get_shipday_pickup_delivery_times(WC_Order $order) {
 
-	if(is_plugin_active('woo-delivery/coderockz-woo-delivery.php')) {
+	if(is_plugin_active('woo-delivery/coderockz-woo-delivery.php') || is_plugin_active('coderockz-woocommerce-delivery-date-time-pro/coderockz-woo-delivery.php')) {
 		require_once dirname( __FILE__ ) . '/Coderocks_Woo_Delivery.php';
 		$date_picker_object = new Coderocks_Woo_Delivery($order->get_id());
 	} else if(is_plugin_active('order-delivery-date-for-woocommerce/order_delivery_date.php') ||
@@ -24,6 +24,7 @@ function get_shipday_pickup_delivery_times(WC_Order $order) {
 
 function get_shipday_datetime_plugins() {
     $plugins = array();
+    if (is_plugin_active('coderockz-woocommerce-delivery-date-time-pro/coderockz-woo-delivery.php')) $plugins[] = 'CodeRockz Woo Delivery Pro';
     if (is_plugin_active('woo-delivery/coderockz-woo-delivery.php')) $plugins[] = 'CodeRockz Woo Delivery';
     if (is_plugin_active('order-delivery-date-for-woocommerce/order_delivery_date.php')) $plugins[] = 'Tyche Order Delivery Date';
     if (is_plugin_active('order-delivery-date/order_delivery_date.php')) $plugins[] = 'Tyche Order Delivery Date Pro';

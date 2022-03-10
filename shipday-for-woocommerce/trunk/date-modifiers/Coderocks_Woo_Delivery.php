@@ -6,7 +6,7 @@ class Coderocks_Woo_Delivery extends Date_Picker_Object {
 	public function __construct($order_id) {
 		$this->utc = new DateTimeZone('Utc');
 
-		if(is_plugin_active('woo-delivery/coderockz-woo-delivery.php')) {
+		if(is_plugin_active('woo-delivery/coderockz-woo-delivery.php') || is_plugin_active('coderockz-woocommerce-delivery-date-time-pro/coderockz-woo-delivery.php')) {
 			require_once CODEROCKZ_WOO_DELIVERY_DIR . '/includes/class-coderockz-woo-delivery-helper.php';
 			require_once CODEROCKZ_WOO_DELIVERY_DIR . '/includes/class-coderockz-woo-delivery-delivery-option.php';
 			$this->time_zone = (new Coderockz_Woo_Delivery_Helper())->get_the_timezone();
