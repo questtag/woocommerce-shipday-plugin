@@ -132,7 +132,7 @@ class Woocommerce_Core_Shipday {
     function get_signature(): array {
         global $shipday_plugin_version;
         return array(
-            'orderSource' => 'woocommerce',
+            'orderSource' => 'WooCommerce',
             'signature' => array(
                 'version' => $shipday_plugin_version,
                 'wooVersion' => WC()->version,
