@@ -11,7 +11,10 @@ function get_shipday_pickup_delivery_times(WC_Order $order) {
 	          is_plugin_active('order-delivery-date/order_delivery_date.php')){
 		require_once dirname( __FILE__ ) . '/Order_Delivery_Date_Shipday.php';
 		$date_picker_object = new Order_Delivery_Date_Shipday($order->get_id());
-	}
+	} else if (is_plugin_active('woocommerce-delivery-area-pro/woocommerce-delivery-area-pro.php')) {
+        require_once dirname( __FILE__ ) . '/Delivery_Area_Pro.php';
+        $date_picker_object = new Delivery_Area_Pro($order->get_id());
+    }
 
 	if (!isset($date_picker_object)) return array();
 
@@ -28,6 +31,7 @@ function get_shipday_datetime_plugins() {
     if (is_plugin_active('woo-delivery/coderockz-woo-delivery.php')) $plugins[] = 'CodeRockz Woo Delivery';
     if (is_plugin_active('order-delivery-date-for-woocommerce/order_delivery_date.php')) $plugins[] = 'Tyche Order Delivery Date';
     if (is_plugin_active('order-delivery-date/order_delivery_date.php')) $plugins[] = 'Tyche Order Delivery Date Pro';
+    if (is_plugin_active('woocommerce-delivery-area-pro/woocommerce-delivery-area-pro.php')) $plugins[] = 'WooCommerce Delivery Area Pro';
     return $plugins;
 }
 

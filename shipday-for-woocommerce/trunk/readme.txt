@@ -2,11 +2,11 @@
 Contributors: shipdayinc
 Tags: delivery tracking, route-planning, delivery management, delivery dispatch, same day delivery, local pickup, local delivery, delivery tracking,  driver app
 Requires at least: 5.0
-Tested up to: 5.9.1
+Tested up to: 5.9.2
 WC requires at least: 4.0
-WC tested up to: 6.2.1
+WC tested up to: 6.4.1
 Requires PHP: 7.0
-Stable tag: 1.2.0
+Stable tag: 1.3.0
 License: GPLv2 or later
 
 == Description ==
@@ -36,6 +36,7 @@ Shipday is ideal for managing fast on-demand or scheduled deliveries for your on
 👉 [WCFM Marketplace](https://wordpress.org/plugins/wc-multivendor-marketplace/)
 👉 [Delivery & Pickup Date Time for WooCommerce](https://wordpress.org/plugins/woo-delivery/)
 👉 [Order Delivery Date for WooCommerce](https://wordpress.org/plugins/order-delivery-date-for-woocommerce/)
+👉 [WooCommere Delivery Area Pro](https://www.woodeliveryarea.com/) for delivery date time only.
 
 #### What is Shipday?
 [Shipday](https://www.shipday.com/) offers simple, easy-to-use software and apps to automate local deliveries in minutes. Thousands of users from 50+ countries use Shipday to track their delivery orders and get their product in the hands of customers, fast. It’s free to start and works anywhere in the world with internet connectivity.
@@ -77,8 +78,8 @@ You can install shipday plugin directly from wordpress plugin repository or manu
 
 == Changelog ==
 
-= 1.2.0 =
-* New Name
+= 1.3.0 =
+* WooCommerce Delivery Area Pro support added
 
 
 
