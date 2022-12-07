@@ -40,6 +40,7 @@ function get_shipday_datetime_timezone() {
     if (is_plugin_active('order-delivery-date-for-woocommerce/order_delivery_date.php') ||
         is_plugin_active('order-delivery-date/order_delivery_date.php')
     ) return wp_timezone_string();
+    return wp_timezone_string();
 }
 
 ?>

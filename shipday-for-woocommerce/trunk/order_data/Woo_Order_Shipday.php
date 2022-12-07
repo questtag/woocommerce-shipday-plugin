@@ -12,7 +12,7 @@ class Woo_Order_Shipday extends Woocommerce_Core_Shipday {
 	}
 	public function get_payloads() {
 		return array(
-			get_shipday_api_key() => [$this->get_user_filterd_payload($this->get_payload())]
+			get_shipday_api_key() => [$this->get_user_filtered_payload($this->get_payload())]
 		);
 	}
 
