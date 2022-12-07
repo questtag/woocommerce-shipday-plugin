@@ -16,7 +16,7 @@ defined('ABSPATH') || exit;
 
 /** Functions end */
 global $shipday_plugin_version;
-$shipday_plugin_version = '1.3.1';
+$shipday_plugin_version = '1.3.2';
 
 require_once ABSPATH.'wp-admin/includes/plugin.php';
 require_once dirname( __FILE__ ) . '/views/WC_Settings_Tab_Shipday.php';
