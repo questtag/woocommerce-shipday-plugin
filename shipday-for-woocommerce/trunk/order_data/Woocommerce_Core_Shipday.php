@@ -145,10 +145,10 @@ class Woocommerce_Core_Shipday {
 
     function prevent_order_sync() {
         $flag = get_post_meta($this->order->get_id(), '_shipday_order_sync_prevent', true);
-        return $flag == "yes" ? true : false;
+        return $flag == "yes";
     }
 
-    public function get_user_filterd_payload($payload) {
+    public function get_user_filtered_payload($payload) {
         return apply_filters('shipday_order_data_filter', $payload, $this->order->get_id());
     }
 

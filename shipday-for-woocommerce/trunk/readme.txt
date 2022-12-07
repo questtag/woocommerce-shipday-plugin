@@ -2,9 +2,9 @@
 Contributors: shipdayinc
 Tags: delivery tracking, route-planning, delivery management, delivery dispatch, same day delivery, local pickup, local delivery, delivery tracking,  driver app
 Requires at least: 5.0
-Tested up to: 5.9.2
+Tested up to: 5.1.1
 WC requires at least: 4.0
-WC tested up to: 6.4.1
+WC tested up to: 7.1.0
 Requires PHP: 7.0
 Stable tag: 1.3.0
 License: GPLv2 or later
@@ -78,8 +78,8 @@ You can install shipday plugin directly from wordpress plugin repository or manu
 
 == Changelog ==
 
-= 1.3.0 =
-* WooCommerce Delivery Area Pro support added
+= 1.3.1 =
+* Typo fix
 
 
 
