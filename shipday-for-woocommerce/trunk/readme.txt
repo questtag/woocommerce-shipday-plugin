@@ -78,8 +78,8 @@ You can install shipday plugin directly from wordpress plugin repository or manu
 
 == Changelog ==
 
-= 1.3.0 =
-* WooCommerce Delivery Area Pro support added
+= 1.3.2 =
+* Typo fix
 
 
 

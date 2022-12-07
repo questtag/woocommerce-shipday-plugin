@@ -3,7 +3,7 @@
 /*
 Plugin Name: Shipday Integration for Wordpress (WooCommerce)
 Plugin URI: https://www.shipday.com/woocommerce
-Version: 1.3.0
+Version: 1.3.2
 Description: Enable fast local deliveries for your online store or marketplace with Shipday. Easy driver and dispatch app with live delivery tracking. Built-in connection with on-demand delivery services like DoorDash and Uber in the US.
 Author URI: https://www.shipday.com/
 Text Domain: woocommerce-shipday
