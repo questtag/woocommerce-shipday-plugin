@@ -32,7 +32,7 @@ class Dokan_Order_Shipday extends Woo_Order_Shipday {
             get_shipday_pickup_delivery_times($this->order),
             $this->get_signature()
         );
-        $payloads[$api_key][] = $this->get_user_filterd_payload($payload);
+        $payloads[$api_key][] = $this->get_user_filtered_payload($payload);
 
 		return $payloads;
 	}
