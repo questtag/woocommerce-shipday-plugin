@@ -30,6 +30,10 @@ function shipday_post_orders(array $payloads) {
 function shipday_post_order(array $payload, string $api_key, $url) {
 	if (strlen($api_key) < 3) return false;
 	$response = shipday_curl_post_order($payload, $api_key, $url);
+    if ($response['http_code'] != 200) {
+        shipday_logger('error', 'Curl failed. Re-trying with stream');
+        $response = streams_post_order($payload, $api_key, $url);
+    }
 	return $response;
 }
 
@@ -62,7 +66,7 @@ function shipday_curl_post_order(array $payload, string $api_key, $url) {
 			CURLOPT_FOLLOWLOCATION => true,
 			CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
 			CURLOPT_CUSTOMREQUEST  => 'POST',
-			CURLOPT_POSTFIELDS     => json_encode($payload),
+			CURLOPT_POSTFIELDS     => remove_emoji(json_encode($payload)),
 			CURLOPT_HTTPHEADER     => array(
 				'Authorization: Basic '.$api_key,
 				'Content-Type: application/json'
