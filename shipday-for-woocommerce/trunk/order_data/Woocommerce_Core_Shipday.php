@@ -144,6 +144,7 @@ class Woocommerce_Core_Shipday {
     }
 
     function prevent_order_sync() {
+        if ($this->order == null) return true;
         $flag = get_post_meta($this->order->get_id(), '_shipday_order_sync_prevent', true);
         return $flag == "yes";
     }
