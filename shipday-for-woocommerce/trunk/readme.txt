@@ -1,12 +1,12 @@
 === Local Delivery App for WordPress (WooCommerce) by Shipday ===
 Contributors: shipdayinc, shhrrtnvr
 Tags: delivery tracking, route-planning, delivery management, delivery dispatch, same day delivery, local pickup, local delivery, delivery tracking,  driver app
-Requires at least: 5.0
+Requires at least: 5.8
 Tested up to: 6.1.1
-WC requires at least: 4.0
+WC requires at least: 7.0.0
 WC tested up to: 7.4.0
-Requires PHP: 7.0
-Stable tag: 1.4.0
+Requires PHP: 7.4
+Stable tag: 1.5.0
 License: GPLv2 or later
 
 == Description ==
@@ -78,10 +78,8 @@ You can install shipday plugin directly from wordpress plugin repository or manu
 
 == Changelog ==
 
-= 1.4.1 =
-* Emoji removed from order info
-* Bug Fix: Dokan multi vender order error
-
-
+= 1.5.0 =
+* Requires WooCoommerce 7.0 atleast and PHP 7.4
+* Product price set to default 0 if product retrieve fails
 
 
