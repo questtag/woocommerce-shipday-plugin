@@ -98,11 +98,12 @@ class Woocommerce_Core_Shipday {
 		if ($items === null) $items = $this->order->get_items();
 		foreach ( $items as $item_id => $item ) {
             $product_id = $item->get_product_id();
-            $product = wc_get_product($product_id);
+            $product = wc_get_product($product_id); // can return boolean
+            $price = $product ? $product->get_price() : 0.0;
             $orderItem[] = array(
 				'name'      => $item->get_name(),
 				'quantity'  => $item->get_quantity(),
-				'unitPrice' => $product->get_price(),
+				'unitPrice' => $price,
 			);
 		}
 		return array(
