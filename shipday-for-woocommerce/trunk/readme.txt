@@ -78,8 +78,7 @@ You can install shipday plugin directly from wordpress plugin repository or manu
 
 == Changelog ==
 
-= 1.5.0 =
-* Requires WooCoommerce 7.0 atleast and PHP 7.4
-* Product price set to default 0 if product retrieve fails
+= 1.5.1 =
+* Order insertion lock added
 
 
