@@ -6,7 +6,7 @@ Tested up to: 6.1.1
 WC requires at least: 7.0.0
 WC tested up to: 7.4.0
 Requires PHP: 7.4
-Stable tag: 1.5.1
+Stable tag: 1.6
 License: GPLv2 or later
 
 == Description ==
@@ -51,7 +51,6 @@ Whether you are launching your own delivery service to fulfill orders locally or
 
 If you need assistance or have any questions, contact us at <support@shipday.com>. You can also read our [terms of use](https://www.shipday.com/terms).
 
-[youtube https://youtu.be/GCypZ45ZCQ4]
 
 == Screenshots ==
 
@@ -67,7 +66,6 @@ You can install shipday plugin directly from wordpress plugin repository or manu
 5. Enter your API key which is found in your dispatch accounts setting page.
 6. Confirm settings and you are done.
 
-[youtube https://www.youtube.com/watch?v=t5MdxiBfuks]
 
 #### Manual upload
 1. Upload `woocommerce-shipday` to the `/wp-content/plugins/` directory
@@ -78,7 +76,7 @@ You can install shipday plugin directly from wordpress plugin repository or manu
 
 == Changelog ==
 
-= 1.5.1 =
-* Order insertion lock added
+= 1.6 =
+* Updated description and images
 
 
