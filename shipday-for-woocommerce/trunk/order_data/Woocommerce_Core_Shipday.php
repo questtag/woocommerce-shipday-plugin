@@ -144,6 +144,15 @@ class Woocommerce_Core_Shipday {
         );
     }
 
+    function is_pickup_order() {
+        $shipping_methods = $this->order->get_shipping_methods();
+        $is_pickup = false;
+        foreach ($shipping_methods as $shipping_method) {
+            $is_pickup = $is_pickup || $shipping_method->get_method_id() == 'local_pickup';
+        }
+        return $is_pickup;
+    }
+
     function prevent_order_sync() {
         if ($this->order == null) return true;
         $flag = get_post_meta($this->order->get_id(), '_shipday_order_sync_prevent', true);
