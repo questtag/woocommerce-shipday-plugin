@@ -45,7 +45,12 @@ class Shipday_Order_Management {
 			$order_data_object = new Woo_Order_Shipday( $order_id );
 
         if ($order_data_object->prevent_order_sync()) {
-            shipday_logger('info', $order_id.': Shipday Order Management Process not a shipday order');
+            shipday_logger('info', $order_id.': Not a shipday order');
+            return;
+        }
+
+        if ($order_data_object-> is_pickup_order()) {
+            shipday_logger('info', $order_id . ': Order filtered out as pickup order');
             return;
         }
 
