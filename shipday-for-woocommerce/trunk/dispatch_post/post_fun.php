@@ -13,7 +13,7 @@ function shipday_post_orders(array $payloads) {
 			$response = shipday_post_order($payload, $api_key, get_shipday_api_url());
             $success |= ($response['http_code'] == 200);
 			if ($response['http_code'] != 200) {
-                shipday_logger('error', 'Post failed for API key: '.$api_key );
+                shipday_logger('error', 'Post failed for API key: '.$api_key);
             }
 			if ($shipday_debug_flag == true) shipday_post_order(
                 array(
@@ -31,8 +31,12 @@ function shipday_post_order(array $payload, string $api_key, $url) {
 	if (strlen($api_key) < 3) return false;
 	$response = shipday_curl_post_order($payload, $api_key, $url);
     if ($response['http_code'] != 200) {
-        shipday_logger('error', 'Curl failed. Re-trying with stream');
+        shipday_logger('error', 'Curl failed with code: '.$response['http_code'].' Response: '.json_encode($response));
+        shipday_logger('info', 'Trying with stream post order');
         $response = streams_post_order($payload, $api_key, $url);
+    }
+    if ($response['http_code'] != 200) {
+        shipday_logger('error', 'Stream failed with code: '.$response['http_code'].' Response: '.json_encode($response));
     }
 	return $response;
 }
