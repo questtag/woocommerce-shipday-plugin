@@ -1,15 +1,12 @@
 <?php
 
 /** Global Variables */
-$api_url = 'https://api.shipday.com/orders';
 $debug_url = '';
-$rest_key_install_url = 'https://api.shipday.com/woocommerce/install';
 $shipday_debug_flag = false;
 
 /** Functions */
 function get_shipday_api_url(): string {
-	global $api_url;
-	return $api_url;
+	return 'https://api.shipday.com/orders';
 }
 
 function get_shipday_debug_api_url(): string {
@@ -18,8 +15,7 @@ function get_shipday_debug_api_url(): string {
 }
 
 function get_shipday_rest_key_install_url() {
-	global $rest_key_install_url;
-	return $rest_key_install_url;
+	return 'https://api.shipday.com/woocommerce/install';
 }
 
 function shipday_handle_null($text) {

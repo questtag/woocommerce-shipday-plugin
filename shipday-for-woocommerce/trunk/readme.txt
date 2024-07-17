@@ -6,7 +6,7 @@ Tested up to: 6.5.4
 WC requires at least: 7.0.0
 WC tested up to: 8.4.0
 Requires PHP: 7.4
-Stable tag: 1.8.1
+Stable tag: 1.8.2
 License: GPLv2 or later
 
 == Description ==
@@ -76,7 +76,7 @@ You can install shipday plugin directly from wordpress plugin repository or manu
 
 == Changelog ==
 
-= 1.8.1 =
-* Added logs for failed orders
+= 1.8.2 =
+* Fix: global variable override issue in some cases
 
 
