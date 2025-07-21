@@ -9,6 +9,10 @@ function get_shipday_api_url(): string {
 	return 'https://api.shipday.com/orders';
 }
 
+function get_shipday_pickup_api_url(): string {
+	return 'https://api.shipday.com/pickup-orders';
+}
+
 function get_shipday_debug_api_url(): string {
 	global $debug_url;
 	return $debug_url;
@@ -34,6 +38,11 @@ function get_shipday_sync_status() {
 
 function reset_shipday_sync_status() {
 	update_option('wc_settings_tab_shipday_sync', 'no');
+}
+
+function get_shipday_pickup_enabled() {
+	$key = get_option('wc_settings_tab_shipday_enable_pickup');
+	return shipday_handle_null($key) == 'yes';
 }
 
 function get_shipday_order_manager() {

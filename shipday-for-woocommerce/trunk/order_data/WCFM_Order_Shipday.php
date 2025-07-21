@@ -63,18 +63,24 @@ class WCFM_Order_Shipday extends Woocommerce_Core_Shipday {
 		$this->order_payloads = array();
 		$this->api_keys       = array();
 		foreach ($this->items_by_vendors as $store_id => $items){
-			$payload                = array_merge(
-				$this->get_ids(),
-				$this->get_shipping_address(),
-				$this->get_vendor_info($store_id),
-				$this->get_order_items($items),
-				$this->get_costing($store_id, $items),
-				$this->get_payment_info(),
-				$this->get_dropoff_object(),
-				$this->get_message(),
-				$this->get_signature_for_store($store_id),
-				get_shipday_pickup_delivery_times($this->order)
-			);
+			if ($this->is_pickup_order() && get_shipday_pickup_enabled()) {
+				// For pickup orders, use the pickup payload structure
+				$payload = $this->get_wcfm_pickup_payload($store_id, $items);
+			} else {
+				// For delivery orders, use the existing payload structure
+				$payload = array_merge(
+					$this->get_ids(),
+					$this->get_shipping_address(),
+					$this->get_vendor_info($store_id),
+					$this->get_order_items($items),
+					$this->get_costing($store_id, $items),
+					$this->get_payment_info(),
+					$this->get_dropoff_object(),
+					$this->get_message(),
+					$this->get_signature_for_store($store_id),
+					get_shipday_pickup_delivery_times($this->order)
+				);
+			}
 			$this->order_payloads[] = $payload;
 			$api_key = $this->get_wcfm_api_key($store_id);
 			$this->api_keys[] = $api_key;
@@ -168,6 +174,194 @@ class WCFM_Order_Shipday extends Woocommerce_Core_Shipday {
         $data['signature']['WCFM version'] = WCFM_VERSION;
         $data['signature']['WCFMmp version'] = WCFMmp_VERSION;
         return $data;
+	}
+
+	private function get_wcfm_pickup_payload($store_id, $items): array {
+		return array_merge(
+			$this->get_ids(),
+			$this->get_wcfm_pickup_restaurant_info($store_id),
+			$this->get_pickup_customer_info(),
+			$this->get_wcfm_pickup_costing($store_id, $items),
+			$this->get_order_items($items),
+			$this->get_payment_info(),
+			$this->get_pickup_instructions(),
+			$this->get_pickup_times(),
+			array('orderSource' => 'WooCommerce-WCFM')
+		);
+	}
+
+	protected function get_pickup_customer_info(): array {
+		$name = sanitize_user(shipday_handle_null($this->order->get_billing_first_name())) . ' ' . 
+		        sanitize_user(shipday_handle_null($this->order->get_billing_last_name()));
+		$phoneNumber = $this->add_calling_country_code(
+			shipday_handle_null($this->order->get_billing_phone()), 
+			$this->order->get_billing_country()
+		);
+		$emailAddress = shipday_handle_null($this->order->get_billing_email());
+
+		return array(
+			'customer' => array(
+				'name' => $name,
+				'phone' => $phoneNumber,
+				'email' => $emailAddress
+			)
+		);
+	}
+
+	private function get_wcfm_pickup_costing($store_id, $items): array {
+		$tax = 0;
+		$discount = 0.0;
+		$total = 0;
+		
+		foreach ($items as $item) {
+			$tax += floatval($item->get_total_tax());
+			$total += floatval($item->get_total());
+			$product = wc_get_product($item->get_product_id());
+			$discount += floatval($item->get_total()) - floatval($product->get_price()) * intval($item->get_quantity());
+		}
+		
+		$subtotal = $total + abs($discount);
+		// For pickup orders, no delivery fee
+		$tips = $total - $subtotal - $tax + $discount;
+
+		return array(
+			'tips' => $tips,
+			'tax' => $tax,
+			'discountAmount' => abs($discount),
+			'totalOrderCost' => $total + $tax
+		);
+	}
+
+	protected function get_pickup_instructions(): array {
+		$notes = shipday_handle_null($this->order->get_customer_note());
+		$default_instruction = "Please call customer when order is ready.";
+		
+		return array(
+			'pickupInstruction' => $notes ? $notes : $default_instruction
+		);
+	}
+
+	protected function get_pickup_times(): array {
+		$times = get_shipday_pickup_delivery_times($this->order);
+		$result = array();
+		
+		if (isset($times['expectedPickupTime'])) {
+			$result['expectedPickupTime'] = $times['expectedPickupTime'];
+		}
+		
+		if (isset($times['expectedDeliveryDate'])) {
+			$result['expectedPickupDate'] = $times['expectedDeliveryDate'];
+		} elseif (isset($times['expectedPickupDate'])) {
+			$result['expectedPickupDate'] = $times['expectedPickupDate'];
+		} else {
+			// Default to today if no date specified
+			$result['expectedPickupDate'] = date('Y-m-d');
+		}
+		
+		// If no time specified, set a default
+		if (!isset($result['expectedPickupTime'])) {
+			$result['expectedPickupTime'] = date('H:i:s', strtotime('+1 hour'));
+		}
+		
+		return $result;
+	}
+
+	private function get_wcfm_pickup_restaurant_info($store_id): array {
+		// If admin store, use default store info
+		if ($this->is_admin_store($store_id)) {
+			$store_name = shipday_handle_null(get_bloginfo('name'));
+			$store_phone = shipday_handle_null(get_option('woocommerce_store_phone'));
+			if (empty($store_phone)) {
+				$store_phone = '+1-000-000-0000'; // Default placeholder
+			}
+			
+			$address1 = shipday_handle_null(get_option('woocommerce_store_address'));
+			$city = shipday_handle_null(get_option('woocommerce_store_city'));
+			$post_code = shipday_handle_null(get_option('woocommerce_store_postcode'));
+			$country_state = shipday_handle_null(get_option('woocommerce_default_country'));
+			
+			$split_country = explode(":", $country_state);
+			$country_code = isset($split_country[0]) ? $split_country[0] : '';
+			$state_code = isset($split_country[1]) ? $split_country[1] : '';
+			$state = $this->to_state_name($state_code, $country_code);
+			$country = $this->to_country_name($country_code);
+			
+			$full_address = $address1 . ', ' . $city . ', ' . $state . ', ' . $post_code . ', ' . $country;
+		} else {
+			// Use WCFM methods to get vendor store information
+			global $WCFM;
+			
+			// Get store name using WCFM vendor support
+			$store_name = '';
+			if (isset($WCFM) && isset($WCFM->wcfm_vendor_support)) {
+				$store_name = $WCFM->wcfm_vendor_support->wcfm_get_vendor_store_name_by_vendor($store_id);
+			}
+			
+			// Fallback to store user method if WCFM global not available
+			if (empty($store_name)) {
+				$store_user = wcfmmp_get_store($store_id);
+				$store_name = $store_user->get_shop_name();
+			}
+			
+			// Get vendor address using WCFM method
+			$vendor_address = '';
+			if (isset($WCFM) && isset($WCFM->wcfm_vendor_support)) {
+				$vendor_address = $WCFM->wcfm_vendor_support->wcfm_get_vendor_address_by_vendor($store_id);
+			}
+			
+			// Fallback: Get address from user meta if WCFM global not available
+			if (empty($vendor_address)) {
+				$vendor_data = get_user_meta($store_id, 'wcfmmp_profile_settings', true);
+				$address_parts = array();
+				
+				if (isset($vendor_data['address']['street_1']) && !empty($vendor_data['address']['street_1'])) {
+					$address_parts[] = $vendor_data['address']['street_1'];
+				}
+				if (isset($vendor_data['address']['street_2']) && !empty($vendor_data['address']['street_2'])) {
+					$address_parts[] = $vendor_data['address']['street_2'];
+				}
+				if (isset($vendor_data['address']['city']) && !empty($vendor_data['address']['city'])) {
+					$address_parts[] = $vendor_data['address']['city'];
+				}
+				if (isset($vendor_data['address']['state']) && !empty($vendor_data['address']['state'])) {
+					$state = $this->to_state_name($vendor_data['address']['state'], $vendor_data['address']['country']);
+					$address_parts[] = $state;
+				}
+				if (isset($vendor_data['address']['zip']) && !empty($vendor_data['address']['zip'])) {
+					$address_parts[] = $vendor_data['address']['zip'];
+				}
+				if (isset($vendor_data['address']['country']) && !empty($vendor_data['address']['country'])) {
+					$country = $this->to_country_name($vendor_data['address']['country']);
+					$address_parts[] = $country;
+				}
+				
+				$vendor_address = implode(', ', $address_parts);
+			}
+			
+			$full_address = $vendor_address;
+			
+			// Get vendor phone
+			$store_phone = '';
+			if (isset($vendor_data['phone']) && !empty($vendor_data['phone'])) {
+				$store_phone = $vendor_data['phone'];
+			} else {
+				// Try to get from store user
+				$store_user = wcfmmp_get_store($store_id);
+				$store_phone = $store_user->get_phone();
+			}
+			
+			if (empty($store_phone)) {
+				$store_phone = '+1-000-000-0000'; // Default placeholder
+			}
+		}
+
+		return array(
+			'restaurant' => array(
+				'name' => shipday_handle_null($store_name),
+				'address' => shipday_handle_null($full_address),
+				'phone' => shipday_handle_null($store_phone)
+			)
+		);
 	}
 
 }
