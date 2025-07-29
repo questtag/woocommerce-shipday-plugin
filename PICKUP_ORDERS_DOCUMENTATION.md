@@ -128,8 +128,8 @@ graph TD
     D -->|No| E[Filter Out<br/>Log: Pickup Disabled]
     D -->|Yes| F[Send to Pickup API]
     
-    C --> G[/orders endpoint]
-    F --> H[/pickup-orders endpoint]
+    C --> G[orders endpoint]
+    F --> H[pickup-orders endpoint]
     
     G --> I[Success/Failure Logging]
     H --> I

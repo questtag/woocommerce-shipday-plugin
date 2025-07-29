@@ -170,7 +170,7 @@ class Woo_Order_Shipday extends Woocommerce_Core_Shipday {
 		$subtotal = $this->order->get_subtotal();
 		
 		// For pickup orders, no delivery fee
-		$tips = $total - $subtotal - $tax + $discount;
+        $tips = $this->get_tip_amount();
 
 		return array(
 			'tips'           => $tips,
@@ -179,6 +179,20 @@ class Woo_Order_Shipday extends Woocommerce_Core_Shipday {
 			'totalOrderCost' => $total
 		);
 	}
+
+    private function get_tip_amount(): float
+    {
+        $tip_amount = 0;
+
+        $meta_keys = ['_tip_amount', '_customer_tip', '_gratuity_amount', '_delivery_tip'];
+        foreach ($meta_keys as $meta_key) {
+            $meta_tip = $this->order->get_meta($meta_key);
+            if (!empty($meta_tip) && is_numeric($meta_tip)) {
+                return floatval($meta_tip);
+            }
+        }
+        return $tip_amount;
+    }
 
 	protected function get_pickup_instructions(): array {
 		$notes = shipday_handle_null($this->order->get_customer_note());
