@@ -164,13 +164,13 @@ class Woo_Order_Shipday extends Woocommerce_Core_Shipday {
 	}
 
 	protected function get_pickup_costing(): array {
-		$tax      = $this->order->get_total_tax();
-		$discount = $this->order->get_total_discount();
-		$total    = $this->order->get_total();
-		$subtotal = $this->order->get_subtotal();
+		$tax      = floatval($this->order->get_total_tax());
+		$discount = floatval($this->order->get_total_discount());
+		$total    = floatval($this->order->get_total());
+		$subtotal = floatval($this->order->get_subtotal());
 		
 		// For pickup orders, no delivery fee
-        $tips = $this->get_tip_amount();
+        $tips = floatval($this->get_tip_amount());
 
 		return array(
 			'tips'           => $tips,
