@@ -1,5 +1,7 @@
 <?php
 require_once dirname(__DIR__). '/functions/logger.php';
+require_once dirname(__DIR__). '/functions/common.php';
+require_once dirname(__DIR__). '/dispatch_post/post_fun.php';
 
 require_once dirname(__DIR__). '/order_data/Woo_Order_Shipday.php';
 require_once dirname(__DIR__). '/order_data/Dokan_Order_Shipday.php';
@@ -49,26 +51,41 @@ class Shipday_Order_Management {
             return;
         }
 
-        if ($order_data_object-> is_pickup_order()) {
-            shipday_logger('info', $order_id . ': Order filtered out as pickup order');
+        $is_pickup = $order_data_object-> is_pickup_order();
+        
+        if ($is_pickup && !get_shipday_pickup_enabled()) {
+            shipday_logger('info', $order_id . ': Order filtered out as pickup order (pickup orders disabled)');
             return;
         }
 
-        shipday_logger('info', $order_id.': Shipday Order Management Process post sending starts' );
+        $order_type = $is_pickup ? 'pickup' : 'delivery';
+        shipday_logger('info', $order_id.': Shipday Order Management Process post sending starts for ' . $order_type . ' order' );
+        
+        $payloads = array();
+        $success = false;
+        
         try {
             $payloads = $order_data_object->get_payloads();
         } catch (Exception $exception) {
             shipday_logger('error', $order_id.': Shipday Order Management Process get_payloads failed');
         }
+        
         try {
-            $success = shipday_post_orders($payloads);
+            if ($is_pickup && get_shipday_pickup_enabled()) {
+                shipday_logger('info', $order_id.': Sending pickup order to Shipday pickup API');
+                $success = shipday_post_pickup_orders($payloads);
+            } else {
+                shipday_logger('info', $order_id.': Sending delivery order to Shipday delivery API');
+                $success = shipday_post_orders($payloads);
+            }
         } catch (Exception $exception) {
-            shipday_logger('info', $order_id.': Shipday Order Management Process post sending failed');
+            shipday_logger('info', $order_id.': Shipday Order Management Process post sending failed for ' . $order_type . ' order');
         }
+        
         if ($success) {
-            shipday_logger('info', $order_id.': Shipday Order Management Process post successfully sent');
+            shipday_logger('info', $order_id.': Shipday Order Management Process post successfully sent for ' . $order_type . ' order');
         } else {
-            shipday_logger('info', $order_id.': Shipday Order Management Process post sending failed');
+            shipday_logger('info', $order_id.': Shipday Order Management Process post sending failed for ' . $order_type . ' order');
             self::unregister_as_posted($order_id);
         }
 

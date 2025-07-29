@@ -62,6 +62,14 @@ function get_woocommerce_settings()
             'id' => 'wc_settings_tab_shipday_sync'
         ),
         array(
+            'title'       => __( 'Enable pickup orders', 'woocommerce-settings-tab-shipday' ),
+            'label'       => __( 'Enable pickup orders', 'woocommerce-settings-tab-shipday'),
+            'type'        => 'checkbox',
+            'description' => 'Allow orders with local pickup shipping method to be sent to Shipday',
+            'default'     => 'no',
+            'id' => 'wc_settings_tab_shipday_enable_pickup'
+        ),
+        array(
             'type' => 'sectionend',
             'id' => 'wc_settings_tab_shipday_sync_section_end',
         ),
@@ -98,6 +106,14 @@ function get_dokan_settings()
             'id' => 'wc_settings_tab_shipday_api_key',
         ),
         array(
+            'title'       => __( 'Enable pickup orders', 'woocommerce-settings-tab-shipday' ),
+            'label'       => __( 'Enable pickup orders', 'woocommerce-settings-tab-shipday'),
+            'type'        => 'checkbox',
+            'description' => 'Allow orders with local pickup shipping method to be sent to Shipday',
+            'default'     => 'no',
+            'id' => 'wc_settings_tab_shipday_enable_pickup'
+        ),
+        array(
             'type' => 'sectionend',
             'id' => 'wc_settings_tab_shipday_general_section_end',
         )
@@ -132,6 +148,14 @@ function get_wcfm_settings()
             'type' => 'text',
             'desc' => 'To get API Key, Login to your Shipday account and go to My Account > Profile > Api key',
             'id' => 'wc_settings_tab_shipday_api_key',
+        ),
+        array(
+            'title'       => __( 'Enable pickup orders', 'woocommerce-settings-tab-shipday' ),
+            'label'       => __( 'Enable pickup orders', 'woocommerce-settings-tab-shipday'),
+            'type'        => 'checkbox',
+            'description' => 'Allow orders with local pickup shipping method to be sent to Shipday',
+            'default'     => 'no',
+            'id' => 'wc_settings_tab_shipday_enable_pickup'
         ),
         array(
             'type' => 'sectionend',
