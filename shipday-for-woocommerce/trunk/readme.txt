@@ -6,7 +6,7 @@ Tested up to: 6.8
 WC requires at least: 7.0.0
 WC tested up to: 9.8.2
 Requires PHP: 7.4
-Stable tag: 1.8.6
+Stable tag: 1.8.8
 License: GPLv2 or later
 
 == Description ==
@@ -76,7 +76,7 @@ You can install shipday plugin directly from wordpress plugin repository or manu
 
 == Changelog ==
 
-= 1.8.6 =
-* Tested with WooCommerce 9.8.2
+= 1.8.8 =
+* Pickup order support added for Woocommerce, Dokan and WCFM
 
 
