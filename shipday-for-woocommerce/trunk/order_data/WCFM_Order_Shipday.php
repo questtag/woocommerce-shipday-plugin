@@ -139,7 +139,7 @@ class WCFM_Order_Shipday extends Woocommerce_Core_Shipday {
 
 	function get_costing($store_id, $items) : array {
         $shipping_info = $this->store_shipping[$store_id];
-		$tips = 0.0;
+		$tips = $this->get_tip_amount();
 		$tax = 0;
 		$discount = 0.0;
 		$delivery_fee = floatval($shipping_info['shipping']);
@@ -212,17 +212,16 @@ class WCFM_Order_Shipday extends Woocommerce_Core_Shipday {
 		$tax = 0;
 		$discount = 0.0;
 		$total = 0;
-		
+
 		foreach ($items as $item) {
 			$tax += floatval($item->get_total_tax());
 			$total += floatval($item->get_total());
 			$product = wc_get_product($item->get_product_id());
 			$discount += floatval($item->get_total()) - floatval($product->get_price()) * intval($item->get_quantity());
 		}
-		
-		$subtotal = $total + abs($discount);
-		// For pickup orders, no delivery fee
-		$tips = $total - $subtotal - $tax + $discount;
+
+		// Use unified tip calculation method
+		$tips = $this->get_tip_amount();
 
 		return array(
 			'tips' => $tips,

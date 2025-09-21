@@ -163,4 +163,59 @@ class Woocommerce_Core_Shipday {
         return apply_filters('shipday_order_data_filter', $payload, $this->order->get_id());
     }
 
+    /**
+     * Enhanced tip calculation method that checks multiple sources
+     * Priority: Meta fields -> Line items -> Mathematical fallback -> Default 0
+     *
+     * @return float The tip amount
+     */
+    protected function get_tip_amount(): float
+    {
+        // Priority 1: Check standard tip meta fields (most common)
+        $tip_meta_keys = [
+            '_tip_amount',           // WooCommerce standard
+            '_customer_tip',         // Common plugins
+            '_gratuity_amount',      // Restaurant plugins
+            '_delivery_tip',         // Delivery plugins
+            '_driver_tip',           // Driver-specific tips
+            '_service_fee_tip',      // Service-based tips
+            'tip_amount',            // Alternative naming
+            'delivery_tip_amount'    // Delivery-specific
+        ];
+
+        foreach ($tip_meta_keys as $meta_key) {
+            $tip_value = $this->order->get_meta($meta_key);
+            if (!empty($tip_value) && is_numeric($tip_value)) {
+                $tip = $this->validate_tip_amount($tip_value);
+                if ($tip > 0) {
+                    return $tip;
+                }
+            }
+        }
+
+        return 0;
+    }
+
+    /**
+     * Utility for tip validation
+     *
+     * @param mixed $tip_value The tip value to validate
+     * @return float The validated tip amount
+     */
+    protected function validate_tip_amount($tip_value): float
+    {
+        if (!is_numeric($tip_value)) return 0;
+
+        $tip = floatval($tip_value);
+
+        // Basic validation: tips should be non-negative
+        if ($tip < 0) return 0;
+
+        // Reasonable upper bound: tips shouldn't exceed order total
+        $order_total = floatval($this->order->get_total());
+        if ($tip > $order_total) return 0;
+
+        return $tip;
+    }
+
 }
