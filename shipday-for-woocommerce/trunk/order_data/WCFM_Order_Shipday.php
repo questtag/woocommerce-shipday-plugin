@@ -140,10 +140,10 @@ class WCFM_Order_Shipday extends Woocommerce_Core_Shipday {
 	function get_costing($store_id, $items) : array {
         $shipping_info = $this->store_shipping[$store_id];
 		$tips = $this->get_tip_amount();
-		$tax = 0;
+		$tax = 0.0;
 		$discount = 0.0;
 		$delivery_fee = floatval($shipping_info['shipping']);
-		$total = 0;
+		$total = 0.0;
 		foreach ($items as $item) {
 			$tax          += floatval( $item->get_total_tax() );
 			$total        += floatval( $item->get_total() );
@@ -156,7 +156,7 @@ class WCFM_Order_Shipday extends Woocommerce_Core_Shipday {
 			'tax'            => $tax,
 			'discountAmount' => $discount,
 			'deliveryFee'    => $delivery_fee,
-			'totalOrderCost' => strval($total + $delivery_fee + $tax + $tips)
+			'totalOrderCost' => $total + $delivery_fee + $tax + $tips
 		);
 
 		return $costing;
@@ -209,9 +209,9 @@ class WCFM_Order_Shipday extends Woocommerce_Core_Shipday {
 	}
 
 	private function get_wcfm_pickup_costing($store_id, $items): array {
-		$tax = 0;
+		$tax = 0.0;
 		$discount = 0.0;
-		$total = 0;
+		$total = 0.0;
 
 		foreach ($items as $item) {
 			$tax += floatval($item->get_total_tax());

@@ -74,10 +74,10 @@ class Woo_Order_Shipday extends Woocommerce_Core_Shipday {
 	}
 
 	function get_costing(): array {
-		$tax          = $this->order->get_total_tax();
-		$discount     = $this->order->get_total_discount();
-		$delivery_fee = $this->order->get_shipping_total();
-		$total        = $this->order->get_total();
+		$tax          = floatval($this->order->get_total_tax());
+		$discount     = floatval($this->order->get_total_discount());
+		$delivery_fee = floatval($this->order->get_shipping_total());
+		$total        = floatval($this->order->get_total());
 		$tips         = $this->get_tip_amount();
 
 		return array(
@@ -85,7 +85,7 @@ class Woo_Order_Shipday extends Woocommerce_Core_Shipday {
 			'tax'            => $tax,
 			'discountAmount' => $discount,
 			'deliveryFee'    => $delivery_fee,
-			'totalOrderCost' => strval($total)
+			'totalOrderCost' => $total
 		);
 	}
 
