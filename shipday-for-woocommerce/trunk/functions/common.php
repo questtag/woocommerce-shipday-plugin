@@ -45,6 +45,11 @@ function get_shipday_pickup_enabled() {
 	return shipday_handle_null($key) == 'yes';
 }
 
+function get_shipday_webhook_enabled() {
+	$key = get_option('wc_settings_tab_shipday_enable_webhook');
+	return shipday_handle_null($key) == 'yes';
+}
+
 function get_shipday_order_manager() {
 	$key = get_option('wc_settings_tab_shipday_order_manage');
 	return shipday_handle_null($key);
