@@ -69,6 +69,16 @@ function get_woocommerce_settings()
             'default'     => 'no',
             'id' => 'wc_settings_tab_shipday_enable_pickup'
         ),
+
+        array(
+            'title'       => __( 'Enable new Shipday webhook', 'woocommerce-settings-tab-shipday' ),
+            'label'       => __( 'Enable new Shipday webhook', 'woocommerce-settings-tab-shipday'),
+            'type'        => 'checkbox',
+            'description' => 'Enable this to send your orders to new Shipday Webhook',
+            'default'     => 'no',
+            'id' => 'wc_settings_tab_shipday_enable_webhook'
+        ),
+
         array(
             'type' => 'sectionend',
             'id' => 'wc_settings_tab_shipday_sync_section_end',
@@ -114,6 +124,14 @@ function get_dokan_settings()
             'id' => 'wc_settings_tab_shipday_enable_pickup'
         ),
         array(
+            'title'       => __( 'Enable new Shipday webhook', 'woocommerce-settings-tab-shipday' ),
+            'label'       => __( 'Enable new Shipday webhook', 'woocommerce-settings-tab-shipday'),
+            'type'        => 'checkbox',
+            'description' => 'Enable this to send your orders to new Shipday Webhook',
+            'default'     => 'no',
+            'id' => 'wc_settings_tab_shipday_enable_webhook'
+        ),
+        array(
             'type' => 'sectionend',
             'id' => 'wc_settings_tab_shipday_general_section_end',
         )
@@ -156,6 +174,14 @@ function get_wcfm_settings()
             'description' => 'Allow orders with local pickup shipping method to be sent to Shipday',
             'default'     => 'no',
             'id' => 'wc_settings_tab_shipday_enable_pickup'
+        ),
+        array(
+            'title'       => __( 'Enable new Shipday webhook', 'woocommerce-settings-tab-shipday' ),
+            'label'       => __( 'Enable new Shipday webhook', 'woocommerce-settings-tab-shipday'),
+            'type'        => 'checkbox',
+            'description' => 'Enable this to send your orders to new Shipday Webhook',
+            'default'     => 'no',
+            'id' => 'wc_settings_tab_shipday_enable_webhook'
         ),
         array(
             'type' => 'sectionend',
