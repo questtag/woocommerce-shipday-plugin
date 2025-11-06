@@ -54,6 +54,7 @@ class WooCommerce_REST_API {
 //		$key_size = 43;
 		$consumer_key = trim(get_option('wc_settings_tab_shipday_rest_api_consumer_key'));
 		$consumer_secret = trim(get_option('wc_settings_tab_shipday_rest_api_consumer_secret'));
+        shipday_logger('INFO', 'Rest api key: consumer key: '.$consumer_key.' consumer secret: '.$consumer_secret);
 		if (is_null($consumer_key) ||
             is_null($consumer_secret) ||
             !self::is_consumer_keys_valid($consumer_key, $consumer_secret)
@@ -63,13 +64,14 @@ class WooCommerce_REST_API {
             return;
         }
 		$uuid = self::post_payload($consumer_key, $consumer_secret);
+
 		if (is_null($uuid)) {
-            shipday_logger('info', 'Rest api key: null uuid');
+            shipday_logger('INFO', "Couldn't save consumer key and secret. most probably shipday api-key is invalid. api-key".get_shipday_api_key());
             delete_option('wc_settings_tab_shipday_registered_uuid');
             return;
+        }else {
+            shipday_logger('INFO', 'Saved UUID: '.$uuid);
         }
-//        delete_option('wc_settings_tab_shipday_rest_api_consumer_key');
-//        delete_option('wc_settings_tab_shipday_rest_api_consumer_secret');
 
         update_option('wc_settings_tab_shipday_registered_uuid', $uuid);
 	}

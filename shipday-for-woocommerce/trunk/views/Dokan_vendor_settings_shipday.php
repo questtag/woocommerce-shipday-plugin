@@ -11,6 +11,16 @@ class Dokan_vendor_settings_shipday
     }
 
     public static function save_api_key() {
+        // Only handle POST requests
+        if ( $_SERVER['REQUEST_METHOD'] !== 'POST' ) {
+            return;
+        }
+
+        // Only proceed if our form was actually submitted
+        if ( ! isset( $_POST['shipday_vendor_settings'] ) ) {
+            return;
+        }
+
         $post_data = wp_unslash($_POST);
         if (!is_null($post_data) && !is_null($post_data['shipday_api_key']) && !empty(trim($post_data['shipday_api_key'])))
             update_user_meta(wp_get_current_user()->ID, 'shipday_api_key', trim($post_data['shipday_api_key']));
