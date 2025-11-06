@@ -58,9 +58,9 @@ class Dokan_Payload extends _CorePayload
         );
     }
 
-    public function prevent_order_sync(): bool|int
+    public function prevent_order_sync()
     {
-        return $this->has_suborders | parent::prevent_order_sync();
+        return $this->has_suborders || parent::prevent_order_sync();
     }
 
     public function get_vendor_info() {
