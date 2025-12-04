@@ -5,6 +5,9 @@
 <div class="sd-panel-header">
   <div class="sd-panel-title-wrap">
     <div class="sd-panel-title">Rest API Settings</div>
+    <div class="sd-field-description">
+      Configure your REST API keys so WooCommerce orders are automatically marked as “Completed” when they’re delivered in Shipday.
+    </div>
   </div>
   <div data-save="rest-api" data-state="Disabled" class="sd-save-button sd-save-button--disabled">
     <span>Save changes</span>

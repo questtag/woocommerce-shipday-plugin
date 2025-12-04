@@ -6,6 +6,9 @@ $datetime_heading_label = get_option('shipday_delivery_pickup_label', "Delivery/
 <div class="sd-panel-header">
   <div class="sd-panel-title-wrap">
     <div class="sd-panel-title">General Settings</div>
+    <div class="sd-field-description">
+      Enable or disable delivery/pickup date & time at checkout.
+    </div>
   </div>
   <div data-save="general" data-state="Disabled" class="sd-save-button sd-save-button--disabled">
     <span>Save changes</span>

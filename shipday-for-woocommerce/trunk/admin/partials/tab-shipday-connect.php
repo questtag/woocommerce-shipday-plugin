@@ -9,6 +9,9 @@ $manage_order = get_option('wc_settings_tab_shipday_order_manage', 'admin_manage
 <div class="sd-panel-header">
     <div class="sd-panel-title-wrap">
         <div class="sd-panel-title">Connect your Shipday Account</div>
+        <div class="sd-field-description">
+          We can connect your WooCommerce store to your Shipday account so you can manage all pickup and delivery orders directly from your Shipday dashboard.
+        </div>
     </div>
     <div data-save="shipday-connect" data-state="Disabled" class="sd-save-button sd-save-button--disabled">
         <span>Save changes</span>

@@ -16,7 +16,10 @@ $datetime_enabled = get_option('shipday_enable_datetime_plugin', "no") === "yes"
 ?>
 <div class="sd-panel-header">
   <div class="sd-panel-title-wrap">
-    <div class="sd-panel-title">pickup Settings</div>
+    <div class="sd-panel-title">Pickup Settings</div>
+    <div class="sd-field-description">
+      Configure your store’s pickup date and time options at checkout.
+    </div>
   </div>
   <div data-save="pickup" data-state="Disabled" class="sd-save-button sd-save-button--disabled">
     <span>Save changes</span>
@@ -337,6 +340,8 @@ $datetime_enabled = get_option('shipday_enable_datetime_plugin', "no") === "yes"
                 <option value="60" <?php echo ($pickup_slot_duration === "60") ? "selected" : ""?>>60</option>
                 <option value="90" <?php echo ($pickup_slot_duration === "90") ? "selected" : ""?>>90</option>
                 <option value="120" <?php echo ($pickup_slot_duration === "120") ? "selected" : ""?>>120</option>
+                <option value="150" <?php echo ($pickup_slot_duration === "150") ? "selected" : ""?>>150</option>
+                <option value="180" <?php echo ($pickup_slot_duration === "180") ? "selected" : ""?>>180</option>
               </select>
             </div>
           </div>

@@ -24,7 +24,7 @@ class Shipday_Menu_Settings {
 
         wp_enqueue_style( 'select2mincss', plugin_dir_url( __FILE__ ) . 'css/select2.min.css', array(), "2.0.0", 'all' );
         wp_enqueue_style( "flatpickr_css",  plugin_dir_url( __FILE__ ) . '../shipday-datetime/public/css/flatpickr.min.css', array(), "2.0.0", 'all' );
-        wp_enqueue_style( "shipday_admin_menu_css", plugin_dir_url( __FILE__ ) . 'css/shipday_admin_menu.css', array(), "2.5.63", 'all' );
+        wp_enqueue_style( "shipday_admin_menu_css", plugin_dir_url( __FILE__ ) . 'css/shipday_admin_menu.css', array(), "2.5.66", 'all' );
 
     }
 

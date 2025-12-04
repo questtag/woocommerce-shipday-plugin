@@ -8,7 +8,7 @@ function shipday_tab_link( $tab_slug ) {
   <div class="sd-panel-title-wrap">
     <div class="sd-panel-title">Overview</div>
     <div class="sd-field-description">
-      Configure your store's checkout process and manage orders sent from WooCommerce to Shipday.
+      The Shipday WooCommerce plugin lets your customers choose their preferred pickup or delivery date and time at checkout. It also connects your WooCommerce store to your Shipday account, so you can manage the full lifecycle of your pickup and delivery orders in one place.
     </div>
   </div>
 </div>
@@ -74,7 +74,7 @@ function shipday_tab_link( $tab_slug ) {
     <header class="shipday-delivery-card__header">
       <h3 class="shipday-delivery-card__title">Order Fulfillment</h3>
       <div class="sd-overview-card__desc">
-        Connect with Shipday and manage your orders smartly.
+        Connect your Shipday account to manage all your pickup and delivery orders in one place.
       </div>
     </header>
 
