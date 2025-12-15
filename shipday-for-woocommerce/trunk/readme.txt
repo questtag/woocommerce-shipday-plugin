@@ -25,7 +25,7 @@ With Shipday’s datetime configuration, now you can show a **delivery date and 
 As a merchant, you can:
 
 - Configure which **days of the week** are available for delivery (e.g. weekdays only, or specific days).
-- Define flexible **time slots** (e.g. 10:00–12:00, 12:00–14:00, evening delivery, etc.).
+- Define flexible **time slots** (e.g. 10:00 AM – 11:00 AM, 12:00 PM – 03:00 PM, etc.).
 - Manage everything through a **simple calendar-style UI**, without touching code.
 
 👉 **This delivery date & time slot functionality is included for free with Shipday – there is no additional charge to use it.**
@@ -111,7 +111,8 @@ You can install shipday plugin directly from wordpress plugin repository or manu
 
 == Changelog ==
 
-= 1.8.8 =
-* Pickup order support added for Woocommerce, Dokan, and WCFM
+= 2.0.0 =
+* Datetime support in the order checkout
+* New admin configuration page
 
 

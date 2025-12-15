@@ -46,7 +46,7 @@ const Shipday_Woo_Delivery = ({
 
   // Validation function
   const validateField = (value, fieldType) => {
-    const errorKey = "shipday_woo_" + fieldType + "_error";
+    let errorKey = "shipday_woo_" + fieldType + "_error";
     let errorMessage = "This field is mandatory";
     let isRequired = false;
 
@@ -54,6 +54,7 @@ const Shipday_Woo_Delivery = ({
     if (fieldType === "shipday_order_type") {
       errorMessage = "Order type is required";
       isRequired = shipdaySettings.enable_delivery_option;
+      errorKey = "shipday_woo_order_type_error";
     } else if (fieldType === "delivery_date") {
       errorMessage = "Delivery date is required";
       isRequired = shipdaySettings.enable_delivery_date && shipdaySettings.delivery_date_mandatory;

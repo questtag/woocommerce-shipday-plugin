@@ -176,7 +176,6 @@ class Shipday_Woo_Delivery_Block {
 
 
     static function validate_and_set_date( $settings, $type, $selected ) {
-        shipday_logger("INFO", "called validate_and_set_date with type: $type and selected: $selected");
         if ( $type === 'Delivery' ) {
             $disable_week_days = $settings['delivery_disable_week_days'];
             $disable_dates = array_merge( $settings['disable_dates'], $settings['disable_delivery_date_passed_time'] );

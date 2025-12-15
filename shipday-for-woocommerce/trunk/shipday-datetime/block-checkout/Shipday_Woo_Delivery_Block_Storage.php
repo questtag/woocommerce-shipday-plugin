@@ -20,6 +20,7 @@ class Shipday_Woo_Delivery_Block_Storage {
     }
 
     function update_block_order_meta( $order, $request ) {
+        shipday_logger("INFO", "called update_block_order_meta");
         $settings = Shipday_Woo_DateTime_Util::get_default_settings();
         $extensions = $request->get_param( 'extensions' );
         $data = $extensions['shipday-woo-delivery'] ?? [];
@@ -43,7 +44,7 @@ class Shipday_Woo_Delivery_Block_Storage {
             if ( $hpos ) {
                 $order->update_meta_data( '_shipday_delivery_type', sanitize_text_field( $data['shipday_order_type'] ) );
             } else {
-                update_post_meta( $order_id, 'delivery_type', sanitize_text_field( $data['shipday_order_type'] ) );
+                update_post_meta( $order_id, '_shipday_delivery_type', sanitize_text_field( $data['shipday_order_type'] ) );
             }
         }
 
@@ -85,6 +86,7 @@ class Shipday_Woo_Delivery_Block_Storage {
     }
 
     static function validation( $data, $settings, $errors ) {
+        shipday_logger("INFO", "called validation with data: " . print_r($data, true));;
 
         if ( $settings['enable_datetime_plugin'] && $settings['enable_delivery_option'] && empty( $data['shipday_order_type'] ) ) {
             $errors->add( 'error', $settings['checkout_delivery_option_notice'] );
