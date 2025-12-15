@@ -18,8 +18,8 @@ class Shipday_Woo_DateTime_Util {
     function reset_session() {
         WC()->session->set( 'on_change', false );
         WC()->session->set( 'shipday_order_type', NULL );
-        WC()->session->set( 'delivery_date', NULL );
-        WC()->session->set( 'delivery_time', NULL );
+        WC()->session->set( 'shipday_delivery_date', NULL );
+        WC()->session->set( 'shipday_delivery_time', NULL );
     }
 
     public static function get_default_settings() {
@@ -114,7 +114,7 @@ class Shipday_Woo_DateTime_Util {
         $time_options = $type === 'Delivery' ? $settings["delivery_time_options"] : $settings["pickup_time_options"];
         $enable_time = $type === 'Delivery' ? $settings['enable_delivery_time'] : $settings['enable_pickup_time'];
         $auto_select_first_time = $type === 'Delivery' ? $settings['auto_select_first_time'] : $settings['pickup_auto_select_first_time'];
-        $session_name = $type === 'Delivery' ? 'delivery_time' : 'pickup_time';
+        $session_name = $type === 'Delivery' ? 'shipday_delivery_time' : 'pickup_time';
 
         if ( !empty( $selected ) ) {
             if ( isset( $time_options[$selected]['disabled'] ) && !$time_options[$selected]['disabled'] ) {

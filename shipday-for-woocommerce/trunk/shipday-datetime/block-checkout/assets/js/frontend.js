@@ -36,9 +36,9 @@ const Shipday_Woo_Delivery = ({
 
   // State hooks
   const [shipdayOrderType, setShipdayOrderType] = React.useState(shipdaySettings.shipday_order_type);
-  const [deliveryDate, setDeliveryDate] = React.useState(shipdaySettings.delivery_date);
-  const [deliveryTime, setDeliveryTime] = React.useState(shipdaySettings.delivery_time);
-  const [pickupDate, setPickupDate] = React.useState(shipdaySettings.pickup_date);
+  const [shipdayDeliveryDate, setShipdayDeliveryDate] = React.useState(shipdaySettings.shipday_delivery_date);
+  const [shipdayDeliveryTime, setShipdayDeliveryTime] = React.useState(shipdaySettings.shipday_delivery_time);
+  const [shipdayPickupDate, setShipdayPickupDate] = React.useState(shipdaySettings.shipday_pickup_date);
   const [pickupTime, setPickupTime] = React.useState(shipdaySettings.pickup_time);
   const [isProcessing, setIsProcessing] = React.useState(false);
 
@@ -55,13 +55,15 @@ const Shipday_Woo_Delivery = ({
       errorMessage = "Order type is required";
       isRequired = shipdaySettings.enable_delivery_option;
       errorKey = "shipday_woo_order_type_error";
-    } else if (fieldType === "delivery_date") {
+    } else if (fieldType === "shipday_delivery_date") {
       errorMessage = "Delivery date is required";
+      errorKey = "shipday_woo_delivery_date_error";
       isRequired = shipdaySettings.enable_delivery_date && shipdaySettings.delivery_date_mandatory;
-    } else if (fieldType === "delivery_time") {
+    } else if (fieldType === "shipday_delivery_time") {
       errorMessage = "Delivery time is mandatory";
+      errorKey = "shipday_woo_delivery_time_error";
       isRequired = shipdaySettings.enable_delivery_time && shipdaySettings.delivery_time_mandatory;
-    } else if (fieldType === "pickup_date") {
+    } else if (fieldType === "shipday_pickup_date") {
       errorMessage = "Pickup date is mandatory";
       isRequired = shipdaySettings.enable_pickup_date && shipdaySettings.pickup_date_mandatory;
     }else if (fieldType === "pickup_time") {
@@ -103,19 +105,19 @@ const Shipday_Woo_Delivery = ({
 
       if (shipdaySettings.enable_delivery_option) {
         if (shipdaySettings.shipday_order_type === "Delivery") {
-          validateField(deliveryDate, "delivery_date");
-          validateField(deliveryTime, "delivery_time");
+          validateField(shipdayDeliveryDate, "shipday_delivery_date");
+          validateField(shipdayDeliveryTime, "shipday_delivery_time");
         } else if (shipdaySettings.shipday_order_type === "Pickup") {
-          validateField(pickupDate, "pickup_date");
+          validateField(shipdayPickupDate, "shipday_pickup_date");
           validateField(pickupTime, "pickup_time");
         }
       } else {
         if(shipdaySettings.enable_delivery_date)
-          validateField(deliveryDate, "delivery_date");
+          validateField(shipdayDeliveryDate, "shipday_delivery_date");
         if(shipdaySettings.enable_delivery_time)
-          validateField(deliveryTime, "delivery_time");
+          validateField(shipdayDeliveryTime, "shipday_delivery_time");
         if(shipdaySettings.enable_pickup_date)
-        validateField(pickupDate, "pickup_date");
+        validateField(shipdayPickupDate, "shipday_pickup_date");
         if(shipdaySettings.enable_dpickup_time)
           validateField(pickupTime, "pickup_time");
       }
@@ -128,16 +130,16 @@ const Shipday_Woo_Delivery = ({
   }, [shipdayOrderType]);
 
   React.useEffect(() => {
-    checkoutExtensionData.setExtensionData("shipday-woo-delivery", "delivery_date", deliveryDate);
-  }, [deliveryDate]);
+    checkoutExtensionData.setExtensionData("shipday-woo-delivery", "shipday_delivery_date", shipdayDeliveryDate);
+  }, [shipdayDeliveryDate]);
 
   React.useEffect(() => {
-    checkoutExtensionData.setExtensionData("shipday-woo-delivery", "delivery_time", deliveryTime);
-  }, [deliveryTime]);
+    checkoutExtensionData.setExtensionData("shipday-woo-delivery", "shipday_delivery_time", shipdayDeliveryTime);
+  }, [shipdayDeliveryTime]);
 
   React.useEffect(() => {
-    checkoutExtensionData.setExtensionData("shipday-woo-delivery", "pickup_date", pickupDate);
-  }, [pickupDate]);
+    checkoutExtensionData.setExtensionData("shipday-woo-delivery", "shipday_pickup_date", shipdayPickupDate);
+  }, [shipdayPickupDate]);
 
   React.useEffect(() => {
     checkoutExtensionData.setExtensionData("shipday-woo-delivery", "pickup_time", pickupTime);
@@ -145,9 +147,9 @@ const Shipday_Woo_Delivery = ({
 
   // Update state when shipdaySettings change
   React.useEffect(() => { setShipdayOrderType(shipdaySettings.shipday_order_type); }, [shipdaySettings.shipday_order_type]);
-  React.useEffect(() => { setDeliveryDate(shipdaySettings.delivery_date); }, [shipdaySettings.delivery_date]);
-  React.useEffect(() => { setDeliveryTime(shipdaySettings.delivery_time); }, [shipdaySettings.delivery_time]);
-  React.useEffect(() => { setPickupDate(shipdaySettings.pickup_date); }, [shipdaySettings.pickup_date]);
+  React.useEffect(() => { setShipdayDeliveryDate(shipdaySettings.shipday_delivery_date); }, [shipdaySettings.shipday_delivery_date]);
+  React.useEffect(() => { setShipdayDeliveryTime(shipdaySettings.shipday_delivery_time); }, [shipdaySettings.shipday_delivery_time]);
+  React.useEffect(() => { setShipdayPickupDate(shipdaySettings.shipday_pickup_date); }, [shipdaySettings.shipday_pickup_date]);
   React.useEffect(() => { setPickupTime(shipdaySettings.pickup_time); }, [shipdaySettings.pickup_time]);
 
   // Handle checkout errors
@@ -173,25 +175,25 @@ const Shipday_Woo_Delivery = ({
   };
 
   const handleDeliveryDateChange = (value) => {
-    setDeliveryDate(value);
-    validateField(value, "delivery_date");
+    setShipdayDeliveryDate(value);
+    validateField(value, "shipday_delivery_date");
     setIsProcessing(true);
     wc.blocksCheckout.extensionCartUpdate({
       namespace: "shipday_woo_delivery_delivery_date_change",
       data: {
-        delivery_date: value
+        shipday_delivery_date: value
       }
     }).finally(() => setIsProcessing(false));
   };
 
   const handlePickupDateChange = (value) => {
-    setPickupDate(value);
-    validateField(value, "pickup_date");
+    setShipdayPickupDate(value);
+    validateField(value, "shipday_pickup_date");
     setIsProcessing(true);
     wc.blocksCheckout.extensionCartUpdate({
       namespace: "shipday_woo_delivery_pickup_date_change",
       data: {
-        pickup_date: value
+        shipday_pickup_date: value
       }
     }).finally(() => setIsProcessing(false));
   };
@@ -204,13 +206,13 @@ const Shipday_Woo_Delivery = ({
     }else {
       event.target.classList.remove('shipday-select-placeholder');
     }
-    setDeliveryTime(value);
-    validateField(value, "delivery_time");
+    setShipdayDeliveryTime(value);
+    validateField(value, "shipday_delivery_time");
     setIsProcessing(true);
     wc.blocksCheckout.extensionCartUpdate({
       namespace: "shipday_woo_delivery_delivery_time_change",
       data: {
-        delivery_time: value
+        shipday_delivery_time: value
       }
     }).finally(() => setIsProcessing(false));
   };
@@ -271,7 +273,7 @@ const Shipday_Woo_Delivery = ({
   (!shipdaySettings.enable_delivery_option || shipdayOrderType === "Delivery") &&
   React.createElement(Shipday_Woo_Delivery_Time, {
     shipdaySettings: shipdaySettings,
-    deliveryTime: deliveryTime,
+    shipdayDeliveryTime: shipdayDeliveryTime,
     handleDeliveryTimeChange: handleDeliveryTimeChange,
     getValidationError: getValidationError
   }),
@@ -427,7 +429,7 @@ const Shipday_Woo_Delivery = ({
     const datePickerRef = React.useRef(null);
 
     // State to track if the date field is active (has a value)
-    const [isActive, setIsActive] = React.useState(!!shipdaySettings.delivery_date);
+    const [isActive, setIsActive] = React.useState(!!shipdaySettings.shipday_delivery_date);
 
     // Flag to prevent onChange handler during initialization
     let isInitializing = false;
@@ -457,7 +459,7 @@ const Shipday_Woo_Delivery = ({
     React.useEffect(() => {
       // Create flatpickr instance
       const flatpickrInstance = flatpickr(datePickerRef.current, {
-        defaultDate: shipdaySettings.delivery_date,
+        defaultDate: shipdaySettings.shipday_delivery_date,
         enable: enabledDates,
         minDate: shipdaySettings.today,
         dateFormat: "Y-m-d",
@@ -470,7 +472,7 @@ const Shipday_Woo_Delivery = ({
         // Handle initialization
         onReady(selectedDates, dateStr, instance) {
           // Check if current value matches shipdaySettings
-          const expectedValue = shipdaySettings.delivery_date !== null ? shipdaySettings.delivery_date : "";
+          const expectedValue = shipdaySettings.shipday_delivery_date !== null ? shipdaySettings.shipday_delivery_date : "";
 
           // If they don't match, reset the picker
           if (dateStr !== expectedValue) {
@@ -563,7 +565,7 @@ const Shipday_Woo_Delivery = ({
   // Delivery Time Component
   Shipday_Woo_Delivery_Time = ({
     shipdaySettings,
-    deliveryTime,
+    shipdayDeliveryTime,
     handleDeliveryTimeChange,
     getValidationError
   }) => {
@@ -576,9 +578,9 @@ const Shipday_Woo_Delivery = ({
     // Get validation error if any
     const validationError = getValidationError("shipday_woo_delivery_time_error");
 
-    // Reset select to default option if deliveryTime is empty
+    // Reset select to default option if shipdayDeliveryTime is empty
     React.useEffect(() => {
-      if (!deliveryTime && selectRef.current) {
+      if (!shipdayDeliveryTime && selectRef.current) {
         selectRef.current.selectedIndex = 0;
       }
     });
@@ -595,7 +597,7 @@ const Shipday_Woo_Delivery = ({
         React.createElement("option", {
           key: value,
           value: value,
-          selected: deliveryTime === value && !option.disabled,
+          selected: shipdayDeliveryTime === value && !option.disabled,
           disabled: option.disabled
         }, option.title)
       );
@@ -605,7 +607,7 @@ const Shipday_Woo_Delivery = ({
         className: `shipday-woo-delivery-time-container${validationError ? " has-error" : ""}`
       },
       React.createElement("div", {
-          className: `wc-blocks-components-select shipday-woo-delivery-select${deliveryTime ? "" : " not-selected"}`
+          className: `wc-blocks-components-select shipday-woo-delivery-select${shipdayDeliveryTime ? "" : " not-selected"}`
         },
         React.createElement("div", {
             className: "wc-blocks-components-select__container"
@@ -677,7 +679,7 @@ const Shipday_Woo_Delivery = ({
         // Get validation error if any
         const validationError = getValidationError("shipday_woo_pickup_time_error");
 
-        // Reset select to default option if deliveryTime is empty
+        // Reset select to default option if shipdayDeliveryTime is empty
         React.useEffect(() => {
           if (!pickupTime && selectRef.current) {
             selectRef.current.selectedIndex = 0;
@@ -772,7 +774,7 @@ const Shipday_Woo_Delivery = ({
                                  getValidationError
                                }) => {
     const pickupDatePickerRef = React.useRef(null);
-    const [isActive, setIsActive] = React.useState(!!shipdaySettings.pickup_date);
+    const [isActive, setIsActive] = React.useState(!!shipdaySettings.shipday_pickup_date);
     let isInitializing = false;
     const validationError = getValidationError("shipday_woo_pickup_date_error");
 
@@ -798,7 +800,7 @@ const Shipday_Woo_Delivery = ({
     React.useEffect(() => {
       // Create flatpickr instance
       const flatpickrInstance = flatpickr(pickupDatePickerRef.current, {
-        defaultDate: shipdaySettings.pickup_date,
+        defaultDate: shipdaySettings.shipday_pickup_date,
         enable: enabledDates,
         dateFormat: "Y-m-d",
         altInput: true,
@@ -809,7 +811,7 @@ const Shipday_Woo_Delivery = ({
         // Handle initialization
         onReady(selectedDates, dateStr, instance) {
           // Check if current value matches shipdaySettings
-          const expectedValue = shipdaySettings.pickup_date !== null ? shipdaySettings.pickup_date : "";
+          const expectedValue = shipdaySettings.shipday_pickup_date !== null ? shipdaySettings.shipday_pickup_date : "";
           // If they don't match, reset the picker
           if (dateStr !== expectedValue) {
             setIsActive(false);

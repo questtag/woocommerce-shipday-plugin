@@ -32,8 +32,8 @@ class Shipday_Woo_Delivery_Block {
     function reset_session() {
         WC()->session->set( 'on_change', false );
         WC()->session->set( 'shipday_order_type', NULL );
-        WC()->session->set( 'delivery_date', NULL );
-        WC()->session->set( 'delivery_time', NULL );
+        WC()->session->set( 'shipday_delivery_date', NULL );
+        WC()->session->set( 'shipday_delivery_time', NULL );
     }
 
     function register_woo_delivery_block() {
@@ -69,14 +69,14 @@ class Shipday_Woo_Delivery_Block {
 
         $data['shipday_order_type'] = WC()->session->get( 'shipday_order_type' );
 
-        $data['delivery_date'] = self::validate_and_set_date( $data, 'Delivery', WC()->session->get( 'delivery_date' ) );
-        $data['delivery_time'] = self::validate_and_set_time( $data, 'Delivery', WC()->session->get( 'delivery_time' ) );
+        $data['shipday_delivery_date'] = self::validate_and_set_date( $data, 'Delivery', WC()->session->get( 'shipday_delivery_date' ) );
+        $data['shipday_delivery_time'] = self::validate_and_set_time( $data, 'Delivery', WC()->session->get( 'shipday_delivery_time' ) );
 
-        $data['pickup_date'] = self::validate_and_set_date( $data, 'Pickup', WC()->session->get( 'pickup_date' ) );
+        $data['shipday_pickup_date'] = self::validate_and_set_date( $data, 'Pickup', WC()->session->get( 'shipday_pickup_date' ) );
         $data['pickup_time'] = self::validate_and_set_time( $data, 'Pickup', WC()->session->get( 'pickup_time' ) );
 
-        $data['delivery_time_options'] = self::reset_time_options('Delivery', $data['delivery_time_options'] ,  $data['delivery_date']);
-        $data['pickup_time_options'] = self::reset_time_options('Pickup',  $data['pickup_time_options'] ,  $data['pickup_date']);
+        $data['delivery_time_options'] = self::reset_time_options('Delivery', $data['delivery_time_options'] ,  $data['shipday_delivery_date']);
+        $data['pickup_time_options'] = self::reset_time_options('Pickup',  $data['pickup_time_options'] ,  $data['shipday_pickup_date']);
 
         return $data;
     }
@@ -100,15 +100,15 @@ class Shipday_Woo_Delivery_Block {
                 'description' => __( 'Type of order', 'shipday-delivery' ),
                 'enum'        => array_merge( array_keys( $settings['delivery_options'] ), ["", null] ),
             ),
-            'delivery_date' => array(
+            'shipday_delivery_date' => array(
                 'type'        => ['string', 'null'],
                 'description' => __( 'Delivery Date', 'shipday-delivery' ),
             ),
-            'delivery_time' => array(
+            'shipday_delivery_time' => array(
                 'type'        => ['string', 'null'],
                 'description' => __( 'Delivery Time', 'shipday-delivery' ),
             ),
-            'pickup_date' => array(
+            'shipday_pickup_date' => array(
                 'type'        => ['string', 'null'],
                 'description' => __( 'Pickup Date', 'shipday-delivery' ),
             ),
@@ -151,21 +151,21 @@ class Shipday_Woo_Delivery_Block {
     }
 
     function delivery_date_change( $data ) {
-        $delivery_date = sanitize_text_field( $data['delivery_date'] );
+        $delivery_date = sanitize_text_field( $data['shipday_delivery_date'] );
         WC()->session->set( 'on_change', true );
-        WC()->session->set( "delivery_date", $delivery_date );
+        WC()->session->set( "shipday_delivery_date", $delivery_date );
     }
 
     function pickup_date_change( $data ) {
-        $pickup_date = sanitize_text_field( $data['pickup_date'] );
+        $pickup_date = sanitize_text_field( $data['shipday_pickup_date'] );
         WC()->session->set( 'on_change', true );
-        WC()->session->set( "pickup_date", $pickup_date );
+        WC()->session->set( "shipday_pickup_date", $pickup_date );
     }
 
     function delivery_time_change( $data ) {
-        $delivery_time = sanitize_text_field( $data['delivery_time'] );
+        $delivery_time = sanitize_text_field( $data['shipday_delivery_time'] );
         WC()->session->set( 'on_change', true );
-        WC()->session->set( "delivery_time", $delivery_time );
+        WC()->session->set( "shipday_delivery_time", $delivery_time );
     }
 
     function pickup_time_change( $data ) {
@@ -181,13 +181,13 @@ class Shipday_Woo_Delivery_Block {
             $disable_dates = array_merge( $settings['disable_dates'], $settings['disable_delivery_date_passed_time'] );
             $enable_date = $settings['enable_delivery_date'];
             $auto_select_first_date = $settings['auto_select_first_date'];
-            $session_name = 'delivery_date';
+            $session_name = 'shipday_delivery_date';
         } else {
             $disable_week_days = $settings['pickup_disable_week_days'];
             $disable_dates = array_merge( $settings['pickup_disable_dates'], $settings['disable_pickup_date_passed_time'] );
             $enable_date = $settings['enable_pickup_date'];
             $auto_select_first_date = $settings['pickup_auto_select_first_date'];
-            $session_name = 'pickup_date';
+            $session_name = 'shipday_pickup_date';
         }
         $current = \DateTime::createFromFormat( 'Y-m-d', $settings['today'] );
 
@@ -277,7 +277,7 @@ class Shipday_Woo_Delivery_Block {
         $time_options = $type === 'Delivery' ? $settings["delivery_time_options"] : $settings["pickup_time_options"];
         $enable_time = $type === 'Delivery' ? $settings['enable_delivery_time'] : $settings['enable_pickup_time'];
         $auto_select_first_time = $type === 'Delivery' ? $settings['auto_select_first_time'] : $settings['pickup_auto_select_first_time'];
-        $session_name = $type === 'Delivery' ? 'delivery_time' : 'pickup_time';
+        $session_name = $type === 'Delivery' ? 'shipday_delivery_time' : 'pickup_time';
 
         if ( !empty( $selected ) ) {
             if ( isset( $time_options[$selected]['disabled'] ) && !$time_options[$selected]['disabled'] ) {
