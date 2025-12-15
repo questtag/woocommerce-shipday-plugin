@@ -20,6 +20,7 @@ class Shipday_Woo_Delivery_Block_Storage {
     }
 
     function update_block_order_meta( $order, $request ) {
+        $settings = Shipday_Woo_DateTime_Util::get_default_settings();
         $extensions = $request->get_param( 'extensions' );
         $data = $extensions['shipday-woo-delivery'] ?? [];
         $order_id = $order->get_id();
@@ -27,8 +28,6 @@ class Shipday_Woo_Delivery_Block_Storage {
         if ( class_exists( \Automattic\WooCommerce\Utilities\OrderUtil::class ) ) {
             $hpos = \Automattic\WooCommerce\Utilities\OrderUtil::custom_orders_table_usage_is_enabled();
         }
-
-        $settings = Shipday_Woo_DateTime_Util::get_default_settings();
 
         $errors = new \WP_Error();
 
@@ -79,8 +78,6 @@ class Shipday_Woo_Delivery_Block_Storage {
                 update_post_meta( $order_id, '_shipday_delivery_time', sanitize_text_field( $data['pickup_time'] ) );
             }
         }
-
-
 
         $order->save();
 

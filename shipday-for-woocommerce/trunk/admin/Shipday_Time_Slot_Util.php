@@ -76,6 +76,4 @@ class Shipday_Time_Slot_Util {
         echo '</td></tr>';
     }
 
-
-
 }
