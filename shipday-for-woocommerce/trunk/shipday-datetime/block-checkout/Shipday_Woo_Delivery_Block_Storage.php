@@ -39,15 +39,15 @@ class Shipday_Woo_Delivery_Block_Storage {
             throw new \WC_Data_Exception( 'SHIPDAY_WOO_ERROR', $combined_error_message );
         }
 
-        if ( !empty( $data['order_type'] ) ) {
+        if ( !empty( $data['shipday_order_type'] ) ) {
             if ( $hpos ) {
-                $order->update_meta_data( '_shipday_delivery_type', sanitize_text_field( $data['order_type'] ) );
+                $order->update_meta_data( '_shipday_delivery_type', sanitize_text_field( $data['shipday_order_type'] ) );
             } else {
-                update_post_meta( $order_id, 'delivery_type', sanitize_text_field( $data['order_type'] ) );
+                update_post_meta( $order_id, 'delivery_type', sanitize_text_field( $data['shipday_order_type'] ) );
             }
         }
 
-        if ( $settings['enable_delivery_date'] && ( !$settings['enable_delivery_option'] || $data['order_type'] === 'Delivery' ) && !empty( $data['delivery_date'] ) ) {
+        if ( $settings['enable_delivery_date'] && ( !$settings['enable_delivery_option'] || $data['shipday_order_type'] === 'Delivery' ) && !empty( $data['delivery_date'] ) ) {
             if ( $hpos ) {
                 $order->update_meta_data( '_shipday_delivery_date', sanitize_text_field( $data['delivery_date'] ) );
             } else {
@@ -55,7 +55,7 @@ class Shipday_Woo_Delivery_Block_Storage {
             }
         }
 
-        if ( $settings['enable_delivery_time'] && ( !$settings['enable_delivery_option'] || $data['order_type'] === 'Delivery' ) && !empty( $data['delivery_time'] ) ) {
+        if ( $settings['enable_delivery_time'] && ( !$settings['enable_delivery_option'] || $data['shipday_order_type'] === 'Delivery' ) && !empty( $data['delivery_time'] ) ) {
             if ( $hpos ) {
                 $order->update_meta_data( '_shipday_delivery_time', sanitize_text_field( $data['delivery_time'] ) );
             } else {
@@ -63,7 +63,7 @@ class Shipday_Woo_Delivery_Block_Storage {
             }
         }
 
-        if ( $settings['enable_pickup_date'] &&  $data['order_type'] === 'Pickup' && !empty( $data['pickup_date'] ) ) {
+        if ( $settings['enable_pickup_date'] &&  $data['shipday_order_type'] === 'Pickup' && !empty( $data['pickup_date'] ) ) {
             if ( $hpos ) {
                 $order->update_meta_data( '_shipday_delivery_date', sanitize_text_field( $data['pickup_date'] ) );
             } else {
@@ -71,7 +71,7 @@ class Shipday_Woo_Delivery_Block_Storage {
             }
         }
 
-        if ( $settings['enable_pickup_time'] && $data['order_type'] === 'Pickup' && !empty( $data['pickup_time'] ) ) {
+        if ( $settings['enable_pickup_time'] && $data['shipday_order_type'] === 'Pickup' && !empty( $data['pickup_time'] ) ) {
             if ( $hpos ) {
                 $order->update_meta_data( '_shipday_delivery_time', sanitize_text_field( $data['pickup_time'] ) );
             } else {
@@ -86,19 +86,19 @@ class Shipday_Woo_Delivery_Block_Storage {
 
     static function validation( $data, $settings, $errors ) {
 
-        if ( $settings['enable_datetime_plugin'] && $settings['enable_delivery_option'] && empty( $data['order_type'] ) ) {
+        if ( $settings['enable_datetime_plugin'] && $settings['enable_delivery_option'] && empty( $data['shipday_order_type'] ) ) {
             $errors->add( 'error', $settings['checkout_delivery_option_notice'] );
         }
 
-        if ( $settings['enable_datetime_plugin'] && $settings['enable_delivery_date'] && $settings['delivery_date_mandatory'] && ( !$settings['enable_delivery_option'] || $data['order_type'] === 'Delivery' ) && empty( $data['delivery_date'] ) ) {
+        if ( $settings['enable_datetime_plugin'] && $settings['enable_delivery_date'] && $settings['delivery_date_mandatory'] && ( !$settings['enable_delivery_option'] || $data['shipday_order_type'] === 'Delivery' ) && empty( $data['delivery_date'] ) ) {
             $errors->add( 'error', $settings['checkout_date_notice'] );
         }
 
-        if ( $settings['enable_datetime_plugin'] && $settings['enable_delivery_time'] && $settings['delivery_time_mandatory'] && ( !$settings['enable_delivery_option'] || $data['order_type'] === 'Delivery' ) && empty( $data['delivery_time'] ) ) {
+        if ( $settings['enable_datetime_plugin'] && $settings['enable_delivery_time'] && $settings['delivery_time_mandatory'] && ( !$settings['enable_delivery_option'] || $data['shipday_order_type'] === 'Delivery' ) && empty( $data['delivery_time'] ) ) {
             $errors->add( 'error', $settings['checkout_time_notice'] );
         }
 
-        if ( $settings['enable_datetime_plugin'] && $settings['enable_pickup_date'] && $settings['pickup_date_mandatory'] &&  $data['order_type'] === 'Pickup' && empty( $data['pickup_date'] ) ) {
+        if ( $settings['enable_datetime_plugin'] && $settings['enable_pickup_date'] && $settings['pickup_date_mandatory'] &&  $data['shipday_order_type'] === 'Pickup' && empty( $data['pickup_date'] ) ) {
             $errors->add( 'error', $settings['checkout_date_notice'] );
         }
 
@@ -106,7 +106,7 @@ class Shipday_Woo_Delivery_Block_Storage {
 
     static function reset_session() {
         WC()->session->__unset( 'on_change' );
-        WC()->session->__unset( 'order_type' );
+        WC()->session->__unset( 'shipday_order_type' );
         WC()->session->__unset( 'delivery_date' );
         WC()->session->__unset( 'delivery_time' );
         WC()->session->__unset( 'pickup_date' );

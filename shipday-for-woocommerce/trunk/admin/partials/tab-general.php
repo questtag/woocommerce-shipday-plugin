@@ -54,7 +54,7 @@ $datetime_heading_label = get_option('shipday_delivery_pickup_label', "Delivery/
 
       <div class="shipday-divider"></div>
 
-      <fieldset class="sd-fieldset" <?php echo $datetime_enabled ? '' : 'disabled aria-disabled="true"'; ?> <?php echo $datetime_enabled ? '' : 'disabled'; ?>>
+      <fieldset class="sd-fieldset datetime-dependent">
       <!-- Enable order type -->
       <div class="shipday-toggle-row">
         <label class="shipday-switch">
@@ -92,7 +92,7 @@ $datetime_heading_label = get_option('shipday_delivery_pickup_label', "Delivery/
 
     </div>
 
-    <fieldset class="sd-fieldset" <?php echo $datetime_enabled ? '' : 'disabled aria-disabled="true"'; ?> <?php echo $datetime_enabled ? '' : 'disabled'; ?>>
+    <fieldset class="sd-fieldset datetime-dependent">
     <div class="sd-field">
       <div class="rest-api-label-wrapper">
         <div class="rest-api-label">Date & time field heading</div>
@@ -115,4 +115,30 @@ $datetime_heading_label = get_option('shipday_delivery_pickup_label', "Delivery/
 
 
   </form>
+
+  <script type="text/javascript">
+    (function($) {
+      $(document).ready(function() {
+        // Function to toggle fieldset disabled state based on checkbox
+        function toggleDatetimeDependentFields() {
+          var isChecked = $('#shipday_enable_datetime_plugin').is(':checked');
+          $('.datetime-dependent').prop('disabled', !isChecked);
+          $('.datetime-dependent').attr('aria-disabled', !isChecked);
+
+          // If datetime plugin is unchecked, also uncheck delivery option
+          if (!isChecked) {
+            $('#shipday_enable_delivery_option').prop('checked', false);
+          }
+        }
+
+        // Initial state
+        toggleDatetimeDependentFields();
+
+        // Listen for changes on the checkbox
+        $('#shipday_enable_datetime_plugin').on('change', function() {
+          toggleDatetimeDependentFields();
+        });
+      });
+    })(jQuery);
+  </script>
 </div>

@@ -31,7 +31,7 @@ class Shipday_Woo_Delivery_Block {
 
     function reset_session() {
         WC()->session->set( 'on_change', false );
-        WC()->session->set( 'order_type', NULL );
+        WC()->session->set( 'shipday_order_type', NULL );
         WC()->session->set( 'delivery_date', NULL );
         WC()->session->set( 'delivery_time', NULL );
     }
@@ -67,7 +67,7 @@ class Shipday_Woo_Delivery_Block {
     static function data() {
         $data = Shipday_Woo_DateTime_Util::get_default_settings();
 
-        $data['order_type'] = WC()->session->get( 'order_type' );
+        $data['shipday_order_type'] = WC()->session->get( 'shipday_order_type' );
 
         $data['delivery_date'] = self::validate_and_set_date( $data, 'Delivery', WC()->session->get( 'delivery_date' ) );
         $data['delivery_time'] = self::validate_and_set_time( $data, 'Delivery', WC()->session->get( 'delivery_time' ) );
@@ -95,7 +95,7 @@ class Shipday_Woo_Delivery_Block {
     static function data_structure() {
         $settings = Shipday_Woo_DateTime_Util::get_default_settings();
         return array(
-            'order_type'    => array(
+            'shipday_order_type'    => array(
                 'type'        => ['string', 'null'],
                 'description' => __( 'Type of order', 'shipday-delivery' ),
                 'enum'        => array_merge( array_keys( $settings['delivery_options'] ), ["", null] ),
@@ -145,9 +145,9 @@ class Shipday_Woo_Delivery_Block {
     }
 
     function order_type_change( $data ) {
-        $order_type = sanitize_text_field( $data['order_type'] );
+        $order_type = sanitize_text_field( $data['shipday_order_type'] );
         WC()->session->set( 'on_change', false );
-        WC()->session->set( "order_type", $order_type );
+        WC()->session->set( "shipday_order_type", $order_type );
     }
 
     function delivery_date_change( $data ) {

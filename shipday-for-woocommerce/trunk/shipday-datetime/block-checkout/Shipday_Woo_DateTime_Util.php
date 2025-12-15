@@ -17,7 +17,7 @@ class Shipday_Woo_DateTime_Util {
 
     function reset_session() {
         WC()->session->set( 'on_change', false );
-        WC()->session->set( 'order_type', NULL );
+        WC()->session->set( 'shipday_order_type', NULL );
         WC()->session->set( 'delivery_date', NULL );
         WC()->session->set( 'delivery_time', NULL );
     }

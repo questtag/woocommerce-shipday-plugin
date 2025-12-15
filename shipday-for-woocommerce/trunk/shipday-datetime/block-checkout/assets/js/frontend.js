@@ -35,7 +35,7 @@ const Shipday_Woo_Delivery = ({
 
 
   // State hooks
-  const [shipdayOrderType, setShipdayOrderType] = React.useState(shipdaySettings.order_type);
+  const [shipdayOrderType, setShipdayOrderType] = React.useState(shipdaySettings.shipday_order_type);
   const [deliveryDate, setDeliveryDate] = React.useState(shipdaySettings.delivery_date);
   const [deliveryTime, setDeliveryTime] = React.useState(shipdaySettings.delivery_time);
   const [pickupDate, setPickupDate] = React.useState(shipdaySettings.pickup_date);
@@ -51,7 +51,7 @@ const Shipday_Woo_Delivery = ({
     let isRequired = false;
 
     // Determine error message and required status based on field type
-    if (fieldType === "order_type") {
+    if (fieldType === "shipday_order_type") {
       errorMessage = "Order type is required";
       isRequired = shipdaySettings.enable_delivery_option;
     } else if (fieldType === "delivery_date") {
@@ -83,7 +83,7 @@ const Shipday_Woo_Delivery = ({
     clearValidationError(errorKey);
 
     // Special handling for order type changes
-    if (fieldType === "order_type") {
+    if (fieldType === "shipday_order_type") {
       clearValidationError("shipday_woo_delivery_date_error");
       clearValidationError("shipday_woo_delivery_time_error");
       clearValidationError("shipday_woo_pickup_date_error");
@@ -97,14 +97,14 @@ const Shipday_Woo_Delivery = ({
   React.useEffect(() => {
     if (isBeforeProcessing && shipdaySettings.enable_datetime_plugin) {
       if (shipdaySettings.enable_delivery_option) {
-        validateField(shipdayOrderType, "order_type");
+        validateField(shipdayOrderType, "shipday_order_type");
       }
 
       if (shipdaySettings.enable_delivery_option) {
-        if (shipdaySettings.order_type === "Delivery") {
+        if (shipdaySettings.shipday_order_type === "Delivery") {
           validateField(deliveryDate, "delivery_date");
           validateField(deliveryTime, "delivery_time");
-        } else if (shipdaySettings.order_type === "Pickup") {
+        } else if (shipdaySettings.shipday_order_type === "Pickup") {
           validateField(pickupDate, "pickup_date");
           validateField(pickupTime, "pickup_time");
         }
@@ -123,7 +123,7 @@ const Shipday_Woo_Delivery = ({
 
   // Set extension data when values change
   React.useEffect(() => {
-    checkoutExtensionData.setExtensionData("shipday-woo-delivery", "order_type", shipdayOrderType);
+    checkoutExtensionData.setExtensionData("shipday-woo-delivery", "shipday_order_type", shipdayOrderType);
   }, [shipdayOrderType]);
 
   React.useEffect(() => {
@@ -143,7 +143,7 @@ const Shipday_Woo_Delivery = ({
   }, [pickupTime]);
 
   // Update state when shipdaySettings change
-  React.useEffect(() => { setShipdayOrderType(shipdaySettings.order_type); }, [shipdaySettings.order_type]);
+  React.useEffect(() => { setShipdayOrderType(shipdaySettings.shipday_order_type); }, [shipdaySettings.shipday_order_type]);
   React.useEffect(() => { setDeliveryDate(shipdaySettings.delivery_date); }, [shipdaySettings.delivery_date]);
   React.useEffect(() => { setDeliveryTime(shipdaySettings.delivery_time); }, [shipdaySettings.delivery_time]);
   React.useEffect(() => { setPickupDate(shipdaySettings.pickup_date); }, [shipdaySettings.pickup_date]);
@@ -161,12 +161,12 @@ const Shipday_Woo_Delivery = ({
       event.target.classList.remove('shipday-select-placeholder');
     }
     setShipdayOrderType(value);
-    validateField(value, "order_type");
+    validateField(value, "shipday_order_type");
     setIsProcessing(true);
     wc.blocksCheckout.extensionCartUpdate({
       namespace: "shipday_woo_delivery_order_type_change",
       data: {
-        order_type: value
+        shipday_order_type: value
       }
     }).finally(() => setIsProcessing(false));
   };
@@ -337,7 +337,7 @@ const Shipday_Woo_Delivery = ({
     // Extract needed properties from shipdaySettings
     let {
       delivery_options: deliveryOptions,
-      order_type: shipdayOrderType
+      shipday_order_type: shipdayOrderType
     } = shipdaySettings;
 
     // Get validation error if any
