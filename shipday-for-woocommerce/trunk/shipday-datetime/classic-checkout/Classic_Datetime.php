@@ -71,10 +71,6 @@ class Classic_Datetime {
         $pickup_disable_week_days = Shipday_Woo_DateTime_Util::get_disable_week_days(get_option('shipday_avaialble_pickup_days', Shipday_Woo_DateTime_Util::WEEK_DAYS));
         $pickup_auto_select_first_date = true;
 
-        shipday_logger("error", "pickup_date_selectable_days: ". $pickup_date_selectable_days ."pickup_disable_week_days:".json_encode($pickup_disable_week_days));
-
-
-
         echo "<div data-today_date='" . $today . "'  id='shipday_woo_delivery_setting_wrapper'>";
 
         // delivery options
@@ -235,7 +231,6 @@ class Classic_Datetime {
         if ( $enable_datetime_plugin  && $enable_delivery_date && $delivery_date_mandatory &&
             (!$enable_delivery_option || $_POST['shipday_order_type_field'] === "Delivery")
         ) {
-            shipday_logger('error', 'yes......type:'.$_POST['shipday_order_type_field']." date:".$_POST['shipday_delivery_date_field']);
 
             if (!isset($_POST['shipday_delivery_date_field']) || $_POST['shipday_delivery_date_field'] === "" ) {
                 wc_add_notice( __( "Please select Delivery Date", "shipday-delivery" ), 'error' );
@@ -280,16 +275,17 @@ class Classic_Datetime {
 
     public static function classic_save( $order_id) {
         if ( ! function_exists('is_checkout') || ! is_checkout() ) return;
-        shipday_logger('error', '$order: '. $order_id);;
         $order = wc_get_order( $order_id );
 
-        $enable_order_type=true;
-        $enable_delivery_date = true;
-        $enable_pickup_date = true;
-        $enable_delivery_time = true;
-        $enable_pickup_time = true;
+        $enable_datetime_plugin = get_option('shipday_enable_datetime_plugin', "no") === "yes";
+        $enable_order_type = get_option('shipday_enable_delivery_option', "no") === "yes";
+        $enable_delivery_date = get_option('shipday_enable_delivery_date', "no") === "yes";
+        $enable_pickup_date = get_option('shipday_enable_pickup_date', "no") === "yes";
+        $enable_delivery_time = get_option('shipday_enable_delivery_time', "no") === "yes";
+        $enable_pickup_time =  get_option('shipday_enable_pickup_time', "no") === "yes";
+
         $order_type = sanitize_text_field( wp_unslash( $_POST['shipday_order_type_field'] ) );
-        if ( $enable_order_type && isset( $_POST['shipday_order_type_field'] ) ) {
+        if ( $enable_datetime_plugin && $enable_order_type && isset( $_POST['shipday_order_type_field'] ) ) {
             if ( $order_type !== '' ) {
                 if ( self::$hpos === true ) {
                     $order->update_meta_data( '_shipday_order_type', $order_type );
@@ -298,7 +294,7 @@ class Classic_Datetime {
                 }
             }
         }
-        if ( (!$enable_order_type || $order_type==='Delivery') && $enable_delivery_date && isset( $_POST['shipday_delivery_date_field'] ) ) {
+        if ( $enable_datetime_plugin && (!$enable_order_type || $order_type==='Delivery') && $enable_delivery_date && isset( $_POST['shipday_delivery_date_field'] ) ) {
             $val = sanitize_text_field( wp_unslash( $_POST['shipday_delivery_date_field'] ) );
             shipday_logger('error', 'datetime : '.$val);
             if ( $val !== '' ) {
@@ -309,7 +305,7 @@ class Classic_Datetime {
                 }
             }
         }
-        if ( (!$enable_order_type || $order_type==='Delivery') && $enable_delivery_time && isset( $_POST['shipday_delivery_time_field'] ) ) {
+        if ( $enable_datetime_plugin && (!$enable_order_type || $order_type==='Delivery') && $enable_delivery_time && isset( $_POST['shipday_delivery_time_field'] ) ) {
             $val_time = sanitize_text_field( $_POST['shipday_delivery_time_field'] );
             if ( $val_time !== '' ) {
                 if ( self::$hpos === true ) {
@@ -320,7 +316,7 @@ class Classic_Datetime {
             }
         }
 
-        if ( (!$enable_order_type || $order_type==='Pickup') && $enable_pickup_date && isset( $_POST['shipday_pickup_date_field'] ) ) {
+        if ( $enable_datetime_plugin && (!$enable_order_type || $order_type==='Pickup') && $enable_pickup_date && isset( $_POST['shipday_pickup_date_field'] ) ) {
             $val = sanitize_text_field( wp_unslash( $_POST['shipday_pickup_date_field'] ) );
             shipday_logger('error', 'datetime : '.$val);
             if ( $val !== '' ) {
@@ -332,7 +328,7 @@ class Classic_Datetime {
             }
         }
 
-        if ( (!$enable_order_type || $order_type==='Pickup') &&  $enable_pickup_time && isset( $_POST['shipday_pickup_time_field'] ) ) {
+        if ( $enable_datetime_plugin && (!$enable_order_type || $order_type==='Pickup') &&  $enable_pickup_time && isset( $_POST['shipday_pickup_time_field'] ) ) {
             $val_time = sanitize_text_field( $_POST['shipday_pickup_time_field'] );
             if ( $val_time !== '' ) {
                 if ( self::$hpos === true ) {
