@@ -5,6 +5,7 @@ require_once dirname(__DIR__). '/functions/common.php';
 $shipday_integration_url = 'https://integration.shipday.com';
 $single_vendor_webhook_url = $shipday_integration_url.'/woocommerce/plugin/single-vendor/order';
 $multi_vendor_webhook_url = $shipday_integration_url.'/woocommerce/plugin/multi-vendor/order';
+$cancel_webhook_url = $shipday_integration_url.'/woocommerce/plugin/cancel/order';
 
 function send_single_vendor_payload(array $payload)
 {
@@ -30,6 +31,20 @@ function send_multi_vendor_payload(array $payload)
     }
     if ($response['http_code'] != 200) {
         shipday_logger('error', 'Stream(multi-vendor) failed with code: '.$response['http_code'].' Response: '.json_encode($response));
+    }
+    return $response;
+}
+
+function send_cancel_payload(array $payload)
+{
+    global $cancel_webhook_url;
+    $response = shipday_curl_post_payload($payload, $cancel_webhook_url);
+    if ($response['http_code'] != 200) {
+        shipday_logger('error', 'Curl(cancel-order) failed with code: '.$response['http_code'].' Response: '.json_encode($response));
+        $response = streams_post_payload($payload, $cancel_webhook_url);
+    }
+    if ($response['http_code'] != 200) {
+        shipday_logger('error', 'Stream(cancel-order) failed with code: '.$response['http_code'].' Response: '.json_encode($response));
     }
     return $response;
 }

@@ -12,13 +12,13 @@ class Notices {
 
 	public static function shipday_api_key_notice() {
 		$api_key         = get_option( 'wc_settings_tab_shipday_api_key' );
-		$shipday_tab_url = 'admin.php?page=wc-settings&tab=settings_tab_shipday';
+		$shipday_tab_url = 'admin.php?page=shipday-delivery-settings&tab=shipday-connect';
 		if ( empty( $api_key ) ) {
 			?>
             <div class='notice notice-warning is-dismissible'>
                 <p>Your Shipday API Key Field is blank. To set up API Key, <a href="<?php echo $shipday_tab_url; ?>" target="_top">Click
                         Here</a>.</p>
-            </div>";
+            </div>
 			<?php
 		}
 	}
@@ -29,11 +29,11 @@ class Notices {
         ) return;
 
 		$rest_api_section_url = 'admin.php?page=wc-settings&tab=advanced&section=keys&create-key=1';
-		$shipday_tab_url = 'admin.php?page=wc-settings&tab=settings_tab_shipday';
+		$shipday_tab_url = 'admin.php?page=shipday-delivery-settings&tab=rest-api';
 		if (!WooCommerce_REST_API::is_consumer_secret_valid(get_option('wc_settings_tab_shipday_rest_api_consumer_secret'))){
             shipday_logger('info', 'Rest api key: consumer secret does not exist during notice');
             delete_option('wc_settings_tab_shipday_registered_uuid');
-        }
+    }
 
 		if ( empty( get_option( 'wc_settings_tab_shipday_registered_uuid' ) ) ) {
 			?>
