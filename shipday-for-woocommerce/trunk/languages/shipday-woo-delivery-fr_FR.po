@@ -1,0 +1,84 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: shipday-woo-delivery\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: fr_FR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Domain: shipday-woo-delivery\n"
+"X-Generator: Poedit 3.8\n"
+
+msgid "Delivery/Pickup info"
+msgstr "Informations de livraison/retrait"
+
+msgid "Order Option"
+msgstr "Option de commande"
+
+msgid "Delivery Date"
+msgstr "Date de livraison"
+
+msgid "Delivery Time"
+msgstr "Heure de livraison"
+
+msgid "Pickup Date"
+msgstr "Date de retrait"
+
+msgid "Pickup time"
+msgstr "Heure de retrait"
+
+msgid "Please select order type"
+msgstr "Veuillez sélectionner le type de commande"
+
+msgid "Please enter delivery date"
+msgstr "Veuillez saisir la date de livraison"
+
+msgid "Please enter pickup date"
+msgstr "Veuillez saisir la date de retrait"
+
+msgid "Please select delivery time"
+msgstr "Veuillez sélectionner l'heure de livraison"
+
+msgid "Please select pickup time"
+msgstr "Veuillez sélectionner l'heure de retrait"
+
+msgid "Select order type"
+msgstr "Sélectionnez le type de commande"
+
+msgid "Select delivery time"
+msgstr "Sélectionnez l'heure de livraison"
+
+msgid "Select pickup time"
+msgstr "Sélectionnez l'heure de retrait"
+
+msgid "Order type is required"
+msgstr "Le type de commande est obligatoire"
+
+msgid "Delivery date is required"
+msgstr "La date de livraison est obligatoire"
+
+msgid "Delivery time is mandatory"
+msgstr "L'heure de livraison est obligatoire"
+
+msgid "Pickup date is mandatory"
+msgstr "La date de retrait est obligatoire"
+
+msgid "Pickup time is mandatory"
+msgstr "L'heure de retrait est obligatoire"
+
+msgid "This field is mandatory"
+msgstr "Ce champ est obligatoire"
+
+msgid "Choose Option"
+msgstr "Choisissez une option"
+
+msgid "Choose Date"
+msgstr "Choisissez une date"
+
+msgid "Select pickup slot"
+msgstr "Sélectionnez un créneau de retrait"
+

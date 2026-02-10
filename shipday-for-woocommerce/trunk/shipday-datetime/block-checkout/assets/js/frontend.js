@@ -1,3 +1,5 @@
+const { __ } = wp.i18n;
+
 const Shipday_Woo_Delivery = ({
   extensions,
   checkoutExtensionData
@@ -47,27 +49,27 @@ const Shipday_Woo_Delivery = ({
   // Validation function
   const validateField = (value, fieldType) => {
     let errorKey = "shipday_woo_" + fieldType + "_error";
-    let errorMessage = "This field is mandatory";
+    let errorMessage =  __('This field is mandatory', 'shipday-woo-delivery' );
     let isRequired = false;
 
     // Determine error message and required status based on field type
     if (fieldType === "shipday_order_type") {
-      errorMessage = "Order type is required";
+      errorMessage = __( 'Order type is required', 'shipday-woo-delivery' );
       isRequired = shipdaySettings.enable_delivery_option;
       errorKey = "shipday_woo_order_type_error";
     } else if (fieldType === "shipday_delivery_date") {
-      errorMessage = "Delivery date is required";
+      errorMessage = __( 'Delivery date is required', 'shipday-woo-delivery' );
       errorKey = "shipday_woo_delivery_date_error";
       isRequired = shipdaySettings.enable_delivery_date && shipdaySettings.delivery_date_mandatory;
     } else if (fieldType === "shipday_delivery_time") {
-      errorMessage = "Delivery time is mandatory";
+      errorMessage =  __('Delivery time is mandatory', 'shipday-woo-delivery' );
       errorKey = "shipday_woo_delivery_time_error";
       isRequired = shipdaySettings.enable_delivery_time && shipdaySettings.delivery_time_mandatory;
     } else if (fieldType === "shipday_pickup_date") {
-      errorMessage = "Pickup date is mandatory";
+      errorMessage = __('Pickup date is mandatory', 'shipday-woo-delivery' );
       isRequired = shipdaySettings.enable_pickup_date && shipdaySettings.pickup_date_mandatory;
     }else if (fieldType === "pickup_time") {
-      errorMessage = "Pickup time is mandatory";
+      errorMessage = __('Pickup time is mandatory', 'shipday-woo-delivery' );
       isRequired = shipdaySettings.enable_pickup_time && shipdaySettings.pickup_time_mandatory;
     }
 
@@ -449,11 +451,8 @@ const Shipday_Woo_Delivery = ({
       disabledDates
     );
 
-    // Prepare field label, adding "(optional)" if not mandatory
+
     let fieldLabel = shipdaySettings.delivery_date_field_label;
-    if (!shipdaySettings.delivery_date_mandatory) {
-      fieldLabel += " (optional)";
-    }
 
     // Initialize flatpickr date picker
     React.useEffect(() => {
@@ -585,11 +584,7 @@ const Shipday_Woo_Delivery = ({
       }
     });
 
-    // Prepare field label, adding "(optional)" if not mandatory
     let fieldLabel = shipdaySettings.delivery_time_field_label;
-    if (!shipdaySettings.delivery_time_mandatory) {
-      fieldLabel += " (optional)";
-    }
 
     // Generate options for the select dropdown
     const renderTimeOptions = () =>
@@ -686,11 +681,7 @@ const Shipday_Woo_Delivery = ({
           }
         });
 
-        // Prepare field label, adding "(optional)" if not mandatory
-        let fieldLabel = "Pickup Slot";
-        if (!shipdaySettings.pickup_time_mandatory) {
-          fieldLabel += " (optional)";
-        }
+        let fieldLabel = __('Pickup time', 'shipday-woo-delivery');
 
         // Generate options for the select dropdown
         const renderTimeOptions = () =>
@@ -734,7 +725,7 @@ const Shipday_Woo_Delivery = ({
                 // Default empty option
                 React.createElement("option", {
                   value: ""
-                }, "Select Pickup Slot"),
+                }, __('Select pickup slot', 'shipday-woo-delivery')),
 
                 // Time options
                 renderTimeOptions()
@@ -778,11 +769,7 @@ const Shipday_Woo_Delivery = ({
     let isInitializing = false;
     const validationError = getValidationError("shipday_woo_pickup_date_error");
 
-    // Prepare field label, adding "(optional)" if not mandatory
     let fieldLabel = shipdaySettings.pickup_date_field_label;
-    if (!shipdaySettings.pickup_date_mandatory) {
-      fieldLabel += " (optional)";
-    }
 
     // Get disabled days and dates from shipdaySettings
     const disabledWeekDays = shipdaySettings.pickup_disable_week_days;

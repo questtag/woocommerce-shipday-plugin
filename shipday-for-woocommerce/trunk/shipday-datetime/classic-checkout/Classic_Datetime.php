@@ -27,7 +27,6 @@ class Classic_Datetime {
             }
         } );
 
-
         add_action( 'wp_enqueue_scripts',  array( __CLASS__, 'enqueue_styles' )  );
         add_action( 'wp_enqueue_scripts',  array( __CLASS__, 'enqueue_scripts' ) );
 
@@ -55,7 +54,7 @@ class Classic_Datetime {
 
         // Delivery dates
         $enable_delivery_date = get_option('shipday_enable_delivery_date', "no") === "yes";
-        $delivery_date_field_label = "Scheduled Delivery Date";
+        $delivery_date_field_label =  __('Delivery Date', 'shipday-woo-delivery' );
         $delivery_date_mandatory = get_option('shipday_delivery_date_mandatory', "no") === "yes";
         $delivery_date_selectable_days = get_option('shipday_selectable_delivery_days', 30);
         $delivery_disable_week_days = Shipday_Woo_DateTime_Util::get_disable_week_days(get_option('shipday_avaialble_delivery_days', Shipday_Woo_DateTime_Util::WEEK_DAYS));
@@ -64,7 +63,7 @@ class Classic_Datetime {
 
         // Pickup dates
         $enable_pickup_date = get_option('shipday_enable_pickup_date', "no") === "yes";
-        $pickup_date_field_label = "Scheduled Pickup Date";
+        $pickup_date_field_label =  __('Pickup Date', 'shipday-woo-delivery' );
         $pickup_date_mandatory = get_option('shipday_pickup_date_mandatory', "no") === "yes";
 
         $pickup_date_selectable_days = get_option('shipday_selectable_pickup_days', 30);
@@ -72,6 +71,8 @@ class Classic_Datetime {
         $pickup_auto_select_first_date = true;
 
         echo "<div data-today_date='" . $today . "'  id='shipday_woo_delivery_setting_wrapper'>";
+
+        $order_type_label = get_option('shipday_delivery_pickup_label', __('Delivery/Pickup info', 'shipday-woo-delivery'));
 
         // delivery options
         if ( $enable_datetime_plugin && $enable_delivery_option ) {
@@ -82,8 +83,8 @@ class Classic_Datetime {
                     'class'       => [
                         'shipday_order_type_field form-row-wide',
                     ],
-                    'label'       => "Delivery/Pickup option",
-                    'placeholder' => "Choose Option",
+                    'label'       => $order_type_label,
+                    'placeholder' => __('Choose Option', 'shipday-woo-delivery'),
                     'options'     => Classic_Datetime::getDeliveryoptions(),
                     'required'    => true,
                 ], WC()->checkout->get_value( 'shipday_order_type_field' ) );
@@ -101,7 +102,7 @@ class Classic_Datetime {
                     ),
                     'id' => "shipday_delivery_date_datepicker",
                     'label' => $delivery_date_field_label,
-                    'placeholder' => "Delivery Date",
+                    'placeholder' => __('Choose Date', 'shipday-woo-delivery'),
                     'required' => $delivery_date_mandatory,
                     'custom_attributes' => [
                         'data-today_date' => $today,
@@ -116,7 +117,7 @@ class Classic_Datetime {
 
         // Delivery Time --------------------------------------------------------------
         $enable_delivery_time = get_option('shipday_enable_delivery_time', "no") === "yes";
-        $delivery_time_field_label = "Delivery Time";
+        $delivery_time_field_label = __('Delivery Time', 'shipday-woo-delivery');
         $delivery_time_mandatory = get_option('shipday_delivery_time_mandatory', "no") === "yes";
         $auto_select_first_time = false;
         $start_delivery_slot = get_option('shipday_delivery_time_slot_start', Shipday_Woo_DateTime_Util::DEFAULT_START_SLOT);
@@ -133,8 +134,8 @@ class Classic_Datetime {
                     'class'             => [
                         'shipday_delivery_time_field form-row-wide',
                     ],
-                    'label'             => __( $delivery_time_field_label, "woo-delivery" ),
-                    'placeholder'       => __( $delivery_time_field_label, "woo-delivery" ),
+                    'label'             => $delivery_time_field_label,
+                    'placeholder'       =>  $delivery_time_field_label,
                     'options'           =>  $delivery_time_options,
                     'required'          => $delivery_time_mandatory,
                     'custom_attributes' => [
@@ -154,7 +155,7 @@ class Classic_Datetime {
                     ),
                     'id' => "shipday_pickup_date_datepicker",
                     'label' => $pickup_date_field_label,
-                    'placeholder' => "Pickup Date",
+                    'placeholder' => $pickup_date_field_label,
                     'required' => $pickup_date_mandatory,
                     'custom_attributes' => [
                         'data-today_date' => $today,
@@ -170,7 +171,7 @@ class Classic_Datetime {
         }
         // Pickup Time --------------------------------------------------------------
         $enable_pickup_time =  get_option('shipday_enable_pickup_time', "no") === "yes";
-        $pickup_time_field_label = "Pickup Time";
+        $pickup_time_field_label = __('Pickup time', 'shipday-woo-delivery');
         $pickup_time_mandatory = get_option('shipday_pickup_time_mandatory', "no") === "yes";
         $start_pickup_slot = get_option('shipday_pickup_time_slot_start', Shipday_Woo_DateTime_Util::DEFAULT_START_SLOT);
         $end_pickup_slot = get_option('shipday_pickup_time_slot_end', Shipday_Woo_DateTime_Util::DEFAULT_END_SLOT);
@@ -185,8 +186,8 @@ class Classic_Datetime {
                     'class'             => [
                         'shipday_pickup_time_field form-row-wide',
                     ],
-                    'label'             => __( $pickup_time_field_label, "woo-delivery" ),
-                    'placeholder'       => __( $pickup_time_field_label, "woo-delivery" ),
+                    'label'             => $pickup_time_field_label,
+                    'placeholder'       => $pickup_time_field_label,
                     'options'           =>  $pickup_time_options,
                     'required'          => $pickup_time_mandatory,
                     'custom_attributes' => [
@@ -224,7 +225,7 @@ class Classic_Datetime {
 
         if ( $enable_datetime_plugin && $enable_delivery_option ) {
             if (!isset( $_POST['shipday_order_type_field'] ) || $_POST['shipday_order_type_field'] === "" ||  $_POST['shipday_order_type_field'] === "Choose Option" ) {
-                wc_add_notice( __( "Please select order type", "shipday-delivery" ), 'error' );
+                wc_add_notice( __( "Please select order type", "shipday-woo-delivery" ), 'error' );
             }
 
         }
@@ -233,7 +234,7 @@ class Classic_Datetime {
         ) {
 
             if (!isset($_POST['shipday_delivery_date_field']) || $_POST['shipday_delivery_date_field'] === "" ) {
-                wc_add_notice( __( "Please select Delivery Date", "shipday-delivery" ), 'error' );
+                wc_add_notice( __( "Please enter delivery date", "shipday-woo-delivery" ), 'error' );
             }
 
         }
@@ -241,7 +242,7 @@ class Classic_Datetime {
             (!$enable_delivery_option || $_POST['shipday_order_type_field'] === "Pickup")
         ) {
             if (!isset($_POST['shipday_pickup_date_field']) || $_POST['shipday_pickup_date_field'] === "" || $_POST['shipday_pickup_date_field'] ==="Pickup Date" ) {
-                wc_add_notice( __( "Please select Pickup Date", "shipday-delivery" ), 'error' );
+                wc_add_notice( __( "Please enter pickup date", "shipday-woo-delivery" ), 'error' );
             }
 
         }
@@ -250,7 +251,7 @@ class Classic_Datetime {
         ) {
 
             if (!isset($_POST['shipday_pickup_time_field']) || is_null($_POST['shipday_pickup_time_field']) || $_POST['shipday_pickup_time_field'] === "") {
-                wc_add_notice( __( "Please select Pickup Time", "shipday-delivery" ), 'error' );
+                wc_add_notice( __( "Please select pickup time", "shipday-woo-delivery" ), 'error' );
             }
 
         }
@@ -258,7 +259,7 @@ class Classic_Datetime {
             (!$enable_delivery_option || $_POST['shipday_order_type_field'] === "Delivery")
         ) {
             if (!isset($_POST['shipday_delivery_time_field']) || is_null($_POST['shipday_delivery_time_field']) || $_POST['shipday_delivery_time_field'] === "") {
-                wc_add_notice( __( "Please select Delivery Time", "shipday-delivery" ), 'error' );
+                wc_add_notice( __( "Please select delivery time", "shipday-woo-delivery" ), 'error' );
             }
 
         }
@@ -362,7 +363,7 @@ class Classic_Datetime {
                 $delivery_date = date($delivery_date_format, strtotime(get_post_meta( $order_id, '_shipday_delivery_date', true )));
             }
 
-            echo '<p><strong>'.__($delivery_date_field_label, "woo-delivery").':</strong> ' . $delivery_date . '</p>';
+            echo '<p><strong>'.__($delivery_date_field_label, "shipday-woo-delivery").':</strong> ' . $delivery_date . '</p>';
 
         }
 
@@ -372,7 +373,7 @@ class Classic_Datetime {
             } else {
                 $time_slot = get_post_meta( $order_id, '_shipday_delivery_time', true );
             }
-            echo '<p><strong>'.__($delivery_time_field_label, "woo-delivery").':</strong> ' .$time_slot. '</p>';
+            echo '<p><strong>'.__($delivery_time_field_label, "shipday-woo-delivery").':</strong> ' .$time_slot. '</p>';
         }
     }
 
