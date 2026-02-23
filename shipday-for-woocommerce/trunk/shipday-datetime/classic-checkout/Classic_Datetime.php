@@ -269,8 +269,8 @@ class Classic_Datetime {
     }
 
     public static function getDeliveryoptions() {
-        $delivery_option['Delivery'] = "Delivery";
-        $delivery_option['Pickup'] = "Pickup";
+        $delivery_option['Delivery'] = __( "Delivery", "shipday-woo-delivery" );
+        $delivery_option['Pickup'] = __( "Pickup", "shipday-woo-delivery" );
         return $delivery_option;
     }
 

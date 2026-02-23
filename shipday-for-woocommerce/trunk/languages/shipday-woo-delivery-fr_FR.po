@@ -13,6 +13,12 @@ msgstr ""
 "X-Domain: shipday-woo-delivery\n"
 "X-Generator: Poedit 3.8\n"
 
+msgid "Delivery"
+msgstr "Livraison"
+
+msgid "Pickup"
+msgstr "Retrait"
+
 msgid "Delivery/Pickup info"
 msgstr "Informations de livraison/retrait"
 
@@ -81,4 +87,3 @@ msgstr "Choisissez une date"
 
 msgid "Select pickup slot"
 msgstr "Sélectionnez un créneau de retrait"
-
