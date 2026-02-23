@@ -32,7 +32,7 @@ class Shipday_Woo_DateTime_Util {
         $data['delivery_heading_checkout'] = get_option('shipday_delivery_pickup_label', __("Delivery/Pickup info", "shipday-woo-delivery"));
         $data['enable_delivery_option'] = get_option('shipday_enable_delivery_option', "no") === "yes";
         $data['delivery_option_field_label'] = __("Order Option", "shipday-woo-delivery");
-        $data['delivery_options'] = ["Delivery" => "Delivery", "Pickup" => "Pickup"];
+        $data['delivery_options'] = ["Delivery" => __("Delivery", "shipday-woo-delivery"), "Pickup" => __("Pickup", "shipday-woo-delivery")];
 
         // Delivery dates
         $data['enable_delivery_date'] = get_option('shipday_enable_delivery_date', "no") === "yes";

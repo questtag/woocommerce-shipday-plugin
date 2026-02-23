@@ -111,8 +111,8 @@ You can install shipday plugin directly from wordpress plugin repository or manu
 
 == Changelog ==
 
-= 2.0.1 =
-* Language support template
+= 2.2.0 =
+* Spanish language support
 * Datetime support in the order checkout
 * New admin configuration page
 

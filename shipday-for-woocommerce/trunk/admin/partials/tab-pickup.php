@@ -342,6 +342,9 @@ $datetime_enabled = get_option('shipday_enable_datetime_plugin', "no") === "yes"
                 <option value="120" <?php echo ($pickup_slot_duration === "120") ? "selected" : ""?>>120</option>
                 <option value="150" <?php echo ($pickup_slot_duration === "150") ? "selected" : ""?>>150</option>
                 <option value="180" <?php echo ($pickup_slot_duration === "180") ? "selected" : ""?>>180</option>
+                <option value="240" <?php echo ($pickup_slot_duration === "240") ? "selected" : ""?>>240</option>
+                <option value="300" <?php echo ($pickup_slot_duration === "300") ? "selected" : ""?>>300</option>
+                <option value="360" <?php echo ($pickup_slot_duration === "360") ? "selected" : ""?>>360</option>
               </select>
             </div>
           </div>
