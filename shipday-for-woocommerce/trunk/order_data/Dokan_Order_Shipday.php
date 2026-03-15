@@ -1,4 +1,8 @@
 <?php
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 require_once dirname( __DIR__ ) . '/functions/common.php';
 require_once dirname( __DIR__ ) . '/date-modifiers/order_delivery_date.php';
 

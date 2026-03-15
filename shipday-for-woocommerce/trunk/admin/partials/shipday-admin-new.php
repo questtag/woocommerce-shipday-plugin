@@ -1,6 +1,12 @@
 <?php
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Included admin partial uses file-scoped template variables.
 // Default to the new Overview tab if none is provided
-$active_tab = isset($_GET['tab']) ? sanitize_text_field( wp_unslash( $_GET['tab'] ) ) : 'overview';
+$shipday_active_tab = filter_input( INPUT_GET, 'tab', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
+$shipday_active_tab = is_string( $shipday_active_tab ) && '' !== $shipday_active_tab ? $shipday_active_tab : 'overview';
 ?>
 <div class="sd-root">
 
@@ -21,8 +27,8 @@ $active_tab = isset($_GET['tab']) ? sanitize_text_field( wp_unslash( $_GET['tab'
 
         <!-- Overview -->
         <button type="button" data-tab="overview"
-                class="sd-tab-button <?php echo esc_attr( $active_tab === 'overview' ? 'sd-tab-button--active' : '' ); ?>"
-                id="tab-overview" role="tab" aria-selected="<?php echo esc_attr( $active_tab === 'overview' ? 'true' : 'false' ); ?>">
+                class="sd-tab-button <?php echo esc_attr( $shipday_active_tab === 'overview' ? 'sd-tab-button--active' : '' ); ?>"
+                id="tab-overview" role="tab" aria-selected="<?php echo esc_attr( $shipday_active_tab === 'overview' ? 'true' : 'false' ); ?>">
           <span>Overview</span>
         </button>
 
@@ -31,22 +37,22 @@ $active_tab = isset($_GET['tab']) ? sanitize_text_field( wp_unslash( $_GET['tab'
 
         <!-- General-->
         <button type="button" data-tab="general"
-                class="sd-tab-button <?php echo esc_attr( $active_tab === 'general' ? 'sd-tab-button--active' : '' ); ?>"
-                id="tab-general" role="tab" aria-selected="<?php echo esc_attr( $active_tab === 'general' ? 'true' : 'false' ); ?>">
+                class="sd-tab-button <?php echo esc_attr( $shipday_active_tab === 'general' ? 'sd-tab-button--active' : '' ); ?>"
+                id="tab-general" role="tab" aria-selected="<?php echo esc_attr( $shipday_active_tab === 'general' ? 'true' : 'false' ); ?>">
           <span>General</span>
         </button>
 
         <!-- Delivery -->
         <button type="button" data-tab="delivery"
-                class="sd-tab-button <?php echo esc_attr( $active_tab === 'delivery' ? 'sd-tab-button--active' : '' ); ?>"
-                id="tab-delivery" role="tab" aria-selected="<?php echo esc_attr( $active_tab === 'delivery' ? 'true' : 'false' ); ?>">
+                class="sd-tab-button <?php echo esc_attr( $shipday_active_tab === 'delivery' ? 'sd-tab-button--active' : '' ); ?>"
+                id="tab-delivery" role="tab" aria-selected="<?php echo esc_attr( $shipday_active_tab === 'delivery' ? 'true' : 'false' ); ?>">
           <span>Delivery</span>
         </button>
 
         <!-- Pickup -->
         <button type="button" data-tab="pickup"
-                class="sd-tab-button <?php echo esc_attr( $active_tab === 'pickup' ? 'sd-tab-button--active' : '' ); ?>"
-                id="tab-pickup" role="tab" aria-selected="<?php echo esc_attr( $active_tab === 'pickup' ? 'true' : 'false' ); ?>">
+                class="sd-tab-button <?php echo esc_attr( $shipday_active_tab === 'pickup' ? 'sd-tab-button--active' : '' ); ?>"
+                id="tab-pickup" role="tab" aria-selected="<?php echo esc_attr( $shipday_active_tab === 'pickup' ? 'true' : 'false' ); ?>">
           <span>Pickup</span>
         </button>
 
@@ -55,16 +61,16 @@ $active_tab = isset($_GET['tab']) ? sanitize_text_field( wp_unslash( $_GET['tab'
 
         <!-- Shipday Connect -->
         <button type="button" data-tab="shipday-connect"
-                class="sd-tab-button <?php echo esc_attr( $active_tab === 'shipday-connect' ? 'sd-tab-button--active' : '' ); ?>"
-                id="tab-shipday-connect" role="tab" aria-selected="<?php echo esc_attr( $active_tab === 'shipday-connect' ? 'true' : 'false' ); ?>">
+                class="sd-tab-button <?php echo esc_attr( $shipday_active_tab === 'shipday-connect' ? 'sd-tab-button--active' : '' ); ?>"
+                id="tab-shipday-connect" role="tab" aria-selected="<?php echo esc_attr( $shipday_active_tab === 'shipday-connect' ? 'true' : 'false' ); ?>">
           <span>Connect Shipday Account</span>
         </button>
 
         <!-- Rest API (keep your existing multi-vendor check) -->
           <?php if ( !is_plugin_active( 'dokan-lite/dokan.php' ) && !is_plugin_active( 'wc-multivendor-marketplace/wc-multivendor-marketplace.php' )) { ?>
             <button type="button" data-tab="rest-api"
-                    class="sd-tab-button <?php echo esc_attr( $active_tab === 'rest-api' ? 'sd-tab-button--active' : '' ); ?>"
-                    id="tab-rest-api" role="tab" aria-selected="<?php echo esc_attr( $active_tab === 'rest-api' ? 'true' : 'false' ); ?>">
+                    class="sd-tab-button <?php echo esc_attr( $shipday_active_tab === 'rest-api' ? 'sd-tab-button--active' : '' ); ?>"
+                    id="tab-rest-api" role="tab" aria-selected="<?php echo esc_attr( $shipday_active_tab === 'rest-api' ? 'true' : 'false' ); ?>">
               <span>Rest API</span>
             </button>
           <?php } ?>
@@ -77,34 +83,34 @@ $active_tab = isset($_GET['tab']) ? sanitize_text_field( wp_unslash( $_GET['tab'
     <!-- PANELS -->
 
     <!-- OVERVIEW -->
-    <div data-tab-panel="overview" class="sd-tab-panel <?php echo esc_attr( $active_tab === 'overview' ? 'sd-tab-panel--active' : '' ); ?>">
+    <div data-tab-panel="overview" class="sd-tab-panel <?php echo esc_attr( $shipday_active_tab === 'overview' ? 'sd-tab-panel--active' : '' ); ?>">
         <?php
         include plugin_dir_path( __FILE__ ) . 'tab-overview.php';
         ?>
     </div>
 
     <!-- SHIPDAY CONNECT (old general) -->
-    <div data-tab-panel="shipday-connect" class="sd-tab-panel <?php echo esc_attr( $active_tab === 'shipday-connect' ? 'sd-tab-panel--active' : '' ); ?>">
+    <div data-tab-panel="shipday-connect" class="sd-tab-panel <?php echo esc_attr( $shipday_active_tab === 'shipday-connect' ? 'sd-tab-panel--active' : '' ); ?>">
         <?php include plugin_dir_path( __FILE__ ) . 'tab-shipday-connect.php'; ?>
     </div>
 
     <!-- REST API (unchanged) -->
-    <div data-tab-panel="rest-api" class="sd-tab-panel <?php echo esc_attr( $active_tab === 'rest-api' ? 'sd-tab-panel--active' : '' ); ?>">
+    <div data-tab-panel="rest-api" class="sd-tab-panel <?php echo esc_attr( $shipday_active_tab === 'rest-api' ? 'sd-tab-panel--active' : '' ); ?>">
         <?php include plugin_dir_path( __FILE__ ) . 'tab-rest-api.php'; ?>
     </div>
 
     <!-- DELIVERY (unchanged) -->
-    <div data-tab-panel="delivery" class="sd-tab-panel <?php echo esc_attr( $active_tab === 'delivery' ? 'sd-tab-panel--active' : '' ); ?>">
+    <div data-tab-panel="delivery" class="sd-tab-panel <?php echo esc_attr( $shipday_active_tab === 'delivery' ? 'sd-tab-panel--active' : '' ); ?>">
         <?php include plugin_dir_path( __FILE__ ) . 'tab-delivery.php'; ?>
     </div>
 
     <!-- PICKUP (unchanged) -->
-    <div data-tab-panel="pickup" class="sd-tab-panel <?php echo esc_attr( $active_tab === 'pickup' ? 'sd-tab-panel--active' : '' ); ?>">
+    <div data-tab-panel="pickup" class="sd-tab-panel <?php echo esc_attr( $shipday_active_tab === 'pickup' ? 'sd-tab-panel--active' : '' ); ?>">
         <?php include plugin_dir_path( __FILE__ ) . 'tab-pickup.php'; ?>
     </div>
 
     <!-- General Settings (new) -->
-    <div data-tab-panel="general" class="sd-tab-panel <?php echo esc_attr( $active_tab === 'general' ? 'sd-tab-panel--active' : '' ); ?>">
+    <div data-tab-panel="general" class="sd-tab-panel <?php echo esc_attr( $shipday_active_tab === 'general' ? 'sd-tab-panel--active' : '' ); ?>">
         <?php include plugin_dir_path( __FILE__ ) . 'tab-general.php'; ?>
     </div>
 

@@ -1,10 +1,15 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 require_once dirname( __DIR__ ) . '/functions/common.php';
 require_once dirname( __FILE__ ) . '/Woocommerce_Core_Shipday.php';
 require_once dirname(__FILE__). '/Woo_Order_Shipday.php';
 require_once dirname(__DIR__). '/date-modifiers/order_delivery_date.php';
 
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedClassFound -- Legacy class name retained for backwards compatibility.
 class WCFM_Order_Shipday extends Woocommerce_Core_Shipday {
 	protected $order;
     protected $store_shipping;
@@ -252,15 +257,15 @@ class WCFM_Order_Shipday extends Woocommerce_Core_Shipday {
 			$result['expectedPickupDate'] = $times['expectedDeliveryDate'];
 		} elseif (isset($times['expectedPickupDate'])) {
 			$result['expectedPickupDate'] = $times['expectedPickupDate'];
-		} else {
-			// Default to today if no date specified
-			$result['expectedPickupDate'] = date('Y-m-d');
-		}
-		
-		// If no time specified, set a default
-		if (!isset($result['expectedPickupTime'])) {
-			$result['expectedPickupTime'] = date('H:i:s', strtotime('+1 hour'));
-		}
+			} else {
+				// Default to today if no date specified
+				$result['expectedPickupDate'] = wp_date( 'Y-m-d' );
+			}
+			
+			// If no time specified, set a default
+			if (!isset($result['expectedPickupTime'])) {
+				$result['expectedPickupTime'] = wp_date( 'H:i:s', time() + HOUR_IN_SECONDS );
+			}
 		
 		return $result;
 	}

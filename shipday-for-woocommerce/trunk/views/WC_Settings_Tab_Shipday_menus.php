@@ -1,5 +1,10 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound,WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Legacy settings/filter API is retained for backwards compatibility.
+
 function get_woocommerce_settings()
 {
     $settings = array(
@@ -104,8 +109,8 @@ function get_dokan_settings()
             'std' => 'admin_manage',
             'default' => 'admin_manage',
             'options' => array(
-                'admin_manage' => __('Dokan Admin account manages deliveries for all vendors'),
-                'vendor_manage' => __('Vendors manage their orders in Shipday'),
+                'admin_manage' => __('Dokan Admin account manages deliveries for all vendors', 'shipday-for-woocommerce'),
+                'vendor_manage' => __('Vendors manage their orders in Shipday', 'shipday-for-woocommerce'),
             ),
             'id' => 'wc_settings_tab_shipday_order_manage',
         ),
@@ -156,8 +161,8 @@ function get_wcfm_settings()
             'std' => 'admin_manage',
             'default' => 'admin_manage',
             'options' => array(
-                'admin_manage' => __('WCFM Admin account manages deliveries for all vendors'),
-                'vendor_manage' => __('Vendors manage their orders in Shipday'),
+                'admin_manage' => __('WCFM Admin account manages deliveries for all vendors', 'shipday-for-woocommerce'),
+                'vendor_manage' => __('Vendors manage their orders in Shipday', 'shipday-for-woocommerce'),
             ),
             'id' => 'wc_settings_tab_shipday_order_manage',
         ),

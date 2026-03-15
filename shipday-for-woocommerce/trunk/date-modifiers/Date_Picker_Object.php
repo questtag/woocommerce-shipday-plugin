@@ -1,5 +1,10 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedClassFound -- Compatibility class mirrors the third-party integration name.
+
 class Date_Picker_Object {
 	protected $pickup_date_time;
 	protected $delivery_date_time;

@@ -1,4 +1,8 @@
 <?php
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 require_once dirname(__DIR__). '/functions/logger.php';
 
 class Dokan_vendor_settings_shipday
@@ -12,7 +16,10 @@ class Dokan_vendor_settings_shipday
 
     public static function save_api_key() {
         // Only handle POST requests
-        if ( $_SERVER['REQUEST_METHOD'] !== 'POST' ) {
+        if (
+            ! isset( $_SERVER['REQUEST_METHOD'] )
+            || 'POST' !== strtoupper( sanitize_text_field( wp_unslash( $_SERVER['REQUEST_METHOD'] ) ) )
+        ) {
             return;
         }
 

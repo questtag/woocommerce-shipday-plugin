@@ -1,5 +1,10 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- Compatibility helpers keep their legacy public names.
+
 require_once dirname( __DIR__ ) . '/functions/common.php';
 
 function get_shipday_pickup_delivery_times(WC_Order $order) {

@@ -1,5 +1,10 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedClassFound -- Legacy class name retained for backwards compatibility.
 class WCFM_vendor_settings_shipday {
 	public static function init() {
 		add_action('end_wcfm_vendor_settings', __CLASS__.'::settings');
@@ -14,6 +19,7 @@ class WCFM_vendor_settings_shipday {
 					<div class="store_address">';
 
 		global $WCFM;
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- This is an external WCFM hook name.
 		$user_id = apply_filters( 'wcfm_current_vendor_id', get_current_user_id() );
 		$vendor_data = get_user_meta( $user_id, 'wcfmmp_profile_settings', true );
 

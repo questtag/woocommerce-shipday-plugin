@@ -42,6 +42,7 @@ require_once dirname(__FILE__) . '/shipday-datetime/block-checkout/Shipday_Woo_D
 
 require_once dirname(__FILE__) . '/admin/Shipday_Menu_Settings.php';
 
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound -- Legacy constant is referenced across the plugin codebase.
 define('WC_SHIPDAY_FILE', __FILE__);
 
 if (!defined('SHIPDAY_PLUGIN_DIR')) {
@@ -52,15 +53,7 @@ if (!defined('SHIPDAY_PLUGIN_URL')) {
 	define('SHIPDAY_PLUGIN_URL', plugin_dir_url(__FILE__));
 }
 
-add_action('init', function () {
-	load_plugin_textdomain(
-		'shipday-for-woocommerce',
-		false,
-		dirname(plugin_basename(__FILE__)) . '/languages/'
-	);
-}, 5);
-
-function main() {
+function shipday_main() {
 	if (is_plugin_active('woocommerce/woocommerce.php')) {
 
 		//WC_Settings_Tab_Shipday::init();
@@ -79,6 +72,6 @@ function main() {
 	}
 }
 
-main();
+shipday_main();
 
 ?>

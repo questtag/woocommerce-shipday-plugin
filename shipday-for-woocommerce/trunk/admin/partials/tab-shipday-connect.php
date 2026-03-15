@@ -1,4 +1,9 @@
 <?php
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Included admin partial uses file-scoped template variables.
 $api_key = get_option('wc_settings_tab_shipday_api_key');
 $pickup_order_enabled = get_option('wc_settings_tab_shipday_enable_pickup', "no") === "yes";
 $delivery_order_enabled = get_option('wc_settings_tab_shipday_enable_delivery', "yes") === "yes";

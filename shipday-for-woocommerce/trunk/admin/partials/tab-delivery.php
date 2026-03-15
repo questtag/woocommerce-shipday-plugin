@@ -1,4 +1,9 @@
 <?php
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Included admin partial uses file-scoped template variables.
 $enable_delivery_date = get_option('shipday_enable_delivery_date', "no") === "yes";
 $delivery_date_mandatory = get_option('shipday_delivery_date_mandatory', "no") === "yes";
 $available_delivery_days = get_option('shipday_avaialble_delivery_days', ["0", "1", "2", "3", "4", "5", "6"]);

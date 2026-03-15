@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 use Automattic\WooCommerce\StoreApi\Schemas\V1\CartSchema;
 use Automattic\WooCommerce\StoreApi\Schemas\V1\CheckoutSchema;
 

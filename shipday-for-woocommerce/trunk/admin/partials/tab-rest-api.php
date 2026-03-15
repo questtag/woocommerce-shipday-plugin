@@ -1,4 +1,9 @@
 <?php
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Included admin partial uses file-scoped template variables.
   $consumer_key = get_option('wc_settings_tab_shipday_rest_api_consumer_key');
   $consumer_secret = get_option('wc_settings_tab_shipday_rest_api_consumer_secret');
 ?>

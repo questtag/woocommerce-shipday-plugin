@@ -1,4 +1,8 @@
 <?php
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 require_once dirname(__FILE__). '/../rest_api/WooCommerce_REST_API.php';
 
 class Shipday_Menu_Settings {
@@ -78,11 +82,13 @@ class Shipday_Menu_Settings {
     }
 
     private static function get_form_data_from_request() {
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce is verified in each AJAX handler before this helper runs.
         if ( ! isset( $_POST['formData'] ) || ! is_string( $_POST['formData'] ) ) {
             wp_send_json_error( array( 'message' => 'Invalid form data.' ), 400 );
         }
 
         $form_data = array();
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Serialized form payload is unslashed here and each parsed field is sanitized individually before use.
         parse_str( wp_unslash( $_POST['formData'] ), $form_data );
 
         return is_array( $form_data ) ? $form_data : array();

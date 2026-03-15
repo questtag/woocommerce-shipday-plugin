@@ -1,7 +1,12 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 require_once dirname(__DIR__). '/functions/common.php';
 
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedClassFound -- Legacy class name retained for backwards compatibility.
 class WooCommerce_REST_API {
 
 	public static function init() {
@@ -10,6 +15,12 @@ class WooCommerce_REST_API {
 
 	public static function is_consumer_secret_valid($consumer_secret) {
 		global $wpdb;
+		$cache_key = 'shipday_rest_api_secret_' . md5( $consumer_secret );
+		$rest_api_key = wp_cache_get( $cache_key, 'shipday' );
+		if ( false !== $rest_api_key ) {
+			return ! is_null( $rest_api_key );
+		}
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- WooCommerce stores API keys in a custom table; result is cached immediately below.
 		$rest_api_key = $wpdb->get_row(
 			$wpdb->prepare(
 				"
@@ -22,6 +33,7 @@ class WooCommerce_REST_API {
 			),
 			ARRAY_A
 		);
+		wp_cache_set( $cache_key, $rest_api_key, 'shipday', MINUTE_IN_SECONDS * 5 );
 		return !is_null($rest_api_key);
 	}
 
@@ -35,18 +47,24 @@ class WooCommerce_REST_API {
 
     public static function is_consumer_keys_valid($consumer_key, $consumer_secret) {
         global $wpdb;
-        $rest_api_key = $wpdb->get_row(
-            $wpdb->prepare(
-                "
+        $cache_key = 'shipday_rest_api_keys_' . md5( $consumer_secret );
+        $rest_api_key = wp_cache_get( $cache_key, 'shipday' );
+        if ( false === $rest_api_key ) {
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- WooCommerce stores API keys in a custom table; result is cached immediately below.
+            $rest_api_key = $wpdb->get_row(
+                $wpdb->prepare(
+                    "
 					SELECT consumer_key, consumer_secret, truncated_key, permissions
 					FROM {$wpdb->prefix}woocommerce_api_keys
 					WHERE  consumer_secret = %s
 					  and permissions = 'read_write'
 				",
-                $consumer_secret
-            ),
-            ARRAY_A
-        );
+                    $consumer_secret
+                ),
+                ARRAY_A
+            );
+            wp_cache_set( $cache_key, $rest_api_key, 'shipday', MINUTE_IN_SECONDS * 5 );
+        }
         return !is_null($rest_api_key) && self::str_ends_with($consumer_key, $rest_api_key['truncated_key']);
     }
 
@@ -79,33 +97,28 @@ class WooCommerce_REST_API {
 	public static function post_payload($key, $secret) {
 		$url              = get_rest_url();
 
-		$curl             = curl_init();
-		curl_setopt_array(
-			$curl,
+		$response = shipday_remote_post(
+			get_shipday_rest_key_install_url(),
 			array(
-				CURLOPT_URL            => get_shipday_rest_key_install_url(),
-				CURLOPT_RETURNTRANSFER => true,
-				CURLOPT_ENCODING       => '',
-				CURLOPT_MAXREDIRS      => 10,
-				CURLOPT_TIMEOUT        => 0,
-				CURLOPT_FOLLOWLOCATION => true,
-				CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
-				CURLOPT_CUSTOMREQUEST  => 'POST',
-				CURLOPT_POSTFIELDS     => '{
-  						"url": "' . $url . '",
-  						"consumer_key": "' . $key . '",
-  						"consumer_secret": "' . $secret . '"
-						}',
-				CURLOPT_HTTPHEADER     => array(
-					'Authorization: Basic '. get_shipday_api_key(),
-					'Content-Type: application/json',
+				'headers' => array(
+					'Authorization' => 'Basic ' . get_shipday_api_key(),
+					'Content-Type'  => 'application/json',
+				),
+				'body'    => wp_json_encode(
+					array(
+						'url'             => $url,
+						'consumer_key'    => $key,
+						'consumer_secret' => $secret,
+					)
 				),
 			)
 		);
 
-		$response        = curl_exec($curl);
-		if (is_null($response)) return null;
-		$response_decoded = json_decode($response);
+		if ( empty( $response['body'] ) ) {
+			return null;
+		}
+
+		$response_decoded = json_decode( $response['body'] );
 		if (!isset($response_decoded->success)) return null;
 		$uuid            = $response_decoded->uuid;
 		return $uuid;

@@ -1,8 +1,12 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 require_once dirname(__DIR__). '/functions/common.php';
 
-
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedClassFound -- Legacy class name retained for backwards compatibility.
 class Notices {
 	public static function init() {
 		add_action( 'admin_notices', __CLASS__ . '::shipday_api_key_notice' );

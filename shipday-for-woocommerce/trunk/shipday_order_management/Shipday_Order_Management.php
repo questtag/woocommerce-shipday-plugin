@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 require_once dirname(__DIR__). '/functions/logger.php';
 require_once dirname(__DIR__). '/functions/common.php';
 require_once dirname(__DIR__). '/dispatch_post/post_fun.php';

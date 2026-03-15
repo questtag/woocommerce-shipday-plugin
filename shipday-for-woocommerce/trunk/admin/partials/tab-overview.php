@@ -1,4 +1,8 @@
 <?php
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 // Helper to build a same-page link to a specific tab
 function shipday_tab_link( $tab_slug ) {
     return esc_url( add_query_arg( 'tab', $tab_slug ) );
