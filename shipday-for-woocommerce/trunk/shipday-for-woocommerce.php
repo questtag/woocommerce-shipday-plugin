@@ -3,10 +3,10 @@
 /*
 Plugin Name: Shipday Local Delivery for WooCommerce
 Plugin URI: https://www.shipday.com/woocommerce
-Version: 2.2.0
+Version: 2.3.0
 Description: Enable fast local deliveries for your online store or marketplace with Shipday. Easy driver and dispatch app with live delivery tracking. Built-in connection with on-demand delivery services like DoorDash and Uber in the US.
 Author URI: https://www.shipday.com/
-Text Domain: shipday-woo-delivery
+Text Domain: shipday-for-woocommerce
 Domain Path: /languages
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -17,10 +17,9 @@ Requires Plugins: woocommerce
 defined('ABSPATH') || exit;
 
 global $shipday_plugin_version;
-$shipday_plugin_version = '2.2.0';
+$shipday_plugin_version = '2.3.0';
 
 require_once ABSPATH . 'wp-admin/includes/plugin.php';
-require_once dirname(__FILE__) . '/views/WC_Settings_Tab_Shipday.php';
 require_once dirname(__FILE__) . '/views/WCFM_vendor_settings_shipday.php';
 require_once dirname(__FILE__) . '/views/Dokan_vendor_settings_shipday.php';
 
@@ -41,9 +40,9 @@ require_once dirname(__FILE__) . '/shipday-datetime/block-checkout/Shipday_Woo_D
 require_once dirname(__FILE__) . '/shipday-datetime/block-checkout/Shipday_Woo_Delivery_Block_Storage.php';
 require_once dirname(__FILE__) . '/shipday-datetime/block-checkout/Shipday_Woo_DateTime_Util.php';
 
-require_once dirname(__FILE__) . '/admin/Shipday_WC_Settings_Tab.php';
 require_once dirname(__FILE__) . '/admin/Shipday_Menu_Settings.php';
 
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound -- Legacy constant is referenced across the plugin codebase.
 define('WC_SHIPDAY_FILE', __FILE__);
 
 if (!defined('SHIPDAY_PLUGIN_DIR')) {
@@ -54,15 +53,7 @@ if (!defined('SHIPDAY_PLUGIN_URL')) {
 	define('SHIPDAY_PLUGIN_URL', plugin_dir_url(__FILE__));
 }
 
-add_action('init', function () {
-	load_plugin_textdomain(
-		'shipday-woo-delivery',
-		false,
-		dirname(plugin_basename(__FILE__)) . '/languages/'
-	);
-}, 5);
-
-function main() {
+function shipday_main() {
 	if (is_plugin_active('woocommerce/woocommerce.php')) {
 
 		//WC_Settings_Tab_Shipday::init();
@@ -81,6 +72,6 @@ function main() {
 	}
 }
 
-main();
+shipday_main();
 
 ?>

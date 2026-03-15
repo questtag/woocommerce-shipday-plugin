@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 class Shipday_Time_Slot_Util {
 
     public static function custom_time_slot_row( $field ) {
@@ -18,14 +22,14 @@ class Shipday_Time_Slot_Util {
 
         // HH
         echo '<input type="text" id="' . esc_attr( $id ) . '_hh" name="' . esc_attr( $id ) . '[hh]" '
-            . 'value="' . $hh . '" size="2" maxlength="2" min="1" max="12" step="1" inputmode="numeric" pattern="\d{2}" '
+            . 'value="' . esc_attr( $hh ) . '" size="2" maxlength="2" min="1" max="12" step="1" inputmode="numeric" pattern="\d{2}" '
             . 'placeholder="HH" style="min-width:120px;text-align:center;" />';
 
         echo '<span>:</span>';
 
         // MM
         echo '<input type="text" id="' . esc_attr( $id ) . '_mm" name="' . esc_attr( $id ) . '[mm]" '
-            . 'value="' . $mm . '" size="2" maxlength="2" inputmode="numeric" pattern="\d{2}" '
+            . 'value="' . esc_attr( $mm ) . '" size="2" maxlength="2" inputmode="numeric" pattern="\d{2}" '
             . 'placeholder="MM" style="min-width:120px;text-align:center;" />';
 
         // AM/PM

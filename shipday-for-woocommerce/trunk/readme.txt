@@ -2,12 +2,14 @@
 Contributors: shipdayinc, shhrrtnvr, shammo, hadi
 Tags: local delivery, delivery tracking, woocommerce delivery, same day delivery, driver app
 Requires at least: 5.8
-Tested up to: 6.8
+Tested up to: 6.9
 WC requires at least: 7.0.0
 WC tested up to: 9.8.2
 Requires PHP: 7.4
-Stable tag: 2.2.1
+Stable tag: 2.3.0
 License: GPLv2 or later
+
+Shipday adds local delivery and pickup workflows, dispatch sync, and checkout date/time selection to WooCommerce.
 
 == Description ==
 Support fast, efficient, and affordable local deliveries for your WooCommerce store with Shipday. Our intuitive mobile apps and web dashboard make it easy for you to automatically dispatch on-demand or scheduled orders, identify the best delivery route, and track drivers in real time.
@@ -115,5 +117,3 @@ You can install shipday plugin directly from wordpress plugin repository or manu
 * Spanish language support
 * Datetime support in the order checkout
 * New admin configuration page
-
-

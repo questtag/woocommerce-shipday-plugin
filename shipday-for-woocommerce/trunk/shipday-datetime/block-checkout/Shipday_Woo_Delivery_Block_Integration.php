@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 use Automattic\WooCommerce\Blocks\Integrations\IntegrationInterface;
 
 class Shipday_Woo_Delivery_Block_Integration implements IntegrationInterface {
@@ -64,7 +68,7 @@ class Shipday_Woo_Delivery_Block_Integration implements IntegrationInterface {
     public function register_block_frontend_scripts() {
         wp_register_script( $this->get_name(), plugin_dir_url( __FILE__ ) . 'assets/js/frontend.js', array( 'wp-plugins', 'wp-element', 'wp-components', 'wp-hooks', 'wp-i18n', 'wc-blocks-checkout', 'flatpickr_js' ), "2.0.1", true );
 
-        wp_enqueue_style( $this->get_name(), plugin_dir_url( __FILE__ ) . 'assets/css/frontend.css', "2.1.4" );
+        wp_enqueue_style( $this->get_name(), plugin_dir_url( __FILE__ ) . 'assets/css/frontend.css', array(), "2.1.4" );
     }
 
     /**

@@ -1,5 +1,10 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedClassFound -- Compatibility class mirrors the third-party integration name.
+
 require_once dirname( __FILE__ ) . '/Date_Picker_Object.php';
 
 class Delivery_Area_Pro extends Date_Picker_Object

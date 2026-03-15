@@ -1,4 +1,9 @@
 <?php
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Included admin partial uses file-scoped template variables.
   $consumer_key = get_option('wc_settings_tab_shipday_rest_api_consumer_key');
   $consumer_secret = get_option('wc_settings_tab_shipday_rest_api_consumer_secret');
 ?>
@@ -15,7 +20,7 @@
 </div>
 
 <div class="sd-panel-body">
-  <p class="shipday-rest-api-notice"><span class="dashicons dashicons-yes"></span><?php _e(' Settings Changed Successfully', 'shipday-delivery'); ?></p>
+  <p class="shipday-rest-api-notice"><span class="dashicons dashicons-yes"></span><?php esc_html_e( ' Settings Changed Successfully', 'shipday-for-woocommerce' ); ?></p>
   <form action="" method="post" id ="shipday-rest-api-settings-form">
       <?php wp_nonce_field('shipday_nonce'); ?>
     <div class="sd-field">
@@ -30,7 +35,7 @@
       </div>
       <div class="sd-input-wrapper">
         <input type="text" placeholder="Enter consumer Key" class="sd-text-input" name="shipday_consumer_key"
-               value="<?php echo (isset($consumer_key) && !empty($consumer_key)) ? stripslashes($consumer_key) : '' ?>"
+               value="<?php echo esc_attr( ! empty( $consumer_key ) ? wp_unslash( $consumer_key ) : '' ); ?>"
         />
       </div>
 
@@ -40,7 +45,7 @@
       </div>
       <div class="sd-input-wrapper">
         <input type="text" placeholder="Enter consumer secret" class="sd-text-input" name="shipday_consumer_secret"
-               value="<?php echo (isset($consumer_secret) && !empty($consumer_secret)) ? stripslashes($consumer_secret) : '' ?>"
+               value="<?php echo esc_attr( ! empty( $consumer_secret ) ? wp_unslash( $consumer_secret ) : '' ); ?>"
         />
       </div>
 

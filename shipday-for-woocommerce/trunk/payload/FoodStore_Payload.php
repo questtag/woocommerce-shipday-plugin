@@ -1,10 +1,14 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 require_once dirname(__DIR__) . '/functions/common.php';
 require_once dirname(__DIR__) . '/date-modifiers/order_delivery_date.php';
 require_once dirname(__FILE__) . '/Core_Payload.php';
 
-
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedClassFound -- Legacy class name retained for backwards compatibility.
 class FoodStore_Payload extends _CorePayload
 {
     protected $order, $message;

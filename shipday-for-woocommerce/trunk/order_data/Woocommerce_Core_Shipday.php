@@ -1,6 +1,11 @@
 <?php
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 require_once dirname( __DIR__ ) . '/functions/common.php';
 
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedClassFound -- Legacy class name retained for backwards compatibility.
 class Woocommerce_Core_Shipday {
 	protected $order;
 	public static function to_state_name( $state_code, $country_code ) {

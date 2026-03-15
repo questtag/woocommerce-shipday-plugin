@@ -1,4 +1,9 @@
 <?php
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Included admin partial uses file-scoped template variables.
 $datetime_enabled = get_option('shipday_enable_datetime_plugin', "no") === "yes";
 $order_type_enabled = get_option('shipday_enable_delivery_option', "no") === "yes";
 $datetime_heading_label = get_option('shipday_delivery_pickup_label', "Delivery/Pickup info");
@@ -19,7 +24,7 @@ $datetime_heading_label = get_option('shipday_delivery_pickup_label', "Delivery/
 <div class="sd-panel-body">
   <p class="shipday-general-notice">
     <span class="dashicons dashicons-yes"></span>
-      <?php _e(' Settings Changed Successfully', 'shipday-delivery'); ?>
+      <?php esc_html_e( ' Settings Changed Successfully', 'shipday-for-woocommerce' ); ?>
   </p>
   <form action="" method="post" id="shipday-general-settings-form">
       <?php wp_nonce_field('shipday_nonce'); ?>
@@ -35,7 +40,7 @@ $datetime_heading_label = get_option('shipday_delivery_pickup_label', "Delivery/
               id="shipday_enable_datetime_plugin"
               name="shipday_enable_datetime_plugin"
               class="shipday-switch__input"
-              <?php echo ($datetime_enabled) ? "checked" : "" ?>
+              <?php checked( $datetime_enabled ); ?>
           />
           <span class="shipday-switch__track">
             <span class="shipday-switch__thumb"></span>
@@ -63,7 +68,7 @@ $datetime_heading_label = get_option('shipday_delivery_pickup_label', "Delivery/
               id="shipday_enable_delivery_option"
               name="shipday_enable_delivery_option"
               class="shipday-switch__input"
-              <?php echo ($order_type_enabled) ? "checked" : "" ?>
+              <?php checked( $order_type_enabled ); ?>
           />
           <span class="shipday-switch__track">
             <span class="shipday-switch__thumb"></span>
@@ -106,7 +111,7 @@ $datetime_heading_label = get_option('shipday_delivery_pickup_label', "Delivery/
 
       <div class="sd-input-wrapper sd-text-input">
         <input type="text" placeholder="" class="sd-text-input" name="shipday_delivery_pickup_label"
-               value="<?php echo $datetime_heading_label?>"
+               value="<?php echo esc_attr( $datetime_heading_label ); ?>"
         />
       </div>
     </div>

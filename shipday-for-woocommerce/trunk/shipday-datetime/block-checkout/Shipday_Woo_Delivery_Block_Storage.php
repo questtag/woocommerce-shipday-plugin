@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 class Shipday_Woo_Delivery_Block_Storage {
     protected static $instance = null;
 
@@ -35,8 +39,10 @@ class Shipday_Woo_Delivery_Block_Storage {
 
         if ( $errors->has_errors() ) {
             $error_messages = $errors->get_error_messages();
-            $combined_error_message = implode( "<br>", $error_messages );
-            throw new \WC_Data_Exception( 'SHIPDAY_WOO_ERROR', $combined_error_message );
+            throw new \WC_Data_Exception(
+                'SHIPDAY_WOO_ERROR',
+                esc_html( implode( ' ', array_map( 'sanitize_text_field', $error_messages ) ) )
+            );
         }
 
         if ( !empty( $data['shipday_order_type'] ) ) {

@@ -1,5 +1,10 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound,WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- Legacy helper API is used across the plugin codebase.
+
 /** Global Variables */
 $debug_url = '';
 $shipday_debug_flag = false;
@@ -86,6 +91,35 @@ function remove_emoji($string)
 	$clear_string = preg_replace($regex_dingbats, '', $clear_string);
 
 	return $clear_string;
+}
+
+function shipday_remote_post( $url, array $args = array() ) {
+	$request_args = wp_parse_args(
+		$args,
+		array(
+			'method'      => 'POST',
+			'timeout'     => 20,
+			'redirection' => 5,
+			'httpversion' => '1.1',
+			'blocking'    => true,
+		)
+	);
+
+	$response = wp_safe_remote_post( esc_url_raw( $url ), $request_args );
+
+	if ( is_wp_error( $response ) ) {
+		return array(
+			'http_code' => 0,
+			'body'      => $response->get_error_message(),
+			'error'     => $response->get_error_code(),
+		);
+	}
+
+	return array(
+		'http_code' => (int) wp_remote_retrieve_response_code( $response ),
+		'body'      => wp_remote_retrieve_body( $response ),
+		'headers'   => wp_remote_retrieve_headers( $response ),
+	);
 }
 
 ?>
