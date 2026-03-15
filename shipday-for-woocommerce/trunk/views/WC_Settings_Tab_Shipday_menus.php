@@ -4,13 +4,13 @@ function get_woocommerce_settings()
 {
     $settings = array(
         array(
-            'name' => __('General Settings', 'woocommerce-settings-tab-shipday'),
+            'name' => __('General Settings', 'shipday-for-woocommerce'),
             'type' => 'title',
             'desc' => '',
             'id' => 'wc_settings_tab_shipday_general_section_title',
         ),
         array(
-            'name' => __('Shipday API Key', 'woocommerce-settings-tab-shipday'),
+            'name' => __('Shipday API Key', 'shipday-for-woocommerce'),
             'type' => 'text',
             'desc' => 'To get API Key, Login to your Shipday account and go to My Account > Profile > Api key',
             'custom_attributes' => array('required' => 'required'),
@@ -21,20 +21,20 @@ function get_woocommerce_settings()
             'id' => 'wc_settings_tab_shipday_general_section_end',
         ),
         array(
-            'name' => __('REST API Settings', 'woocommerce-settings-tab-shipday'),
+            'name' => __('REST API Settings', 'shipday-for-woocommerce'),
             'type' => 'title',
             'desc' => 'To get REST API Keys, go to WooCommerce > Settings > Advanced > API Key. Then generate a new API key with any description, '.
                 'give Read/Write permissions and copy consumer key and consumer secret and take note of the keys as you will not see it after leaving the page.',
             'id' => 'wc_settings_tab_shipday_rest_section_title',
         ),
         array(
-            'name' => __('Consumer Key', 'woocommerce-settings-tab-shipday'),
+            'name' => __('Consumer Key', 'shipday-for-woocommerce'),
             'type' => 'text',
 //            'value' => "",
             'id' => 'wc_settings_tab_shipday_rest_api_consumer_key',
         ),
         array(
-            'name' => __('Consumer Secret', 'woocommerce-settings-tab-shipday'),
+            'name' => __('Consumer Secret', 'shipday-for-woocommerce'),
             'type' => 'text',
 //            'value' => "",
             'id' => 'wc_settings_tab_shipday_rest_api_consumer_secret',
@@ -48,22 +48,22 @@ function get_woocommerce_settings()
             'id' => 'wc_settings_tab_shipday_rest_section_end',
         ),
         array(
-            'name' => __('Orders Settings', 'woocommerce-settings-tab-shipday'),
+            'name' => __('Orders Settings', 'shipday-for-woocommerce'),
             'type' => 'title',
             'desc' => '',
             'id' => 'wc_settings_tab_shipday_general_section_title',
         ),
         array(
-            'title'       => __( 'Sync previous orders', 'woocommerce-settings-tab-shipday' ),
-            'label'       => __( 'Sync previous orders', 'woocommerce-settings-tab-shipday'),
+            'title'       => __( 'Sync previous orders', 'shipday-for-woocommerce' ),
+            'label'       => __( 'Sync previous orders', 'shipday-for-woocommerce'),
             'type'        => 'checkbox',
             'description' => '',
             'default'     => 'no',
             'id' => 'wc_settings_tab_shipday_sync'
         ),
         array(
-            'title'       => __( 'Enable pickup orders', 'woocommerce-settings-tab-shipday' ),
-            'label'       => __( 'Enable pickup orders', 'woocommerce-settings-tab-shipday'),
+            'title'       => __( 'Enable pickup orders', 'shipday-for-woocommerce' ),
+            'label'       => __( 'Enable pickup orders', 'shipday-for-woocommerce'),
             'type'        => 'checkbox',
             'description' => 'Allow orders with local pickup shipping method to be sent to Shipday',
             'default'     => 'no',
@@ -71,8 +71,8 @@ function get_woocommerce_settings()
         ),
 
         array(
-            'title'       => __( 'Enable new Shipday webhook', 'woocommerce-settings-tab-shipday' ),
-            'label'       => __( 'Enable new Shipday webhook', 'woocommerce-settings-tab-shipday'),
+            'title'       => __( 'Enable new Shipday webhook', 'shipday-for-woocommerce' ),
+            'label'       => __( 'Enable new Shipday webhook', 'shipday-for-woocommerce'),
             'type'        => 'checkbox',
             'description' => 'Enable this to send your orders to new Shipday Webhook',
             'default'     => 'no',
@@ -93,13 +93,13 @@ function get_dokan_settings()
 {
     $settings = array(
         array(
-            'name' => __('General Settings', 'woocommerce-settings-tab-shipday'),
+            'name' => __('General Settings', 'shipday-for-woocommerce'),
             'type' => 'title',
             'desc' => '',
             'id' => 'wc_settings_tab_shipday_general_section_title',
         ),
         array(
-            'name' => __('Order Management Settings for Dokan Multi-vendor', 'woocommerce-settings-tab-shipday'),
+            'name' => __('Order Management Settings for Dokan Multi-vendor', 'shipday-for-woocommerce'),
             'type' => 'radio',
             'std' => 'admin_manage',
             'default' => 'admin_manage',
@@ -110,22 +110,22 @@ function get_dokan_settings()
             'id' => 'wc_settings_tab_shipday_order_manage',
         ),
         array(
-            'name' => __('Shipday API Key of Admin\'s Account', 'woocommerce-settings-tab-shipday'),
+            'name' => __('Shipday API Key of Admin\'s Account', 'shipday-for-woocommerce'),
             'type' => 'text',
             'desc' => 'To get API Key, Login to your Shipday account and go to My Account > Profile > Api key',
             'id' => 'wc_settings_tab_shipday_api_key',
         ),
         array(
-            'title'       => __( 'Enable pickup orders', 'woocommerce-settings-tab-shipday' ),
-            'label'       => __( 'Enable pickup orders', 'woocommerce-settings-tab-shipday'),
+            'title'       => __( 'Enable pickup orders', 'shipday-for-woocommerce' ),
+            'label'       => __( 'Enable pickup orders', 'shipday-for-woocommerce'),
             'type'        => 'checkbox',
             'description' => 'Allow orders with local pickup shipping method to be sent to Shipday',
             'default'     => 'no',
             'id' => 'wc_settings_tab_shipday_enable_pickup'
         ),
         array(
-            'title'       => __( 'Enable new Shipday webhook', 'woocommerce-settings-tab-shipday' ),
-            'label'       => __( 'Enable new Shipday webhook', 'woocommerce-settings-tab-shipday'),
+            'title'       => __( 'Enable new Shipday webhook', 'shipday-for-woocommerce' ),
+            'label'       => __( 'Enable new Shipday webhook', 'shipday-for-woocommerce'),
             'type'        => 'checkbox',
             'description' => 'Enable this to send your orders to new Shipday Webhook',
             'default'     => 'no',
@@ -145,13 +145,13 @@ function get_wcfm_settings()
 {
     $settings = array(
         array(
-            'name' => __('General Settings', 'woocommerce-settings-tab-shipday'),
+            'name' => __('General Settings', 'shipday-for-woocommerce'),
             'type' => 'title',
             'desc' => '',
             'id' => 'wc_settings_tab_shipday_general_section_title',
         ),
         array(
-            'name' => __('Order Management Settings for WCFM Multi-vendor', 'woocommerce-settings-tab-shipday'),
+            'name' => __('Order Management Settings for WCFM Multi-vendor', 'shipday-for-woocommerce'),
             'type' => 'radio',
             'std' => 'admin_manage',
             'default' => 'admin_manage',
@@ -162,22 +162,22 @@ function get_wcfm_settings()
             'id' => 'wc_settings_tab_shipday_order_manage',
         ),
         array(
-            'name' => __('Shipday API Key of Admin\'s Account', 'woocommerce-settings-tab-shipday'),
+            'name' => __('Shipday API Key of Admin\'s Account', 'shipday-for-woocommerce'),
             'type' => 'text',
             'desc' => 'To get API Key, Login to your Shipday account and go to My Account > Profile > Api key',
             'id' => 'wc_settings_tab_shipday_api_key',
         ),
         array(
-            'title'       => __( 'Enable pickup orders', 'woocommerce-settings-tab-shipday' ),
-            'label'       => __( 'Enable pickup orders', 'woocommerce-settings-tab-shipday'),
+            'title'       => __( 'Enable pickup orders', 'shipday-for-woocommerce' ),
+            'label'       => __( 'Enable pickup orders', 'shipday-for-woocommerce'),
             'type'        => 'checkbox',
             'description' => 'Allow orders with local pickup shipping method to be sent to Shipday',
             'default'     => 'no',
             'id' => 'wc_settings_tab_shipday_enable_pickup'
         ),
         array(
-            'title'       => __( 'Enable new Shipday webhook', 'woocommerce-settings-tab-shipday' ),
-            'label'       => __( 'Enable new Shipday webhook', 'woocommerce-settings-tab-shipday'),
+            'title'       => __( 'Enable new Shipday webhook', 'shipday-for-woocommerce' ),
+            'label'       => __( 'Enable new Shipday webhook', 'shipday-for-woocommerce'),
             'type'        => 'checkbox',
             'description' => 'Enable this to send your orders to new Shipday Webhook',
             'default'     => 'no',

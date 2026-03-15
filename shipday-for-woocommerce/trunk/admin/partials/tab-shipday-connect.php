@@ -19,7 +19,7 @@ $manage_order = get_option('wc_settings_tab_shipday_order_manage', 'admin_manage
 </div>
 
 <div class="sd-panel-body">
-  <p class="shipday-connect-notice"><span class="dashicons dashicons-yes"></span><?php _e(' Settings Changed Successfully', 'shipday-delivery'); ?></p>
+  <p class="shipday-connect-notice"><span class="dashicons dashicons-yes"></span><?php esc_html_e( ' Settings Changed Successfully', 'shipday-for-woocommerce' ); ?></p>
   <form action="" method="post" id ="shipday-connect-settings-form">
       <?php wp_nonce_field('shipday_nonce'); ?>
     <div class="sd-field">
@@ -31,7 +31,7 @@ $manage_order = get_option('wc_settings_tab_shipday_order_manage', 'admin_manage
         </div>
         <div class="sd-input-wrapper">
             <input type="text" placeholder="Enter API Key" class="sd-text-input" name="shipday_api_key"
-                   value="<?php echo (isset($api_key) && !empty($api_key)) ? stripslashes($api_key) : '' ?>"
+                   value="<?php echo esc_attr( ! empty( $api_key ) ? wp_unslash( $api_key ) : '' ); ?>"
             />
         </div>
 
@@ -47,7 +47,7 @@ $manage_order = get_option('wc_settings_tab_shipday_order_manage', 'admin_manage
               id="wc_settings_tab_shipday_enable_pickup"
               name="wc_settings_tab_shipday_enable_pickup"
               class="shipday-switch__input"
-              <?php echo ($pickup_order_enabled) ? "checked" : "" ?>
+              <?php checked( $pickup_order_enabled ); ?>
           />
           <span class="shipday-switch__track">
               <span class="shipday-switch__thumb"></span>
@@ -72,7 +72,7 @@ $manage_order = get_option('wc_settings_tab_shipday_order_manage', 'admin_manage
               id="wc_settings_tab_shipday_sync"
               name="wc_settings_tab_shipday_sync"
               class="shipday-switch__input"
-              <?php echo ($order_sync_enabled) ? "checked" : "" ?>
+              <?php checked( $order_sync_enabled ); ?>
           />
           <span class="shipday-switch__track">
                 <span class="shipday-switch__thumb"></span>
@@ -114,7 +114,7 @@ $manage_order = get_option('wc_settings_tab_shipday_order_manage', 'admin_manage
                     class="sd-radio__input"
                     name="wc_settings_tab_shipday_order_manage"
                     value="admin_manage"
-                    <?php echo ($manage_order === 'admin_manage') ? 'checked' : ''; ?>
+                    <?php checked( $manage_order, 'admin_manage' ); ?>
                 />
                 <span class="sd-radio__mark" aria-hidden="true"></span>
                 <span class="sd-radio__label">Admin manage</span>
@@ -126,7 +126,7 @@ $manage_order = get_option('wc_settings_tab_shipday_order_manage', 'admin_manage
                     class="sd-radio__input"
                     name="wc_settings_tab_shipday_order_manage"
                     value="vendor_manage"
-                    <?php echo ($manage_order === 'vendor_manage') ? 'checked' : ''; ?>
+                    <?php checked( $manage_order, 'vendor_manage' ); ?>
                 />
                 <span class="sd-radio__mark" aria-hidden="true"></span>
                 <span class="sd-radio__label">Vendor manage</span>

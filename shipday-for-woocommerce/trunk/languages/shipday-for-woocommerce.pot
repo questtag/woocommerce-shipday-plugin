@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: shipday-woo-delivery\n"
-"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/shipday-woo-delivery\n"
+"Project-Id-Version: shipday-for-woocommerce\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/shipday-for-woocommerce\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -10,7 +10,7 @@ msgstr ""
 "POT-Creation-Date: 2026-02-03T14:41:30+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
-"X-Domain: shipday-woo-delivery\n"
+"X-Domain: shipday-for-woocommerce\n"
 
 msgid "Delivery"
 msgstr ""
@@ -86,4 +86,3 @@ msgstr ""
 
 msgid "Select pickup slot"
 msgstr ""
-

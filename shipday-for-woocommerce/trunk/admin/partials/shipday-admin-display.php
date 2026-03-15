@@ -1,5 +1,5 @@
 <?php
-$active_tab = isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : 'general';
+$active_tab = isset($_GET['tab']) ? sanitize_text_field( wp_unslash( $_GET['tab'] ) ) : 'general';
 ?>
 <div class="sd-root">
 
@@ -16,13 +16,13 @@ $active_tab = isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : 'general
     <div class="sd-sidebar">
       <div class="sd-tab-list">
         <!-- GENERAL TAB BUTTON (active by default) -->
-        <button type="button" data-tab="general" class="sd-tab-button <?php echo $active_tab === 'general' ? 'sd-tab-button--active' : ''; ?>">
+        <button type="button" data-tab="general" class="sd-tab-button <?php echo esc_attr( $active_tab === 'general' ? 'sd-tab-button--active' : '' ); ?>">
           <span>General</span>
         </button>
 
         <!-- REST API TAB BUTTON -->
         <?php if ( !is_plugin_active( 'dokan-lite/dokan.php' ) && !is_plugin_active( 'wc-multivendor-marketplace/wc-multivendor-marketplace.php' )) {?>
-          <button type="button" data-tab="rest-api" class="sd-tab-button <?php echo $active_tab === 'rest-api' ? 'sd-tab-button--active' : ''; ?>">
+          <button type="button" data-tab="rest-api" class="sd-tab-button <?php echo esc_attr( $active_tab === 'rest-api' ? 'sd-tab-button--active' : '' ); ?>">
             <span>Rest API</span>
           </button>
         <?php } ?>
@@ -47,14 +47,14 @@ $active_tab = isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : 'general
     </div>
 
     <!-- GENERAL TAB PANEL -->
-    <div data-tab-panel="general" class="sd-tab-panel <?php echo $active_tab === 'general' ? 'sd-tab-panel--active' : ''; ?>">
+    <div data-tab-panel="general" class="sd-tab-panel <?php echo esc_attr( $active_tab === 'general' ? 'sd-tab-panel--active' : '' ); ?>">
         <?php
           include plugin_dir_path(__FILE__) . 'tab-shipday-connect.php';
         ?>
     </div>
 
     <!-- REST API TAB PANEL -->
-    <div data-tab-panel="rest-api" class="sd-tab-panel <?php echo $active_tab === 'rest-api' ? 'sd-tab-panel--active' : ''; ?>">
+    <div data-tab-panel="rest-api" class="sd-tab-panel <?php echo esc_attr( $active_tab === 'rest-api' ? 'sd-tab-panel--active' : '' ); ?>">
         <?php
         include plugin_dir_path( __FILE__ ) . 'tab-rest-api.php';
         ?>
@@ -122,4 +122,3 @@ $active_tab = isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : 'general
     });
   })();
 </script>
-

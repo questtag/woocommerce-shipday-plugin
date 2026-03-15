@@ -21,7 +21,7 @@ $manage_order = get_option('wc_settings_tab_shipday_order_manage', 'admin_manage
 <div class="sd-panel-body">
   <p class="shipday-order-sync-notice">
     <span class="dashicons dashicons-yes"></span>
-      <?php _e(' Settings Changed Successfully', 'shipday-delivery'); ?>
+      <?php esc_html_e( ' Settings Changed Successfully', 'shipday-for-woocommerce' ); ?>
   </p>
   <form action="" method="post" id="shipday-order-sync-settings-form">
       <?php wp_nonce_field('shipday_nonce'); ?>
@@ -56,7 +56,7 @@ $manage_order = get_option('wc_settings_tab_shipday_order_manage', 'admin_manage
                     class="sd-radio__input"
                     name="wc_settings_tab_shipday_order_manage"
                     value="admin_manage"
-                    <?php echo ($manage_order === 'admin_manage') ? 'checked' : ''; ?>
+                    <?php checked( $manage_order, 'admin_manage' ); ?>
                 />
                 <span class="sd-radio__mark" aria-hidden="true"></span>
                 <span class="sd-radio__label">Admin manage</span>
@@ -68,7 +68,7 @@ $manage_order = get_option('wc_settings_tab_shipday_order_manage', 'admin_manage
                     class="sd-radio__input"
                     name="wc_settings_tab_shipday_order_manage"
                     value="vendor_manage"
-                    <?php echo ($manage_order === 'vendor_manage') ? 'checked' : ''; ?>
+                    <?php checked( $manage_order, 'vendor_manage' ); ?>
                 />
                 <span class="sd-radio__mark" aria-hidden="true"></span>
                 <span class="sd-radio__label">Vendor manage</span>

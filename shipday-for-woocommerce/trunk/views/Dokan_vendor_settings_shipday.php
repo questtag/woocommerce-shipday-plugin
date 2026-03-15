@@ -21,9 +21,21 @@ class Dokan_vendor_settings_shipday
             return;
         }
 
-        $post_data = wp_unslash($_POST);
-        if (!is_null($post_data) && !is_null($post_data['shipday_api_key']) && !empty(trim($post_data['shipday_api_key'])))
-            update_user_meta(wp_get_current_user()->ID, 'shipday_api_key', trim($post_data['shipday_api_key']));
+        if (
+            ! isset( $_POST['_wpnonce'] )
+            || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_wpnonce'] ) ), 'dokan_delivery_settings_nonce' )
+        ) {
+            return;
+        }
+
+        if ( ! isset( $_POST['shipday_api_key'] ) ) {
+            return;
+        }
+
+        $api_key = sanitize_text_field( wp_unslash( $_POST['shipday_api_key'] ) );
+        if ( '' !== $api_key ) {
+            update_user_meta( wp_get_current_user()->ID, 'shipday_api_key', $api_key );
+        }
     }
 
     public static function get_api_key() {
@@ -38,7 +50,7 @@ class Dokan_vendor_settings_shipday
 
     public static function dokan_add_help_menu( $urls ) {
         $urls['delivery'] = array(
-            'title' => __( 'Delivery', 'shipday'),
+            'title' => __( 'Delivery', 'shipday-for-woocommerce'),
             'icon'  => '<i class="fas fa-truck"></i>',
             'url'   => dokan_get_navigation_url( 'delivery' ),
             'pos'   => 10000
@@ -67,17 +79,17 @@ class Dokan_vendor_settings_shipday
                             <?php wp_nonce_field( 'dokan_delivery_settings_nonce' ); ?>
 
                             <div class="dokan-form-group">
-                                <label class="dokan-w3 dokan-control-label" for="shipday_api_key"><?php esc_html_e( 'Shipday API key', 'shipday' ); ?></label>
+                                <label class="dokan-w3 dokan-control-label" for="shipday_api_key"><?php esc_html_e( 'Shipday API key', 'shipday-for-woocommerce' ); ?></label>
 
                                 <div class="dokan-w5 dokan-text-left">
-                                    <input id="shipday_api_key" required value="<?php echo esc_attr(self::get_api_key()); ?>" name="shipday_api_key" placeholder="<?php esc_attr_e( 'Enter shipday api key', 'shipday' ); ?>" class="dokan-form-control" type="text">
+                                    <input id="shipday_api_key" required value="<?php echo esc_attr(self::get_api_key()); ?>" name="shipday_api_key" placeholder="<?php esc_attr_e( 'Enter shipday api key', 'shipday-for-woocommerce' ); ?>" class="dokan-form-control" type="text">
                                 </div>
                             </div>
 
                             <div class="dokan-form-group">
 
                                 <div class="dokan-w4 ajax_prev dokan-text-left" style="margin-left:24%;">
-                                    <input type="submit" name="shipday_vendor_settings" class="dokan-btn dokan-btn-danger dokan-btn-theme" value="<?php esc_attr_e( 'Update Settings', 'dokan-lite' ); ?>">
+                                    <input type="submit" name="shipday_vendor_settings" class="dokan-btn dokan-btn-danger dokan-btn-theme" value="<?php esc_attr_e( 'Update Settings', 'shipday-for-woocommerce' ); ?>">
                                 </div>
                             </div>
                         </form>

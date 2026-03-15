@@ -19,7 +19,7 @@ class WCFM_vendor_settings_shipday {
 
 		$api_key = isset( $vendor_data['shipday']['api_key'] ) ? $vendor_data['shipday']['api_key'] : '';
 		$fields = array(
-			"api_key" => array("label" => __('Shipday API Key', 'wcfm-settings-tab-shipday'),
+			"api_key" => array("label" => __('Shipday API Key', 'shipday-for-woocommerce'),
 		                              "name" => "shipday[api_key]",
 		                              "type" => "text",
 		                              "class" => "wcfm-text wcfm_ele",

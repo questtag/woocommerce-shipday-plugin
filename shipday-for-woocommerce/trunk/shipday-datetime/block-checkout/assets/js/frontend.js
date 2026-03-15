@@ -49,27 +49,27 @@ const Shipday_Woo_Delivery = ({
   // Validation function
   const validateField = (value, fieldType) => {
     let errorKey = "shipday_woo_" + fieldType + "_error";
-    let errorMessage =  __('This field is mandatory', 'shipday-woo-delivery' );
+    let errorMessage =  __('This field is mandatory', 'shipday-for-woocommerce' );
     let isRequired = false;
 
     // Determine error message and required status based on field type
     if (fieldType === "shipday_order_type") {
-      errorMessage = __( 'Order type is required', 'shipday-woo-delivery' );
+      errorMessage = __( 'Order type is required', 'shipday-for-woocommerce' );
       isRequired = shipdaySettings.enable_delivery_option;
       errorKey = "shipday_woo_order_type_error";
     } else if (fieldType === "shipday_delivery_date") {
-      errorMessage = __( 'Delivery date is required', 'shipday-woo-delivery' );
+      errorMessage = __( 'Delivery date is required', 'shipday-for-woocommerce' );
       errorKey = "shipday_woo_delivery_date_error";
       isRequired = shipdaySettings.enable_delivery_date && shipdaySettings.delivery_date_mandatory;
     } else if (fieldType === "shipday_delivery_time") {
-      errorMessage =  __('Delivery time is mandatory', 'shipday-woo-delivery' );
+      errorMessage =  __('Delivery time is mandatory', 'shipday-for-woocommerce' );
       errorKey = "shipday_woo_delivery_time_error";
       isRequired = shipdaySettings.enable_delivery_time && shipdaySettings.delivery_time_mandatory;
     } else if (fieldType === "shipday_pickup_date") {
-      errorMessage = __('Pickup date is mandatory', 'shipday-woo-delivery' );
+      errorMessage = __('Pickup date is mandatory', 'shipday-for-woocommerce' );
       isRequired = shipdaySettings.enable_pickup_date && shipdaySettings.pickup_date_mandatory;
     }else if (fieldType === "pickup_time") {
-      errorMessage = __('Pickup time is mandatory', 'shipday-woo-delivery' );
+      errorMessage = __('Pickup time is mandatory', 'shipday-for-woocommerce' );
       isRequired = shipdaySettings.enable_pickup_time && shipdaySettings.pickup_time_mandatory;
     }
 
@@ -681,7 +681,7 @@ const Shipday_Woo_Delivery = ({
           }
         });
 
-        let fieldLabel = __('Pickup time', 'shipday-woo-delivery');
+        let fieldLabel = __('Pickup time', 'shipday-for-woocommerce');
 
         // Generate options for the select dropdown
         const renderTimeOptions = () =>
@@ -725,7 +725,7 @@ const Shipday_Woo_Delivery = ({
                 // Default empty option
                 React.createElement("option", {
                   value: ""
-                }, __('Select pickup slot', 'shipday-woo-delivery')),
+                }, __('Select pickup slot', 'shipday-for-woocommerce')),
 
                 // Time options
                 renderTimeOptions()
@@ -890,7 +890,7 @@ const Shipday_Woo_Delivery = ({
   // Block metadata definition
   shipday_woo_delivery_metadata = {
     apiVersion: 3,
-    name: "shipday-woo-delivery",
+    name: "shipday-for-woocommerce/delivery-block",
     title: "Shipday Woocommerce",
     category: "woocommerce",
     icon: "calendar-alt",

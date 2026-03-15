@@ -6,6 +6,7 @@ use Automattic\WooCommerce\StoreApi\Schemas\V1\CheckoutSchema;
 class Shipday_Woo_Delivery_Block {
     protected static $instance = null;
     static $IDENTIFIER = 'shipday_woo_delivery';
+    static $BLOCK_NAME = 'shipday-for-woocommerce/delivery-block';
 
     private function __clone() {}
     public function __wakeup() {
@@ -37,7 +38,7 @@ class Shipday_Woo_Delivery_Block {
     }
 
     function register_woo_delivery_block() {
-        register_block_type( 'shipday-woo-delivery/delivery-block' );
+        register_block_type( self::$BLOCK_NAME );
     }
 
 
@@ -97,24 +98,24 @@ class Shipday_Woo_Delivery_Block {
         return array(
             'shipday_order_type'    => array(
                 'type'        => ['string', 'null'],
-                'description' => __( 'Type of order', 'shipday-delivery' ),
+                'description' => __( 'Type of order', 'shipday-for-woocommerce' ),
                 'enum'        => array_merge( array_keys( $settings['delivery_options'] ), ["", null] ),
             ),
             'shipday_delivery_date' => array(
                 'type'        => ['string', 'null'],
-                'description' => __( 'Delivery Date', 'shipday-delivery' ),
+                'description' => __( 'Delivery Date', 'shipday-for-woocommerce' ),
             ),
             'shipday_delivery_time' => array(
                 'type'        => ['string', 'null'],
-                'description' => __( 'Delivery Time', 'shipday-delivery' ),
+                'description' => __( 'Delivery Time', 'shipday-for-woocommerce' ),
             ),
             'shipday_pickup_date' => array(
                 'type'        => ['string', 'null'],
-                'description' => __( 'Pickup Date', 'shipday-delivery' ),
+                'description' => __( 'Pickup Date', 'shipday-for-woocommerce' ),
             ),
             'pickup_time' => array(
                 'type'        => ['string', 'null'],
-                'description' => __( 'Pickup Time', 'shipday-delivery' ),
+                'description' => __( 'Pickup Time', 'shipday-for-woocommerce' ),
             ),
         );
     }

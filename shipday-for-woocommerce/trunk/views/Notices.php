@@ -16,7 +16,7 @@ class Notices {
 		if ( empty( $api_key ) ) {
 			?>
             <div class='notice notice-warning is-dismissible'>
-                <p>Your Shipday API Key Field is blank. To set up API Key, <a href="<?php echo $shipday_tab_url; ?>" target="_top">Click
+                <p>Your Shipday API Key Field is blank. To set up API Key, <a href="<?php echo esc_url( $shipday_tab_url ); ?>" target="_top">Click
                         Here</a>.</p>
             </div>
 			<?php
@@ -39,8 +39,8 @@ class Notices {
 			?>
                 <div class='notice notice-warning is-dismissible'>
                     <p>REST API key is essential for order status update in WooCommerce dashboard. To add REST API Key,
-                        <a href="<?php echo $rest_api_section_url; ?>" style="color: red">Click here</a> and take note of consumer key and consumer secret.
-                        Then enter the keys in shipday settings tab <a href="<?php echo $shipday_tab_url; ?>"> here</a>.</p>
+                        <a href="<?php echo esc_url( $rest_api_section_url ); ?>" style="color: red">Click here</a> and take note of consumer key and consumer secret.
+                        Then enter the keys in shipday settings tab <a href="<?php echo esc_url( $shipday_tab_url ); ?>"> here</a>.</p>
                 </div>
 			<?php
 		}
@@ -54,7 +54,7 @@ class Notices {
         $consumer_key = get_option('wc_settings_tab_shipday_rest_api_consumer_key');
         ?>
         <div class='notice notice-warning is-dismissible'>
-            <p>You have set <?php echo $consumer_secret.'.'.$consumer_key; ?>.</p>
+            <p>You have set <?php echo esc_html( $consumer_secret . '.' . $consumer_key ); ?>.</p>
         </div>
         <?php
 	}
