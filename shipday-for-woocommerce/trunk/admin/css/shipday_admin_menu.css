@@ -806,6 +806,70 @@
    background-color: #E3E4EB;
 }
 
+.shipday-general-setting {
+   width: 100%;
+}
+
+.shipday-general-setting__control {
+   width: min(100%, 50vw, 420px);
+   min-height: 40px;
+   padding: 0 14px;
+   border: 1px solid #d0d5dd;
+   border-radius: 12px;
+   background: #ffffff;
+   box-sizing: border-box;
+   transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.shipday-general-setting__control:focus-within {
+   border-color: #01ad85;
+   box-shadow: 0 0 0 4px rgba(1, 173, 133, 0.12);
+}
+
+.shipday-general-setting__control .sd-text-input {
+   width: 100%;
+   min-height: 38px !important;
+   border: 0 !important;
+   outline: none !important;
+   box-shadow: none !important;
+   background: transparent !important;
+   padding: 0 !important;
+   border-radius: 0 !important;
+}
+
+.shipday-general-setting__control--select {
+   position: relative;
+   padding-right: 10px;
+}
+
+.shipday-general-setting__control--select::after {
+   content: "";
+   position: absolute;
+   top: 50%;
+   right: 14px;
+   width: 8px;
+   height: 8px;
+   border-right: 2px solid #667085;
+   border-bottom: 2px solid #667085;
+   transform: translateY(-65%) rotate(45deg);
+   pointer-events: none;
+}
+
+.shipday-general-setting__control--select .shipday-slot-duration-field__select {
+   appearance: none;
+   -webkit-appearance: none;
+   -moz-appearance: none;
+   color: #0A0A0A;
+   cursor: pointer;
+   padding-right: 28px !important;
+}
+
+@media (max-width: 782px) {
+   .shipday-general-setting__control {
+      width: 100%;
+   }
+}
+
 
 /*** new overview **/
 

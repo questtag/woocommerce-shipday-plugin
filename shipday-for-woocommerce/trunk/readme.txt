@@ -1,6 +1,6 @@
 === Shipday Local Delivery for WooCommerce ===
 Contributors: shipdayinc, shhrrtnvr, shammo, hadi
-Tags: local delivery, delivery tracking, woocommerce delivery, same day delivery, driver app
+Tags: local delivery, delivery tracking, woocommerce delivery, driver app, datetime picker
 Requires at least: 5.8
 Tested up to: 6.9
 WC requires at least: 7.0.0

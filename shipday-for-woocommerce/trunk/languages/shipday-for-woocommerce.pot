@@ -86,3 +86,9 @@ msgstr ""
 
 msgid "Select pickup slot"
 msgstr ""
+
+msgid "Scheduled Date"
+msgstr ""
+
+msgid "Time Slot"
+msgstr ""

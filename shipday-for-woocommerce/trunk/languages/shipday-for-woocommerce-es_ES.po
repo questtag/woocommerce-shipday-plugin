@@ -88,3 +88,9 @@ msgstr "Elige una fecha"
 
 msgid "Select pickup slot"
 msgstr "Selecciona una franja de recogida"
+
+msgid "Scheduled Date"
+msgstr "Fecha programada"
+
+msgid "Time Slot"
+msgstr "Franja horaria"

@@ -9,6 +9,7 @@ class Shipday_Menu_Settings {
     private static $allowed_order_managers = array( 'admin_manage', 'vendor_manage' );
     private static $allowed_week_days = array( '0', '1', '2', '3', '4', '5', '6' );
     private static $allowed_slot_durations = array( '10', '15', '30', '45', '60', '90', '120', '150', '180', '240', '300', '360' );
+    private static $allowed_time_formats = array( '12-hour', '24-hour' );
 
     public static function initialize() {
         add_action( 'admin_enqueue_scripts',[ __CLASS__, 'enqueue_styles' ] );
@@ -32,7 +33,7 @@ class Shipday_Menu_Settings {
 
         wp_enqueue_style( 'select2mincss', plugin_dir_url( __FILE__ ) . 'css/select2.min.css', array(), "2.0.0", 'all' );
         wp_enqueue_style( "flatpickr_css",  plugin_dir_url( __FILE__ ) . '../shipday-datetime/public/css/flatpickr.min.css', array(), "2.0.0", 'all' );
-        wp_enqueue_style( "shipday_admin_menu_css", plugin_dir_url( __FILE__ ) . 'css/shipday_admin_menu.css', array(), "2.5.66", 'all' );
+        wp_enqueue_style( "shipday_admin_menu_css", plugin_dir_url( __FILE__ ) . 'css/shipday_admin_menu.css', array(), "2.5.70", 'all' );
 
     }
 
@@ -41,7 +42,7 @@ class Shipday_Menu_Settings {
         wp_enqueue_script( 'jquery-effects-slide' );
         wp_enqueue_code_editor( array( 'type' => 'text/css' ) );
         wp_enqueue_script( "flatpickr_js",  plugin_dir_url( __FILE__ ) . 'public/js/flatpickr.min.js', [], "2.0.0", true );
-        wp_enqueue_script( "shipday_admin_menu_js", plugin_dir_url( __FILE__ ) . 'js/shipday_admin_menu.js', array( 'jquery', 'selectWoo', 'flatpickr_js' ), "2.0.51", 'all' );
+        wp_enqueue_script( "shipday_admin_menu_js", plugin_dir_url( __FILE__ ) . 'js/shipday_admin_menu.js', array( 'jquery', 'selectWoo', 'flatpickr_js' ), "2.0.58", 'all' );
         $shipday_nonce = wp_create_nonce('shipday_nonce');
         wp_localize_script("shipday_admin_menu_js", 'shipday_ajax_obj', array(
             'shipday_ajax_url' => admin_url('admin-ajax.php'),
@@ -126,9 +127,22 @@ class Shipday_Menu_Settings {
         return $value > 0 ? $value : $default;
     }
 
-    private static function sanitize_time_slot( $hour, $minute, $ampm ) {
-        $hour = max( 1, min( 12, absint( $hour ) ) );
+    private static function sanitize_time_slot( $hour, $minute, $ampm, $time_format = '12-hour' ) {
+        $time_format = self::sanitize_allowed_value( $time_format, self::$allowed_time_formats, '12-hour' );
         $minute = max( 0, min( 59, absint( $minute ) ) );
+
+        if ( '24-hour' === $time_format ) {
+            $hour = max( 0, min( 23, absint( $hour ) ) );
+            $ampm = $hour >= 12 ? 'PM' : 'AM';
+
+            return array(
+                'hh'   => str_pad( (string) $hour, 2, '0', STR_PAD_LEFT ),
+                'mm'   => str_pad( (string) $minute, 2, '0', STR_PAD_LEFT ),
+                'ampm' => $ampm,
+            );
+        }
+
+        $hour = max( 1, min( 12, absint( $hour ) ) );
         $ampm = self::sanitize_allowed_value( $ampm, array( 'AM', 'PM' ), 'AM' );
 
         return array(
@@ -136,6 +150,25 @@ class Shipday_Menu_Settings {
             'mm'   => str_pad( (string) $minute, 2, '0', STR_PAD_LEFT ),
             'ampm' => $ampm,
         );
+    }
+
+    private static function get_time_slot_minutes( $slot ) {
+        $slot = is_array( $slot ) ? $slot : array();
+        $hour = isset( $slot['hh'] ) ? absint( $slot['hh'] ) : 0;
+        $minute = isset( $slot['mm'] ) ? max( 0, min( 59, absint( $slot['mm'] ) ) ) : 0;
+        $ampm = isset( $slot['ampm'] ) ? strtoupper( sanitize_text_field( (string) $slot['ampm'] ) ) : '';
+
+        $hour = max( 0, min( 23, $hour ) );
+
+        if ( $hour <= 12 && in_array( $ampm, array( 'AM', 'PM' ), true ) ) {
+            if ( 'PM' === $ampm && 12 !== $hour ) {
+                $hour += 12;
+            } elseif ( 'AM' === $ampm && 12 === $hour ) {
+                $hour = 0;
+            }
+        }
+
+        return ( $hour * 60 ) + $minute;
     }
 
     public static function save_connect_settings() {
@@ -184,9 +217,13 @@ class Shipday_Menu_Settings {
         $form_data = self::get_form_data_from_request();
         $enable_datetime = self::sanitize_yes_no_flag( isset( $form_data['shipday_enable_datetime_plugin'] ) );
         $enable_order_type = self::sanitize_yes_no_flag( isset( $form_data['shipday_enable_delivery_option'] ) );
+        $time_format = isset( $form_data['shipday_time_format'] )
+            ? self::sanitize_allowed_value( $form_data['shipday_time_format'], self::$allowed_time_formats, '12-hour' )
+            : '12-hour';
 
         update_option('shipday_enable_datetime_plugin', $enable_datetime);
         update_option('shipday_enable_delivery_option', $enable_order_type);
+        update_option( 'shipday_time_format', $time_format );
         if ( isset( $form_data['shipday_delivery_pickup_label'] ) ) {
             update_option( 'shipday_delivery_pickup_label', sanitize_text_field( $form_data['shipday_delivery_pickup_label'] ) );
         }
@@ -215,6 +252,7 @@ class Shipday_Menu_Settings {
         self::ensure_settings_access();
 
         $form_data = self::get_form_data_from_request();
+        $time_format = self::sanitize_allowed_value( get_option( 'shipday_time_format', '12-hour' ), self::$allowed_time_formats, '12-hour' );
 
         $enable_delivery_date = self::sanitize_yes_no_flag( isset( $form_data['shipday_enable_delivery_date'] ) );
         $delivery_date_mandatory = self::sanitize_yes_no_flag( isset( $form_data['shipday_delivery_date_mandatory'] ) );
@@ -224,14 +262,16 @@ class Shipday_Menu_Settings {
         $start_delivery_slot = self::sanitize_time_slot(
             $form_data['shipday_delivery_time_slot_start_hh'] ?? 9,
             $form_data['shipday_delivery_time_slot_start_mm'] ?? 0,
-            $form_data['shipday_delivery_time_slot_start_ampm'] ?? 'AM'
+            $form_data['shipday_delivery_time_slot_start_ampm'] ?? 'AM',
+            $time_format
         );
         $enable_delivery_time = self::sanitize_yes_no_flag( isset( $form_data['shipday_enable_delivery_time'] ) );
         $delivery_time_mandatory = self::sanitize_yes_no_flag( isset( $form_data['shipday_delivery_time_mandatory'] ) );
         $end_delivery_slot = self::sanitize_time_slot(
             $form_data['shipday_delivery_time_slot_end_hh'] ?? 9,
             $form_data['shipday_delivery_time_slot_end_mm'] ?? 0,
-            $form_data['shipday_delivery_time_slot_end_ampm'] ?? 'AM'
+            $form_data['shipday_delivery_time_slot_end_ampm'] ?? 'AM',
+            $time_format
         );
         $selectable_delivery_days = self::sanitize_positive_int( $form_data['shipday_selectable_delivery_days'] ?? 30, 30 );
         $delivery_slot_duration = self::sanitize_allowed_value(
@@ -239,6 +279,18 @@ class Shipday_Menu_Settings {
             self::$allowed_slot_durations,
             '60'
         );
+
+        if (
+            'yes' === $enable_delivery_time &&
+            self::get_time_slot_minutes( $end_delivery_slot ) <= self::get_time_slot_minutes( $start_delivery_slot )
+        ) {
+            wp_send_json_error(
+                array(
+                    'message' => __( 'Delivery slot end time must be greater than the start time.', 'shipday-for-woocommerce' ),
+                ),
+                400
+            );
+        }
 
         update_option('shipday_enable_delivery_date', $enable_delivery_date);
         update_option('shipday_delivery_date_mandatory', $delivery_date_mandatory);
@@ -262,6 +314,7 @@ class Shipday_Menu_Settings {
         self::ensure_settings_access();
 
         $form_data = self::get_form_data_from_request();
+        $time_format = self::sanitize_allowed_value( get_option( 'shipday_time_format', '12-hour' ), self::$allowed_time_formats, '12-hour' );
 
         $enable_pickup_date = self::sanitize_yes_no_flag( isset( $form_data['shipday_enable_pickup_date'] ) );
         $pickup_date_mandatory = self::sanitize_yes_no_flag( isset( $form_data['shipday_pickup_date_mandatory'] ) );
@@ -271,14 +324,16 @@ class Shipday_Menu_Settings {
         $start_pickup_slot = self::sanitize_time_slot(
             $form_data['shipday_pickup_time_slot_start_hh'] ?? 9,
             $form_data['shipday_pickup_time_slot_start_mm'] ?? 0,
-            $form_data['shipday_pickup_time_slot_start_ampm'] ?? 'AM'
+            $form_data['shipday_pickup_time_slot_start_ampm'] ?? 'AM',
+            $time_format
         );
         $enable_pickup_time = self::sanitize_yes_no_flag( isset( $form_data['shipday_enable_pickup_time'] ) );
         $pickup_time_mandatory = self::sanitize_yes_no_flag( isset( $form_data['shipday_pickup_time_mandatory'] ) );
         $end_pickup_slot = self::sanitize_time_slot(
             $form_data['shipday_pickup_time_slot_end_hh'] ?? 9,
             $form_data['shipday_pickup_time_slot_end_mm'] ?? 0,
-            $form_data['shipday_pickup_time_slot_end_ampm'] ?? 'AM'
+            $form_data['shipday_pickup_time_slot_end_ampm'] ?? 'AM',
+            $time_format
         );
         $selectable_pickup_days = self::sanitize_positive_int( $form_data['shipday_selectable_pickup_days'] ?? 30, 30 );
         $pickup_slot_duration = self::sanitize_allowed_value(
@@ -286,6 +341,18 @@ class Shipday_Menu_Settings {
             self::$allowed_slot_durations,
             '60'
         );
+
+        if (
+            'yes' === $enable_pickup_time &&
+            self::get_time_slot_minutes( $end_pickup_slot ) <= self::get_time_slot_minutes( $start_pickup_slot )
+        ) {
+            wp_send_json_error(
+                array(
+                    'message' => __( 'Pickup slot end time must be greater than the start time.', 'shipday-for-woocommerce' ),
+                ),
+                400
+            );
+        }
 
         update_option('shipday_enable_pickup_date', $enable_pickup_date);
         update_option('shipday_pickup_date_mandatory', $pickup_date_mandatory);

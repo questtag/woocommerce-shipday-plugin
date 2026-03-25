@@ -142,18 +142,11 @@ $shipday_active_tab = is_string( $shipday_active_tab ) && '' !== $shipday_active
         if (isNaN(num)) {
           num = 0;
         }
-        console.log(num);
 
-        const type = input.getAttribute('data-time-type');
-        if (type === 'hour') {
-          // 00–12
-          if (num < 0) num = 0;
-          if (num > 12) num = 12;
-        } else if (type === 'minute') {
-          // 00–59
-          if (num < 0) num = 0;
-          if (num > 59) num = 59;
-        }
+        const min = parseInt(input.getAttribute('min'), 10);
+        const max = parseInt(input.getAttribute('max'), 10);
+        if (!isNaN(min) && num < min) num = min;
+        if (!isNaN(max) && num > max) num = max;
 
         input.value = String(num).padStart(2, '0');
       });

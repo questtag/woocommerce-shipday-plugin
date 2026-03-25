@@ -7,6 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 $datetime_enabled = get_option('shipday_enable_datetime_plugin', "no") === "yes";
 $order_type_enabled = get_option('shipday_enable_delivery_option', "no") === "yes";
 $datetime_heading_label = get_option('shipday_delivery_pickup_label', "Delivery/Pickup info");
+$time_format = get_option( 'shipday_time_format', '12-hour' );
 ?>
 <div class="sd-panel-header">
   <div class="sd-panel-title-wrap">
@@ -98,9 +99,9 @@ $datetime_heading_label = get_option('shipday_delivery_pickup_label', "Delivery/
     </div>
 
     <fieldset class="sd-fieldset datetime-dependent">
-    <div class="sd-field">
+    <div class="sd-field shipday-general-setting">
       <div class="rest-api-label-wrapper">
-        <div class="rest-api-label">Date & time field heading</div>
+        <div class="rest-api-label">Date-time section heading</div>
         <span class="shipday-tooltip" tabindex="0">
             <span class="shipday-tooltip__icon" aria-hidden="true">i</span>
             <span class="shipday-tooltip__text">
@@ -109,10 +110,32 @@ $datetime_heading_label = get_option('shipday_delivery_pickup_label', "Delivery/
         </span>
       </div>
 
-      <div class="sd-input-wrapper sd-text-input">
+      <div class="sd-input-wrapper shipday-general-setting__control">
         <input type="text" placeholder="" class="sd-text-input" name="shipday_delivery_pickup_label"
                value="<?php echo esc_attr( $datetime_heading_label ); ?>"
         />
+      </div>
+    </div>
+    </fieldset>
+
+    <fieldset class="sd-fieldset datetime-dependent">
+    <div class="sd-field shipday-general-setting">
+      <div class="rest-api-label-wrapper">
+        <div class="rest-api-label"><?php esc_html_e( 'Time slot format', 'shipday-for-woocommerce' ); ?></div>
+      </div>
+
+      <div class="sd-input-wrapper shipday-general-setting__control shipday-general-setting__control--select">
+        <select
+          class="shipday-slot-duration-field__select sd-text-input"
+          name="shipday_time_format"
+        >
+          <option value="12-hour" <?php selected( $time_format, '12-hour' ); ?>>
+            <?php esc_html_e( '12-hour', 'shipday-for-woocommerce' ); ?>
+          </option>
+          <option value="24-hour" <?php selected( $time_format, '24-hour' ); ?>>
+            <?php esc_html_e( '24-hour', 'shipday-for-woocommerce' ); ?>
+          </option>
+        </select>
       </div>
     </div>
     </fieldset>
