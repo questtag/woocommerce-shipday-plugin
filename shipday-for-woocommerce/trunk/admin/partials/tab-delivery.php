@@ -11,9 +11,61 @@ $selectable_delivery_days = get_option('shipday_selectable_delivery_days', 30);
 
 $enable_delivery_time = get_option('shipday_enable_delivery_time', "no") === "yes";
 $delivery_time_mandatory = get_option('shipday_delivery_time_mandatory', "no") === "yes";
+$time_format = get_option( 'shipday_time_format', '12-hour' );
+$is_24_hour = '24-hour' === $time_format;
 
-$start_delivery_slot = get_option('shipday_delivery_time_slot_start', ["hh"=>"09:00", "mm" => "00", "amp" => "AM"]);
-$end_delivery_slot = get_option('shipday_delivery_time_slot_end',  ["hh"=>"09:00", "mm" => "00", "amp" => "AM"]);
+$normalize_delivery_slot = static function ( $slot, $default_hour, $default_ampm, $is_24_hour ) {
+	$slot = is_array( $slot ) ? $slot : array();
+	$hour = isset( $slot['hh'] ) ? absint( $slot['hh'] ) : $default_hour;
+	$minute = isset( $slot['mm'] ) ? max( 0, min( 59, absint( $slot['mm'] ) ) ) : 0;
+	$ampm = isset( $slot['ampm'] ) && in_array( strtoupper( (string) $slot['ampm'] ), array( 'AM', 'PM' ), true )
+		? strtoupper( (string) $slot['ampm'] )
+		: $default_ampm;
+
+	$is_stored_24_hour = ! isset( $slot['ampm'] ) || $hour > 12 || 0 === $hour;
+	if ( $is_stored_24_hour ) {
+		$hour_24 = max( 0, min( 23, $hour ) );
+	} else {
+		$hour_12 = max( 1, min( 12, $hour ) );
+		$hour_24 = $hour_12 % 12;
+		if ( 'PM' === $ampm ) {
+			$hour_24 += 12;
+		}
+	}
+
+	if ( $is_24_hour ) {
+		return array(
+			'hh'   => str_pad( (string) $hour_24, 2, '0', STR_PAD_LEFT ),
+			'mm'   => str_pad( (string) $minute, 2, '0', STR_PAD_LEFT ),
+			'ampm' => $hour_24 >= 12 ? 'PM' : 'AM',
+		);
+	}
+
+	$display_ampm = $hour_24 >= 12 ? 'PM' : 'AM';
+	$display_hour = $hour_24 % 12;
+	if ( 0 === $display_hour ) {
+		$display_hour = 12;
+	}
+
+	return array(
+		'hh'   => str_pad( (string) $display_hour, 2, '0', STR_PAD_LEFT ),
+		'mm'   => str_pad( (string) $minute, 2, '0', STR_PAD_LEFT ),
+		'ampm' => $display_ampm,
+	);
+};
+
+$start_delivery_slot = $normalize_delivery_slot(
+	get_option( 'shipday_delivery_time_slot_start', array( 'hh' => '09', 'mm' => '00', 'ampm' => 'AM' ) ),
+	9,
+	'AM',
+	$is_24_hour
+);
+$end_delivery_slot = $normalize_delivery_slot(
+	get_option( 'shipday_delivery_time_slot_end', array( 'hh' => '05', 'mm' => '00', 'ampm' => 'PM' ) ),
+	5,
+	'PM',
+	$is_24_hour
+);
 $delivery_slot_duration = get_option('shipday_delivery_time_slot_duration', "60");
 
 $datetime_enabled = get_option('shipday_enable_datetime_plugin', "no") === "yes";
@@ -254,7 +306,7 @@ $datetime_enabled = get_option('shipday_enable_datetime_plugin', "no") === "yes"
               <!-- Hour -->
               <div class="shipday-time-input sd-text-input ">
                 <input data-time-type="hour"
-                    type="number" min="1" max="12" id="shipday_delivery_time_slot_start_hh" name="shipday_delivery_time_slot_start_hh"
+                    type="number" min="<?php echo esc_attr( $is_24_hour ? '0' : '1' ); ?>" max="<?php echo esc_attr( $is_24_hour ? '23' : '12' ); ?>" id="shipday_delivery_time_slot_start_hh" name="shipday_delivery_time_slot_start_hh"
                     class="shipday-time-input__field"
                     value="<?php echo esc_attr( $start_delivery_slot['hh'] ); ?>"
                 />
@@ -271,17 +323,19 @@ $datetime_enabled = get_option('shipday_enable_datetime_plugin', "no") === "yes"
                 />
               </div>
 
-              <!-- AM/PM -->
-              <div class="shipday-ampm-select">
-                <select
-                    id="shipday_delivery_time_slot_start_ampm"
-                    name="shipday_delivery_time_slot_start_ampm"
-                    class="shipday-ampm-select__field sd-text-input"
-                >
-                  <option value="AM" <?php selected( $start_delivery_slot['ampm'], 'AM' ); ?>>AM</option>
-                  <option value="PM" <?php selected( $start_delivery_slot['ampm'], 'PM' ); ?>>PM</option>
-                </select>
-              </div>
+              <?php if ( ! $is_24_hour ) { ?>
+                <!-- AM/PM -->
+                <div class="shipday-ampm-select">
+                  <select
+                      id="shipday_delivery_time_slot_start_ampm"
+                      name="shipday_delivery_time_slot_start_ampm"
+                      class="shipday-ampm-select__field sd-text-input"
+                  >
+                    <option value="AM" <?php selected( $start_delivery_slot['ampm'], 'AM' ); ?>>AM</option>
+                    <option value="PM" <?php selected( $start_delivery_slot['ampm'], 'PM' ); ?>>PM</option>
+                  </select>
+                </div>
+              <?php } ?>
             </div>
           </div>
 
@@ -295,7 +349,7 @@ $datetime_enabled = get_option('shipday_enable_datetime_plugin', "no") === "yes"
               <!-- Hour -->
               <div class="shipday-time-input sd-text-input ">
                 <input data-time-type="hour"
-                    type="number"  min="1"  max="12" step="1"  id="shipday_delivery_time_slot_end_hh" name="shipday_delivery_time_slot_end_hh"
+                    type="number"  min="<?php echo esc_attr( $is_24_hour ? '0' : '1' ); ?>"  max="<?php echo esc_attr( $is_24_hour ? '23' : '12' ); ?>" step="1"  id="shipday_delivery_time_slot_end_hh" name="shipday_delivery_time_slot_end_hh"
                     class="shipday-time-input__field"
                     value="<?php echo esc_attr( $end_delivery_slot['hh'] ); ?>"
                 />
@@ -312,17 +366,19 @@ $datetime_enabled = get_option('shipday_enable_datetime_plugin', "no") === "yes"
                 />
               </div>
 
-              <!-- AM/PM -->
-              <div class="shipday-ampm-select">
-                <select
-                    id="shipday_delivery_time_slot_end_ampm"
-                    name="shipday_delivery_time_slot_end_ampm"
-                    class="shipday-ampm-select__field sd-text-input"
-                >
-                  <option value="AM" <?php selected( $end_delivery_slot['ampm'], 'AM' ); ?>>AM</option>
-                  <option value="PM" <?php selected( $end_delivery_slot['ampm'], 'PM' ); ?>>PM</option>
-                </select>
-              </div>
+              <?php if ( ! $is_24_hour ) { ?>
+                <!-- AM/PM -->
+                <div class="shipday-ampm-select">
+                  <select
+                      id="shipday_delivery_time_slot_end_ampm"
+                      name="shipday_delivery_time_slot_end_ampm"
+                      class="shipday-ampm-select__field sd-text-input"
+                  >
+                    <option value="AM" <?php selected( $end_delivery_slot['ampm'], 'AM' ); ?>>AM</option>
+                    <option value="PM" <?php selected( $end_delivery_slot['ampm'], 'PM' ); ?>>PM</option>
+                  </select>
+                </div>
+              <?php } ?>
             </div>
           </div>
 

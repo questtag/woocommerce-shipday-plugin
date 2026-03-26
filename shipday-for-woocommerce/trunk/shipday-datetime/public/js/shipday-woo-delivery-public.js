@@ -112,16 +112,8 @@
         }
 
         // Reset form fields
-        $('#shipday_order_type_field').wrap('<form autocomplete="off" class="shipday_woo_delivery_chrome_off_autocomplete"></form>');
         $('#shipday_order_type_field').val('');
         $('#shipday_delivery_datepicker').val('');
-
-        // Initialize select2 for delivery selection box
-        if (typeof $.fn.select2 !== 'undefined') {
-            $('#shipday_order_type_field').select2({
-                dropdownCssClass: 'shipday-delivery-selection-no-search'
-            });
-        }
 
         // Handle order type box change
         if ($('#shipday_order_type_field').length) {
@@ -129,9 +121,6 @@
 
             $(document).on('change', '#shipday_order_type_field', function(e) {
                 e.preventDefault();
-                if ($(this).parent().is('form')) {
-                    $(this).unwrap();
-                }
                 let orderType = $(this).val();
 
                 $("select[name='shipday_order_type_field']").val($('#shipday_order_type_field').val());

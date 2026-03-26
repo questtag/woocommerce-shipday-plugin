@@ -129,6 +129,7 @@ class Classic_Datetime {
         $end_delivery_slot = get_option('shipday_delivery_time_slot_end', Shipday_Woo_DateTime_Util::DEFAULT_END_SLOT);
         $delivery_slot_duration = get_option('shipday_delivery_time_slot_duration', "60");
         $delivery_time_options = Shipday_Woo_DateTime_Util::get_time_slots_from_range($start_delivery_slot, $end_delivery_slot, $delivery_slot_duration);
+        $delivery_time_options = array( '' => __( 'Select delivery time', 'shipday-for-woocommerce' ) ) + $delivery_time_options;
 
         //delivery time
         if ( $enable_datetime_plugin && $enable_delivery_time) {
@@ -182,6 +183,7 @@ class Classic_Datetime {
         $end_pickup_slot = get_option('shipday_pickup_time_slot_end', Shipday_Woo_DateTime_Util::DEFAULT_END_SLOT);
         $pickup_slot_duration = get_option('shipday_pickup_time_slot_duration', "60");
         $pickup_time_options =  Shipday_Woo_DateTime_Util::get_time_slots_from_range($start_pickup_slot, $end_pickup_slot, $pickup_slot_duration);
+        $pickup_time_options = array( '' => __( 'Select pickup time', 'shipday-for-woocommerce' ) ) + $pickup_time_options;
 
         if ( $enable_datetime_plugin && $enable_pickup_time) {
             echo '<div id="shipday_pickup_time_div" style="display:none;">';
@@ -305,6 +307,7 @@ class Classic_Datetime {
     }
 
     public static function getDeliveryoptions() {
+        $delivery_option[''] = __( 'Select order type', 'shipday-for-woocommerce' );
         $delivery_option['Delivery'] = __( "Delivery", "shipday-for-woocommerce" );
         $delivery_option['Pickup'] = __( "Pickup", "shipday-for-woocommerce" );
         return $delivery_option;
@@ -390,8 +393,6 @@ class Classic_Datetime {
             $order_id = $order->id;
         }
 
-        $delivery_date_field_label= "Scheduled Date";
-        $delivery_time_field_label= "Time slot";
         if((metadata_exists('post', $order_id, '_shipday_delivery_date') && get_post_meta( $order_id, '_shipday_delivery_date', true ) != "") || ($order->meta_exists('_shipday_delivery_date') && $order->get_meta( '_shipday_delivery_date', true ) != "")) {
 
             $delivery_date_format = (isset($delivery_date_settings['date_format']) && !empty($delivery_date_settings['date_format'])) ? $delivery_date_settings['date_format'] : "F j, Y";
@@ -412,7 +413,7 @@ class Classic_Datetime {
             } else {
                 $time_slot = get_post_meta( $order_id, '_shipday_delivery_time', true );
             }
-            echo '<p><strong>' . esc_html__( 'Time slot', 'shipday-for-woocommerce' ) . ':</strong> ' . esc_html( $time_slot ) . '</p>';
+            echo '<p><strong>' . esc_html__( 'Time Slot', 'shipday-for-woocommerce' ) . ':</strong> ' . esc_html( $time_slot ) . '</p>';
         }
     }
 
@@ -433,7 +434,7 @@ class Classic_Datetime {
             }
 
             $total_rows['delivery_date'] = array(
-                'label' => "Scheduled Date",
+                'label' => __( 'Scheduled Date', 'shipday-for-woocommerce' ),
                 'value' => $delivery_date,
             );
         }
@@ -446,7 +447,7 @@ class Classic_Datetime {
                 $timeslot = get_post_meta( $order_id, "_shipday_delivery_time", true );
             }
             $total_rows['delivery_time'] = array(
-                'label' => "Time Slot",
+                'label' => __( 'Time Slot', 'shipday-for-woocommerce' ),
                 'value' => $timeslot,
             );
         }
@@ -468,16 +469,16 @@ class Classic_Datetime {
                 wp_enqueue_script( "shipday_script", plugin_dir_url( __FILE__ ) . '../public/js/shipday-woo-delivery-public-flatsome.js', array( 'jquery', 'select2', 'flatpickr_js' ), '2.0.0', true );
             } else {
                 //wp_enqueue_script( "selectWoo_js", plugin_dir_url( __FILE__ ) . 'js/selectWoo.coderockz.delivery.min.js', array('jquery'), $this->version, true );
-                wp_enqueue_script( "shipday_script", plugin_dir_url( __FILE__ ) . '../public/js/shipday-woo-delivery-public.js', array( 'jquery', 'selectWoo', 'flatpickr_js' ),'2.01.8', true );
+                wp_enqueue_script( "shipday_script", plugin_dir_url( __FILE__ ) . '../public/js/shipday-woo-delivery-public.js', array( 'jquery', 'selectWoo', 'flatpickr_js' ),'2.01.9', true );
             }
         }
     }
 
     public static function enqueue_styles() {
         if ( is_checkout() && !( is_wc_endpoint_url( 'order-pay' ) || is_wc_endpoint_url( 'order-received' ) ) ) {
+            wp_enqueue_style( 'shipday_select2_css', plugin_dir_url( __FILE__ ) . '../../admin/css/select2.min.css', array(), '2.0.0', 'all' );
             wp_enqueue_style( "flatpickr_css", plugin_dir_url( __FILE__ ) . '../public/css/flatpickr.min.css', array(), '2.0.0', 'all' );
-            wp_enqueue_style( "shipday_styles", plugin_dir_url( __FILE__ ) . '../public/css/shipday-woo-delivery-public.css', array(), '2.0.1', 'all' );
-            //wp_enqueue_style( 'select2mincss', plugin_dir_url( __FILE__ ) . '../public/css/select2.min.css', array(), '2.0.0', 'all' );
+            wp_enqueue_style( "shipday_styles", plugin_dir_url( __FILE__ ) . '../public/css/shipday-woo-delivery-public.css', array(), '2.0.2', 'all' );
         }
     }
 

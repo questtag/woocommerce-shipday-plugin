@@ -113,6 +113,12 @@ class Shipday_Woo_DateTime_Util {
         return $disabled_week_days;
     }
 
+    public static function get_configured_time_format() {
+        $time_format = get_option( 'shipday_time_format', '12-hour' );
+
+        return '24-hour' === $time_format ? '24-hour' : '12-hour';
+    }
+
     static function validate_and_set_time( $settings, $type, $selected ) {
 
         $time_options = $type === 'Delivery' ? $settings["delivery_time_options"] : $settings["pickup_time_options"];
@@ -143,25 +149,35 @@ class Shipday_Woo_DateTime_Util {
 
     public static function get_time_slots_from_range(array $start_slot, array $end_slot, int $duration) {
         $slots = [];
+        $time_format = self::get_configured_time_format();
 
         $toMinutes = function(array $slot): int {
             $hhRaw = isset($slot['hh']) ? (string) $slot['hh'] : '0';
             $h    = (int) $hhRaw;
             $m    = isset($slot['mm']) ? (int) $slot['mm'] : 0;
-            $ampm = isset($slot['ampm']) ? strtoupper((string) $slot['ampm']) : 'AM';
-            // Normalize to 24h based on AM/PM
-            if ($ampm === 'PM') {
-                if ($h !== 12) {
+            $ampm = isset($slot['ampm']) ? strtoupper((string) $slot['ampm']) : '';
+
+            $h = max(0, min(23, $h));
+
+            // Treat 00-23 hour values as already 24-hour, otherwise normalize 12-hour + AM/PM.
+            if ($h <= 12 && '' !== $ampm) {
+                if ($ampm === 'PM' && $h !== 12) {
                     $h += 12;
+                } elseif ($ampm === 'AM' && $h === 12) {
+                    $h = 0;
                 }
             }
+
             return $h * 60 + $m;
         };
 
-        // Helper: minutes since midnight → "h:i A"
-        $formatMinutes = function(int $minutes): string {
+        $formatMinutes = function(int $minutes) use ($time_format): string {
             $h24 = intdiv($minutes, 60);
             $m   = $minutes % 60;
+
+            if ('24-hour' === $time_format) {
+                return sprintf('%02d:%02d', $h24, $m);
+            }
 
             $ampm = ($h24 >= 12) ? 'PM' : 'AM';
             $h12  = $h24 % 12;

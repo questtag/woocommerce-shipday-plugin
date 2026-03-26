@@ -87,3 +87,9 @@ msgstr "Choisissez une date"
 
 msgid "Select pickup slot"
 msgstr "Sélectionnez un créneau de retrait"
+
+msgid "Scheduled Date"
+msgstr "Date planifiée"
+
+msgid "Time Slot"
+msgstr "Créneau horaire"
