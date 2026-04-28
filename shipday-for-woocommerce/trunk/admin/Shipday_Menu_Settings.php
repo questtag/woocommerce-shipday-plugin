@@ -215,7 +215,7 @@ class Shipday_Menu_Settings {
         self::ensure_settings_access();
 
         $form_data = self::get_form_data_from_request();
-        $enable_datetime = self::sanitize_yes_no_flag( isset( $form_data['shipday_enable_datetime_plugin'] ) );
+        $enable_datetime   = self::sanitize_yes_no_flag( isset( $form_data['shipday_enable_datetime_plugin'] ) );
         $enable_order_type = self::sanitize_yes_no_flag( isset( $form_data['shipday_enable_delivery_option'] ) );
         $time_format = isset( $form_data['shipday_time_format'] )
             ? self::sanitize_allowed_value( $form_data['shipday_time_format'], self::$allowed_time_formats, '12-hour' )
@@ -300,10 +300,16 @@ class Shipday_Menu_Settings {
         update_option('shipday_enable_delivery_time', $enable_delivery_time);
         update_option('shipday_delivery_time_mandatory', $delivery_time_mandatory);
 
-
         update_option('shipday_delivery_time_slot_start',  $start_delivery_slot);
         update_option('shipday_delivery_time_slot_end',  $end_delivery_slot);
         update_option('shipday_delivery_time_slot_duration',  $delivery_slot_duration);
+
+        $enable_delivery_fee = self::sanitize_yes_no_flag( isset( $form_data['shipday_enable_delivery_fee'] ) );
+        $pickup_address      = isset( $form_data['shipday_pickup_address'] )
+            ? sanitize_text_field( $form_data['shipday_pickup_address'] )
+            : '';
+        update_option('shipday_enable_delivery_fee', $enable_delivery_fee);
+        update_option('shipday_pickup_address', $pickup_address);
 
         wp_send_json_success();
 

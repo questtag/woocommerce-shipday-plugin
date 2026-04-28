@@ -70,6 +70,22 @@ $delivery_slot_duration = get_option('shipday_delivery_time_slot_duration', "60"
 
 $datetime_enabled = get_option('shipday_enable_datetime_plugin', "no") === "yes";
 
+$delivery_fee_enabled = get_option('shipday_enable_delivery_fee', 'no') === 'yes';
+$pickup_address_saved = get_option('shipday_pickup_address', '');
+// Pre-populate with WooCommerce store address when nothing has been saved yet.
+if ( empty( trim( $pickup_address_saved ) ) ) {
+	$wc_store_parts  = array_filter( [
+		get_option( 'woocommerce_store_address' ),
+		get_option( 'woocommerce_store_address_2' ),
+		get_option( 'woocommerce_store_city' ),
+		get_option( 'woocommerce_store_postcode' ),
+		WC()->countries->get_base_country(),
+	] );
+	$pickup_address_display = implode( ', ', $wc_store_parts );
+} else {
+	$pickup_address_display = $pickup_address_saved;
+}
+
 ?>
 <div class="sd-panel-header">
   <div class="sd-panel-title-wrap">
@@ -416,6 +432,70 @@ $datetime_enabled = get_option('shipday_enable_datetime_plugin', "no") === "yes"
 
       </div>
     </div>
+    <!-- Delivery Fee -->
+    <div class="shipday-delivery-card" style="margin-top: 30px;">
+      <div class="shipday-delivery-card__header">
+        <div class="shipday-delivery-card__title">
+          <?php esc_html_e( 'Delivery Fee', 'shipday-for-woocommerce' ); ?>
+        </div>
+      </div>
+      <div class="shipday-delivery-card__content">
+
+        <!-- Enable delivery fee -->
+        <div class="shipday-toggle-row">
+          <label class="shipday-switch">
+            <input
+                type="checkbox"
+                id="shipday_enable_delivery_fee"
+                name="shipday_enable_delivery_fee"
+                class="shipday-switch__input"
+                <?php checked( $delivery_fee_enabled ); ?>
+            />
+            <span class="shipday-switch__track">
+              <span class="shipday-switch__thumb"></span>
+            </span>
+          </label>
+          <div class="shipday-toggle-row__text">
+            <div class="shipday-toggle-row__title">
+              <?php esc_html_e( 'Enable delivery fee', 'shipday-for-woocommerce' ); ?>
+              <span class="shipday-tooltip" tabindex="0">
+                <span class="shipday-tooltip__icon" aria-hidden="true">i</span>
+                <span class="shipday-tooltip__text">
+                  <?php esc_html_e( 'Calculates and shows a delivery fee at checkout using the Shipday availability API.', 'shipday-for-woocommerce' ); ?>
+                </span>
+              </span>
+            </div>
+            <div class="shipday-toggle-row__description">
+              <?php esc_html_e( 'Show a delivery fee at checkout based on the customer\'s address.', 'shipday-for-woocommerce' ); ?>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pickup address -->
+        <div class="sd-field shipday-general-setting" style="margin-top: 24px;">
+          <div class="rest-api-label-wrapper">
+            <div class="rest-api-label"><?php esc_html_e( 'Pickup Address', 'shipday-for-woocommerce' ); ?></div>
+            <span class="shipday-tooltip" tabindex="0">
+              <span class="shipday-tooltip__icon" aria-hidden="true">i</span>
+              <span class="shipday-tooltip__text">
+                <?php esc_html_e( 'The restaurant or store address used as the origin for delivery fee calculation. Defaults to your WooCommerce store address if left unchanged.', 'shipday-for-woocommerce' ); ?>
+              </span>
+            </span>
+          </div>
+          <div class="sd-input-wrapper shipday-general-setting__control">
+            <input
+              type="text"
+              placeholder="<?php esc_attr_e( 'e.g. 123 Main St, New York, NY 10001', 'shipday-for-woocommerce' ); ?>"
+              class="sd-text-input"
+              name="shipday_pickup_address"
+              value="<?php echo esc_attr( $pickup_address_display ); ?>"
+            />
+          </div>
+        </div>
+
+      </div>
+    </div>
+
   </form>
   </fieldset>
 </div>

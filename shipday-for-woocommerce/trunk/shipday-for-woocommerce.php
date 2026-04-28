@@ -40,6 +40,8 @@ require_once dirname(__FILE__) . '/shipday-datetime/block-checkout/Shipday_Woo_D
 require_once dirname(__FILE__) . '/shipday-datetime/block-checkout/Shipday_Woo_Delivery_Block_Storage.php';
 require_once dirname(__FILE__) . '/shipday-datetime/block-checkout/Shipday_Woo_DateTime_Util.php';
 
+require_once dirname(__FILE__) . '/shipday-delivery-fee/Shipday_Delivery_Fee.php';
+
 require_once dirname(__FILE__) . '/admin/Shipday_Menu_Settings.php';
 
 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound -- Legacy constant is referenced across the plugin codebase.
@@ -68,6 +70,7 @@ function shipday_main() {
 		Shipday_Woo_Delivery_Block::get_instance();
 		Shipday_Woo_Delivery_Block_Storage::get_instance();
 		Shipday_Woo_DateTime_Util::get_instance();
+		Shipday_Delivery_Fee::init();
 		Shipday_Menu_Settings::initialize();
 	}
 }
