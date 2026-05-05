@@ -27,6 +27,181 @@
     });
   });
 
+  function syncDeliveryFeeDependentFields() {
+    const deliveryToggle = document.getElementById('shipday_enable_delivery_fee');
+
+    if (!deliveryToggle) {
+      return;
+    }
+
+    const dependentFields = document.querySelectorAll('.shipday-delivery-fee-dependent');
+    const dependentWrappers = document.querySelectorAll('.shipday-delivery-fee-dependent-field');
+    const isEnabled =
+      deliveryToggle.checked && deliveryToggle.dataset.shipdayPlanCheckPending !== 'true';
+
+    dependentFields.forEach(field => {
+      field.readOnly = !isEnabled;
+      field.setAttribute('aria-readonly', String(!isEnabled));
+    });
+
+    dependentWrappers.forEach(wrapper => {
+      wrapper.classList.toggle('shipday-general-setting--readonly', !isEnabled);
+    });
+  }
+
+  function getAjaxErrorMessage(xhr, fallbackMessage) {
+    if (
+      xhr &&
+      xhr.responseJSON &&
+      xhr.responseJSON.data &&
+      xhr.responseJSON.data.message
+    ) {
+      return xhr.responseJSON.data.message;
+    }
+
+    return fallbackMessage;
+  }
+
+  function showSlidingNotice($notice, message) {
+    if (!$notice || !$notice.length) {
+      return;
+    }
+
+    if (message) {
+      const $message = $notice.find('.shipday-notice__message');
+
+      if ($message.length) {
+        $message.text(message);
+      } else {
+        $notice.text(message);
+      }
+    }
+
+    const existingTimer = $notice.data('shipdayHideTimer');
+    if (existingTimer) {
+      window.clearTimeout(existingTimer);
+    }
+
+    $notice.stop(true, true).show('slide', {
+      direction: 'right'
+    });
+
+    const hideTimer = window.setTimeout(() => {
+      $notice.hide('slide', {
+        direction: 'right'
+      });
+    }, 4000);
+
+    $notice.data('shipdayHideTimer', hideTimer);
+  }
+
+  function hideDeliveryErrorNotice() {
+    const $notice = jQuery('.shipday-delivery-error-notice');
+
+    if (!$notice.length) {
+      return;
+    }
+
+    $notice.stop(true, true).hide();
+  }
+
+  function showDeliveryErrorNotice(message) {
+    const $notice = jQuery('.shipday-delivery-error-notice');
+
+    if (!$notice.length) {
+      return;
+    }
+
+    const $message = $notice.find('.shipday-notice__message');
+    const noticeMessage =
+      message || shipday_ajax_obj.delivery_fee_plan_required_message;
+
+    if ($message.length) {
+      $message.text(noticeMessage);
+    } else {
+      $notice.text(noticeMessage);
+    }
+
+    $notice.stop(true, true).show();
+  }
+
+  function requestDeliveryFeeFeatureStatus() {
+    return jQuery.ajax({
+      url: shipday_ajax_obj.shipday_ajax_url,
+      type: 'post',
+      data: {
+        _ajax_nonce: shipday_ajax_obj.nonce,
+        action: 'shipday_delivery_fee_feature_status'
+      }
+    });
+  }
+
+  function handleDeliveryFeeToggleChange(event) {
+    const deliveryFeeToggle = event.currentTarget;
+
+    if (!deliveryFeeToggle.checked) {
+      delete deliveryFeeToggle.dataset.shipdayPlanCheckPending;
+      hideDeliveryErrorNotice();
+      syncDeliveryFeeDependentFields();
+      return;
+    }
+
+    deliveryFeeToggle.dataset.shipdayPlanCheckPending = 'true';
+    deliveryFeeToggle.disabled = true;
+    syncDeliveryFeeDependentFields();
+
+    requestDeliveryFeeFeatureStatus()
+      .done(response => {
+        if (response && response.success) {
+          delete deliveryFeeToggle.dataset.shipdayPlanCheckPending;
+          hideDeliveryErrorNotice();
+          syncDeliveryFeeDependentFields();
+          return;
+        }
+
+        deliveryFeeToggle.checked = false;
+        delete deliveryFeeToggle.dataset.shipdayPlanCheckPending;
+        syncDeliveryFeeDependentFields();
+        showDeliveryErrorNotice(
+          response &&
+            response.data &&
+            response.data.message
+            ? response.data.message
+            : shipday_ajax_obj.delivery_fee_plan_required_message
+        );
+      })
+      .fail(xhr => {
+        deliveryFeeToggle.checked = false;
+        delete deliveryFeeToggle.dataset.shipdayPlanCheckPending;
+        syncDeliveryFeeDependentFields();
+        showDeliveryErrorNotice(
+          getAjaxErrorMessage(xhr, shipday_ajax_obj.delivery_fee_plan_required_message)
+        );
+      })
+      .always(() => {
+        deliveryFeeToggle.disabled = false;
+      });
+  }
+
+  function initDeliveryFeeDependentFields() {
+    const deliveryFeeToggle = document.getElementById('shipday_enable_delivery_fee');
+
+    if (!deliveryFeeToggle || deliveryFeeToggle.dataset.shipdayReadonlyBound === 'true') {
+      return;
+    }
+
+    syncDeliveryFeeDependentFields();
+    hideDeliveryErrorNotice();
+    deliveryFeeToggle.addEventListener('change', handleDeliveryFeeToggleChange);
+    deliveryFeeToggle.dataset.shipdayReadonlyBound = 'true';
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initDeliveryFeeDependentFields);
+  } else {
+    initDeliveryFeeDependentFields();
+  }
+
   // ---- Save button enable/disable logic ----
   function setSaveEnabled(saveEl, enabled) {
     if (!saveEl) return;
@@ -183,30 +358,20 @@
       },
       success: function (response) {
         if (response && response.success === false) {
-          window.alert(response.data && response.data.message ? response.data.message : 'Unable to save delivery settings.');
+          showDeliveryErrorNotice(
+            response.data && response.data.message
+              ? response.data.message
+              : 'Unable to save delivery settings.'
+          );
           return;
         }
 
-        $notice.show('slide', {
-          direction: 'right'
-        });
-        setTimeout(function() {
-          $notice.hide('slide', {
-            direction: 'right'
-          });
-        }, 4000);
+        hideDeliveryErrorNotice();
+        showSlidingNotice($notice);
 
       },
       error: function (xhr) {
-        const message =
-          xhr &&
-          xhr.responseJSON &&
-          xhr.responseJSON.data &&
-          xhr.responseJSON.data.message
-            ? xhr.responseJSON.data.message
-            : 'Unable to save delivery settings.';
-
-        window.alert(message);
+        showDeliveryErrorNotice(getAjaxErrorMessage(xhr, 'Unable to save delivery settings.'));
       }
     });
   }

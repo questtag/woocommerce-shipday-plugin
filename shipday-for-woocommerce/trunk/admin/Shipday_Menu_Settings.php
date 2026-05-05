@@ -6,6 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 require_once dirname(__FILE__). '/../rest_api/WooCommerce_REST_API.php';
 
 class Shipday_Menu_Settings {
+    private const WOO_DELIVERY_FEE_STATUS_URL = 'https://api.shipday.com/paid-features/woo-delivery-fee/status';
     private static $allowed_order_managers = array( 'admin_manage', 'vendor_manage' );
     private static $allowed_week_days = array( '0', '1', '2', '3', '4', '5', '6' );
     private static $allowed_slot_durations = array( '10', '15', '30', '45', '60', '90', '120', '150', '180', '240', '300', '360' );
@@ -26,6 +27,7 @@ class Shipday_Menu_Settings {
         add_action( 'wp_ajax_shipday_rest_api_settings_save', [ __CLASS__, 'save_rest_api_settings' ] );
         add_action( 'wp_ajax_shipday_delivery_settings_save', [ __CLASS__, 'save_delivery_settings' ] );
         add_action( 'wp_ajax_shipday_pickup_settings_save', [ __CLASS__, 'save_pickup_settings' ] );
+        add_action( 'wp_ajax_shipday_delivery_fee_feature_status', [ __CLASS__, 'check_delivery_fee_feature_status' ] );
 
     }
 
@@ -33,7 +35,7 @@ class Shipday_Menu_Settings {
 
         wp_enqueue_style( 'select2mincss', plugin_dir_url( __FILE__ ) . 'css/select2.min.css', array(), "2.0.0", 'all' );
         wp_enqueue_style( "flatpickr_css",  plugin_dir_url( __FILE__ ) . '../shipday-datetime/public/css/flatpickr.min.css', array(), "2.0.0", 'all' );
-        wp_enqueue_style( "shipday_admin_menu_css", plugin_dir_url( __FILE__ ) . 'css/shipday_admin_menu.css', array(), "2.5.70", 'all' );
+        wp_enqueue_style( "shipday_admin_menu_css", plugin_dir_url( __FILE__ ) . 'css/shipday_admin_menu.css', array(), "2.5.72", 'all' );
 
     }
 
@@ -42,11 +44,12 @@ class Shipday_Menu_Settings {
         wp_enqueue_script( 'jquery-effects-slide' );
         wp_enqueue_code_editor( array( 'type' => 'text/css' ) );
         wp_enqueue_script( "flatpickr_js",  plugin_dir_url( __FILE__ ) . 'public/js/flatpickr.min.js', [], "2.0.0", true );
-        wp_enqueue_script( "shipday_admin_menu_js", plugin_dir_url( __FILE__ ) . 'js/shipday_admin_menu.js', array( 'jquery', 'selectWoo', 'flatpickr_js' ), "2.0.58", 'all' );
+        wp_enqueue_script( "shipday_admin_menu_js", plugin_dir_url( __FILE__ ) . 'js/shipday_admin_menu.js', array( 'jquery', 'selectWoo', 'flatpickr_js' ), "2.0.60", 'all' );
         $shipday_nonce = wp_create_nonce('shipday_nonce');
         wp_localize_script("shipday_admin_menu_js", 'shipday_ajax_obj', array(
             'shipday_ajax_url' => admin_url('admin-ajax.php'),
             'nonce' => $shipday_nonce,
+            'delivery_fee_plan_required_message' => self::get_delivery_fee_feature_error_message(),
         ));
 
     }
@@ -169,6 +172,84 @@ class Shipday_Menu_Settings {
         }
 
         return ( $hour * 60 ) + $minute;
+    }
+
+    private static function get_delivery_fee_feature_error_message() {
+        return __( 'You need to be on BRANDED_ELITE or above plan', 'shipday-for-woocommerce' );
+    }
+
+    private static function get_delivery_fee_feature_status() {
+        $api_key = trim( (string) get_shipday_api_key() );
+
+        if ( '' === $api_key ) {
+            shipday_logger( 'error', '[DeliveryFee][Plan] Shipday API key is missing while checking paid feature status.' );
+            return new WP_Error( 'shipday_delivery_fee_missing_api_key', 'Missing Shipday API key.' );
+        }
+
+        $response = wp_remote_get(
+            self::WOO_DELIVERY_FEE_STATUS_URL,
+            array(
+                'timeout' => 10,
+                'headers' => array(
+                    'Authorization' => 'Basic ' . $api_key,
+                    'Accept'        => 'application/json',
+                ),
+            )
+        );
+
+        if ( is_wp_error( $response ) ) {
+            shipday_logger( 'error', '[DeliveryFee][Plan] Paid feature status request failed: ' . $response->get_error_message() );
+            return $response;
+        }
+
+        $http_code = (int) wp_remote_retrieve_response_code( $response );
+        $raw_body  = trim( (string) wp_remote_retrieve_body( $response ) );
+
+        if ( 200 !== $http_code ) {
+            shipday_logger( 'error', '[DeliveryFee][Plan] Paid feature status returned HTTP ' . $http_code . ': ' . $raw_body );
+            return new WP_Error( 'shipday_delivery_fee_http_error', 'Unexpected status code.' );
+        }
+
+        $decoded_body = json_decode( $raw_body, true );
+
+        if ( is_bool( $decoded_body ) ) {
+            return $decoded_body;
+        }
+
+        $normalized_body = strtolower( $raw_body );
+
+        if ( 'true' === $normalized_body ) {
+            return true;
+        }
+
+        if ( 'false' === $normalized_body ) {
+            return false;
+        }
+
+        shipday_logger( 'error', '[DeliveryFee][Plan] Invalid paid feature status response: ' . $raw_body );
+        return new WP_Error( 'shipday_delivery_fee_invalid_response', 'Invalid paid feature status response.' );
+    }
+
+    public static function check_delivery_fee_feature_status() {
+        check_ajax_referer('shipday_nonce');
+        self::ensure_settings_access();
+
+        $status = self::get_delivery_fee_feature_status();
+
+        if ( is_wp_error( $status ) || true !== $status ) {
+            wp_send_json_error(
+                array(
+                    'message' => self::get_delivery_fee_feature_error_message(),
+                ),
+                403
+            );
+        }
+
+        wp_send_json_success(
+            array(
+                'enabled' => true,
+            )
+        );
     }
 
     public static function save_connect_settings() {
@@ -304,12 +385,30 @@ class Shipday_Menu_Settings {
         update_option('shipday_delivery_time_slot_end',  $end_delivery_slot);
         update_option('shipday_delivery_time_slot_duration',  $delivery_slot_duration);
 
-        $enable_delivery_fee = self::sanitize_yes_no_flag( isset( $form_data['shipday_enable_delivery_fee'] ) );
-        $pickup_address      = isset( $form_data['shipday_pickup_address'] )
+        $enable_delivery_fee  = self::sanitize_yes_no_flag( isset( $form_data['shipday_enable_delivery_fee'] ) );
+        $pickup_address       = isset( $form_data['shipday_pickup_address'] )
             ? sanitize_text_field( $form_data['shipday_pickup_address'] )
             : '';
+        $google_maps_api_key  = isset( $form_data['shipday_google_maps_api_key'] )
+            ? sanitize_text_field( $form_data['shipday_google_maps_api_key'] )
+            : '';
+
+        if ( 'yes' === $enable_delivery_fee ) {
+            $delivery_fee_feature_status = self::get_delivery_fee_feature_status();
+
+            if ( is_wp_error( $delivery_fee_feature_status ) || true !== $delivery_fee_feature_status ) {
+                wp_send_json_error(
+                    array(
+                        'message' => self::get_delivery_fee_feature_error_message(),
+                    ),
+                    403
+                );
+            }
+        }
+
         update_option('shipday_enable_delivery_fee', $enable_delivery_fee);
         update_option('shipday_pickup_address', $pickup_address);
+        update_option('shipday_google_maps_api_key', $google_maps_api_key);
 
         wp_send_json_success();
 

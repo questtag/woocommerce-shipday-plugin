@@ -19,7 +19,6 @@ defined('ABSPATH') || exit;
 global $shipday_plugin_version;
 $shipday_plugin_version = '2.3.1';
 
-require_once ABSPATH . 'wp-admin/includes/plugin.php';
 require_once dirname(__FILE__) . '/views/WCFM_vendor_settings_shipday.php';
 require_once dirname(__FILE__) . '/views/Dokan_vendor_settings_shipday.php';
 
@@ -55,26 +54,46 @@ if (!defined('SHIPDAY_PLUGIN_URL')) {
 	define('SHIPDAY_PLUGIN_URL', plugin_dir_url(__FILE__));
 }
 
-function shipday_main() {
-	if (is_plugin_active('woocommerce/woocommerce.php')) {
+// Register block-checkout hooks immediately so WooCommerce Blocks callbacks are
+// attached before WooCommerce fires `woocommerce_blocks_loaded`.
+Shipday_Woo_Delivery_Block::get_instance();
 
-		//WC_Settings_Tab_Shipday::init();
-		WCFM_vendor_settings_shipday::init();
-		Dokan_vendor_settings_shipday::init();
-		//WooCommerce_REST_API::init();
-		Shipday_Order_Management::init();
-		Woo_Sync_Order::init();
-		Notices::init();
-
-		Classic_Datetime::init();
-		Shipday_Woo_Delivery_Block::get_instance();
-		Shipday_Woo_Delivery_Block_Storage::get_instance();
-		Shipday_Woo_DateTime_Util::get_instance();
-		Shipday_Delivery_Fee::init();
-		Shipday_Menu_Settings::initialize();
+function shipday_is_woocommerce_active() {
+	if ( class_exists( 'WooCommerce' ) ) {
+		return true;
 	}
+
+	if ( ! function_exists( 'is_plugin_active' ) ) {
+		require_once ABSPATH . 'wp-admin/includes/plugin.php';
+	}
+
+	return function_exists( 'is_plugin_active' ) && is_plugin_active( 'woocommerce/woocommerce.php' );
 }
 
-shipday_main();
+function shipday_main() {
+	static $initialized = false;
+
+	if ( $initialized || ! shipday_is_woocommerce_active() ) {
+		return;
+	}
+
+	$initialized = true;
+
+	//WC_Settings_Tab_Shipday::init();
+	WCFM_vendor_settings_shipday::init();
+	Dokan_vendor_settings_shipday::init();
+	//WooCommerce_REST_API::init();
+	Shipday_Order_Management::init();
+	Woo_Sync_Order::init();
+	Notices::init();
+
+	Classic_Datetime::init();
+	Shipday_Woo_Delivery_Block_Storage::get_instance();
+	Shipday_Woo_DateTime_Util::get_instance();
+	Shipday_Delivery_Fee::init();
+	Shipday_Menu_Settings::initialize();
+}
+
+add_action( 'plugins_loaded', 'shipday_main', 20 );
 
 ?>
