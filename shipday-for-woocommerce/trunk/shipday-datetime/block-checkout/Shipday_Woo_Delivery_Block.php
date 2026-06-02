@@ -179,27 +179,62 @@ class Shipday_Woo_Delivery_Block {
         WC()->session->set( "pickup_time", $delivery_time );
     }
 
+    private static function get_store_timezone() {
+        return function_exists( 'wc_timezone' ) ? wc_timezone() : wp_timezone();
+    }
+
+    private static function normalize_list( $value ) {
+        if ( ! is_array( $value ) ) {
+            return [];
+        }
+
+        return array_map( 'strval', $value );
+    }
+
 
     static function validate_and_set_date( $settings, $type, $selected ) {
         if ( $type === 'Delivery' ) {
-            $disable_week_days = $settings['delivery_disable_week_days'];
-            $disable_dates = array_merge( $settings['disable_dates'], $settings['disable_delivery_date_passed_time'] );
-            $enable_date = $settings['enable_delivery_date'];
-            $auto_select_first_date = $settings['auto_select_first_date'];
+            $disable_week_days = self::normalize_list( $settings['delivery_disable_week_days'] ?? [] );
+            $disable_dates = array_merge(
+                self::normalize_list( $settings['disable_dates'] ?? [] ),
+                self::normalize_list( $settings['disable_delivery_date_passed_time'] ?? [] )
+            );
+            $enable_date = ! empty( $settings['enable_delivery_date'] );
+            $auto_select_first_date = ! empty( $settings['auto_select_first_date'] );
+            $selectable_days = isset( $settings['delivery_date_selectable_days'] ) ? absint( $settings['delivery_date_selectable_days'] ) : 30;
             $session_name = 'shipday_delivery_date';
         } else {
-            $disable_week_days = $settings['pickup_disable_week_days'];
-            $disable_dates = array_merge( $settings['pickup_disable_dates'], $settings['disable_pickup_date_passed_time'] );
-            $enable_date = $settings['enable_pickup_date'];
-            $auto_select_first_date = $settings['pickup_auto_select_first_date'];
+            $disable_week_days = self::normalize_list( $settings['pickup_disable_week_days'] ?? [] );
+            $disable_dates = array_merge(
+                self::normalize_list( $settings['pickup_disable_dates'] ?? [] ),
+                self::normalize_list( $settings['disable_pickup_date_passed_time'] ?? [] )
+            );
+            $enable_date = ! empty( $settings['enable_pickup_date'] );
+            $auto_select_first_date = ! empty( $settings['pickup_auto_select_first_date'] );
+            $selectable_days = isset( $settings['pickup_date_selectable_days'] ) ? absint( $settings['pickup_date_selectable_days'] ) : 30;
             $session_name = 'shipday_pickup_date';
         }
-        $current = \DateTime::createFromFormat( 'Y-m-d', $settings['today'] );
+
+        $selectable_days = max( 1, $selectable_days );
+        $tz = self::get_store_timezone();
+        $today = ! empty( $settings['today'] ) ? (string) $settings['today'] : wp_date( 'Y-m-d', current_time( 'timestamp', true ) );
+        $current = \DateTimeImmutable::createFromFormat( 'Y-m-d', $today, $tz );
+
+        if ( ! $current instanceof \DateTimeImmutable ) {
+            $current = new \DateTimeImmutable( 'today', $tz );
+        }
+
+        $last_selectable_date = $current->modify( '+' . ( $selectable_days - 1 ) . ' day' );
 
         if ( !empty( $selected ) ) {
-            $selected_date = \DateTime::createFromFormat( 'Y-m-d', $selected );
-            if ( $selected_date >= $current && !in_array( $selected_date->format( 'w' ), $disable_week_days )
-                && !in_array( $selected_date->format( 'Y-m-d' ), $disable_dates ) ) {
+            $selected_date = \DateTimeImmutable::createFromFormat( 'Y-m-d', (string) $selected, $tz );
+            if (
+                $selected_date instanceof \DateTimeImmutable
+                && $selected_date >= $current
+                && $selected_date <= $last_selectable_date
+                && ! in_array( $selected_date->format( 'w' ), $disable_week_days, true )
+                && ! in_array( $selected_date->format( 'Y-m-d' ), $disable_dates, true )
+            ) {
                 return $selected_date->format( "Y-m-d" );
             }
         }
@@ -207,15 +242,18 @@ class Shipday_Woo_Delivery_Block {
         $on_change = WC()->session->get( "on_change", false );
 
         if ( $enable_date && $auto_select_first_date && !$on_change ) {
-            while (
-                in_array( $current->format( 'w' ), $disable_week_days )
-                || in_array( $current->format( 'Y-m-d' ), $disable_dates )
-            ) {
-                $current->modify( "+1 day" );
+            for ( $day_offset = 0; $day_offset < $selectable_days; $day_offset++ ) {
+                $candidate = $current->modify( '+' . $day_offset . ' day' );
+
+                if (
+                    ! in_array( $candidate->format( 'w' ), $disable_week_days, true )
+                    && ! in_array( $candidate->format( 'Y-m-d' ), $disable_dates, true )
+                ) {
+                    $formatted_date = $candidate->format( "Y-m-d" );
+                    WC()->session->set( $session_name, $formatted_date );
+                    return $formatted_date;
+                }
             }
-            $formatted_date = $current->format( "Y-m-d" );
-            WC()->session->set( $session_name, $formatted_date );
-            return $formatted_date;
         }
 
         WC()->session->set( $session_name, NULL );
@@ -226,27 +264,27 @@ class Shipday_Woo_Delivery_Block {
         $time_options = [];
 
         // Resolve store timezone (WooCommerce) or WP as fallback
-        $tz = function_exists('wc_timezone') ? wc_timezone() : wp_timezone();
-        $now = new DateTimeImmutable('now', $tz);
+        $tz = self::get_store_timezone();
+        $now = new \DateTimeImmutable('now', $tz);
         $todayYmd = $now->format('Y-m-d');
 
         // Normalize/resolve selected date to Y-m-d in store tz
         $is_today = false;
         if ( $selected_date ) {
             try {
-                if ($selected_date instanceof DateTimeInterface) {
-                    $sel = (new DateTimeImmutable($selected_date->format('Y-m-d'), $tz));
+                if ( $selected_date instanceof \DateTimeInterface ) {
+                    $sel = new \DateTimeImmutable( $selected_date->format( 'Y-m-d' ), $tz );
                 } else {
                     // allow strings like "2025-12-02" or "today" etc.
-                    $sel = new DateTimeImmutable((string)$selected_date, $tz);
+                    $sel = new \DateTimeImmutable( (string) $selected_date, $tz );
                 }
                 $is_today = $sel->format('Y-m-d') === $todayYmd;
-            } catch (Exception $e) {
+            } catch ( \Exception $e ) {
                 $is_today = false; // if parsing fails, treat as not today
             }
         }
 
-        foreach ( $old_time_options as $key => $value ) {
+        foreach ( is_array( $old_time_options ) ? $old_time_options : [] as $key => $value ) {
             $disabled = false;
 
             if ( $is_today ) {
@@ -256,8 +294,8 @@ class Shipday_Woo_Delivery_Block {
                     $end_str  = trim($parts[1]); // "12:34 PM"
                     $parseFmt = 'Y-m-d h:i A';
 
-                    $end_dt = DateTimeImmutable::createFromFormat($parseFmt, $todayYmd . ' ' . $end_str, $tz);
-                    if ( $end_dt instanceof DateTimeInterface ) {
+                    $end_dt = \DateTimeImmutable::createFromFormat($parseFmt, $todayYmd . ' ' . $end_str, $tz);
+                    if ( $end_dt instanceof \DateTimeInterface ) {
                         // Disable if end time is strictly earlier than now
                         if ( $end_dt < $now ) {
                             $disabled = true;
