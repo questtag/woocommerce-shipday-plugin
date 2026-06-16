@@ -6,7 +6,7 @@ Tested up to: 7.0
 WC requires at least: 7.0.0
 WC tested up to: 9.8.2
 Requires PHP: 7.4
-Stable tag: 2.3.1
+Stable tag: 2.4.0
 License: GPLv2 or later
 
 Shipday adds local delivery and pickup workflows, dispatch sync, and checkout date/time selection to WooCommerce.
@@ -112,6 +112,9 @@ You can install shipday plugin directly from wordpress plugin repository or manu
 
 
 == Changelog ==
+
+= 2.4.0 =
+* Delivery fee feature
 
 = 2.2.0 =
 * Spanish language support
