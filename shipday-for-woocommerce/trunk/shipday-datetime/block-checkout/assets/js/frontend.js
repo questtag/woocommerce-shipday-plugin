@@ -1,31 +1,26 @@
 const { __ } = wp.i18n;
+const React = window.React || wp.element;
 
-const Shipday_Woo_Delivery = ({
-  extensions,
-  checkoutExtensionData
-}) => {
+const SHIPDAY_MOUNT_ID = "shipday-woo-delivery-block-mount";
+const SHIPDAY_CHECKOUT_SELECTORS = [
+  ".wp-block-woocommerce-checkout-contact-information-block",
+  ".wc-block-components-checkout-step--contact-information .wc-block-components-checkout-step__container",
+  ".wc-block-components-checkout-step--contact-information",
+  ".wc-block-checkout__form",
+];
+
+const Shipday_Woo_Delivery = () => {
   const {
     CHECKOUT_STORE_KEY: checkoutStoreKey,
     CART_STORE_KEY: cartStoreKey,
-    validationStore
+    validationStore,
   } = wc.wcBlocksData;
 
-  const {
-    useSelect,
-    dispatch
-  } = wp.data;
+  const { useSelect, dispatch } = wp.data;
+  const { clearValidationError, setValidationErrors } = dispatch(validationStore);
+  const { getValidationError } = useSelect((store) => store(validationStore));
 
-  const {
-    clearValidationError,
-    setValidationErrors
-  } = dispatch(validationStore);
-
-  const {
-    getValidationError,
-    hasValidationErrors
-  } = useSelect(store => store(validationStore));
-
-  const cartExtensions = useSelect(store => {
+  const cartExtensions = useSelect((store) => {
     try {
       return store(cartStoreKey).getCartData()?.extensions;
     } catch (error) {
@@ -33,61 +28,72 @@ const Shipday_Woo_Delivery = ({
     }
   }, []);
 
-  const shipdaySettings = extensions?.shipday_woo_delivery || cartExtensions?.shipday_woo_delivery || {};
+  const shipdaySettings = cartExtensions?.shipday_woo_delivery || {};
 
-
-  // State hooks
-  const [shipdayOrderType, setShipdayOrderType] = React.useState(shipdaySettings.shipday_order_type);
-  const [shipdayDeliveryDate, setShipdayDeliveryDate] = React.useState(shipdaySettings.shipday_delivery_date);
-  const [shipdayDeliveryTime, setShipdayDeliveryTime] = React.useState(shipdaySettings.shipday_delivery_time);
-  const [shipdayPickupDate, setShipdayPickupDate] = React.useState(shipdaySettings.shipday_pickup_date);
+  const [shipdayOrderType, setShipdayOrderType] = React.useState(
+    shipdaySettings.shipday_order_type
+  );
+  const [shipdayDeliveryDate, setShipdayDeliveryDate] = React.useState(
+    shipdaySettings.shipday_delivery_date
+  );
+  const [shipdayDeliveryTime, setShipdayDeliveryTime] = React.useState(
+    shipdaySettings.shipday_delivery_time
+  );
+  const [shipdayPickupDate, setShipdayPickupDate] = React.useState(
+    shipdaySettings.shipday_pickup_date
+  );
   const [pickupTime, setPickupTime] = React.useState(shipdaySettings.pickup_time);
   const [isProcessing, setIsProcessing] = React.useState(false);
 
-  const isBeforeProcessing = useSelect(store => store(checkoutStoreKey).isBeforeProcessing());
+  const isBeforeProcessing = useSelect((store) =>
+    store(checkoutStoreKey).isBeforeProcessing()
+  );
 
-  // Validation function
   const validateField = (value, fieldType) => {
-    let errorKey = "shipday_woo_" + fieldType + "_error";
-    let errorMessage =  __('This field is mandatory', 'shipday-for-woocommerce' );
+    let errorKey = `shipday_woo_${fieldType}_error`;
+    let errorMessage = __("This field is mandatory", "shipday-for-woocommerce");
     let isRequired = false;
 
-    // Determine error message and required status based on field type
     if (fieldType === "shipday_order_type") {
-      errorMessage = __( 'Order type is required', 'shipday-for-woocommerce' );
+      errorMessage = __("Order type is required", "shipday-for-woocommerce");
       isRequired = shipdaySettings.enable_delivery_option;
       errorKey = "shipday_woo_order_type_error";
     } else if (fieldType === "shipday_delivery_date") {
-      errorMessage = __( 'Delivery date is required', 'shipday-for-woocommerce' );
+      errorMessage = __("Delivery date is required", "shipday-for-woocommerce");
       errorKey = "shipday_woo_delivery_date_error";
-      isRequired = shipdaySettings.enable_delivery_date && shipdaySettings.delivery_date_mandatory;
+      isRequired =
+        shipdaySettings.enable_delivery_date &&
+        shipdaySettings.delivery_date_mandatory;
     } else if (fieldType === "shipday_delivery_time") {
-      errorMessage =  __('Delivery time is mandatory', 'shipday-for-woocommerce' );
+      errorMessage = __("Delivery time is mandatory", "shipday-for-woocommerce");
       errorKey = "shipday_woo_delivery_time_error";
-      isRequired = shipdaySettings.enable_delivery_time && shipdaySettings.delivery_time_mandatory;
+      isRequired =
+        shipdaySettings.enable_delivery_time &&
+        shipdaySettings.delivery_time_mandatory;
     } else if (fieldType === "shipday_pickup_date") {
-      errorMessage = __('Pickup date is mandatory', 'shipday-for-woocommerce' );
-      isRequired = shipdaySettings.enable_pickup_date && shipdaySettings.pickup_date_mandatory;
-    }else if (fieldType === "pickup_time") {
-      errorMessage = __('Pickup time is mandatory', 'shipday-for-woocommerce' );
-      isRequired = shipdaySettings.enable_pickup_time && shipdaySettings.pickup_time_mandatory;
+      errorMessage = __("Pickup date is mandatory", "shipday-for-woocommerce");
+      errorKey = "shipday_woo_pickup_date_error";
+      isRequired =
+        shipdaySettings.enable_pickup_date && shipdaySettings.pickup_date_mandatory;
+    } else if (fieldType === "pickup_time") {
+      errorMessage = __("Pickup time is mandatory", "shipday-for-woocommerce");
+      errorKey = "shipday_woo_pickup_time_error";
+      isRequired =
+        shipdaySettings.enable_pickup_time && shipdaySettings.pickup_time_mandatory;
     }
 
-    // If value is empty and field is required, show error
-    if ((!value || value==='') && isRequired) {
+    if ((!value || value === "") && isRequired) {
       setValidationErrors({
         [errorKey]: {
           message: errorMessage,
-          hidden: false
-        }
+          hidden: false,
+        },
       });
       return false;
     }
 
-    // Clear error
     clearValidationError(errorKey);
 
-    // Special handling for order type changes
     if (fieldType === "shipday_order_type") {
       clearValidationError("shipday_woo_delivery_date_error");
       clearValidationError("shipday_woo_delivery_time_error");
@@ -98,423 +104,428 @@ const Shipday_Woo_Delivery = ({
     return true;
   };
 
-  // Validate fields before processing checkout
   React.useEffect(() => {
-    if (isBeforeProcessing && shipdaySettings.enable_datetime_plugin) {
-      if (shipdaySettings.enable_delivery_option) {
-        validateField(shipdayOrderType, "shipday_order_type");
-      }
+    if (!isBeforeProcessing || !shipdaySettings.enable_datetime_plugin) {
+      return;
+    }
 
-      if (shipdaySettings.enable_delivery_option) {
-        if (shipdaySettings.shipday_order_type === "Delivery") {
-          validateField(shipdayDeliveryDate, "shipday_delivery_date");
-          validateField(shipdayDeliveryTime, "shipday_delivery_time");
-        } else if (shipdaySettings.shipday_order_type === "Pickup") {
-          validateField(shipdayPickupDate, "shipday_pickup_date");
-          validateField(pickupTime, "pickup_time");
-        }
-      } else {
-        if(shipdaySettings.enable_delivery_date)
-          validateField(shipdayDeliveryDate, "shipday_delivery_date");
-        if(shipdaySettings.enable_delivery_time)
-          validateField(shipdayDeliveryTime, "shipday_delivery_time");
-        if(shipdaySettings.enable_pickup_date)
+    if (shipdaySettings.enable_delivery_option) {
+      validateField(shipdayOrderType, "shipday_order_type");
+    }
+
+    if (shipdaySettings.enable_delivery_option) {
+      if (shipdayOrderType === "Delivery") {
+        validateField(shipdayDeliveryDate, "shipday_delivery_date");
+        validateField(shipdayDeliveryTime, "shipday_delivery_time");
+      } else if (shipdayOrderType === "Pickup") {
         validateField(shipdayPickupDate, "shipday_pickup_date");
-        if(shipdaySettings.enable_dpickup_time)
-          validateField(pickupTime, "pickup_time");
+        validateField(pickupTime, "pickup_time");
+      }
+    } else {
+      if (shipdaySettings.enable_delivery_date) {
+        validateField(shipdayDeliveryDate, "shipday_delivery_date");
+      }
+      if (shipdaySettings.enable_delivery_time) {
+        validateField(shipdayDeliveryTime, "shipday_delivery_time");
+      }
+      if (shipdaySettings.enable_pickup_date) {
+        validateField(shipdayPickupDate, "shipday_pickup_date");
+      }
+      if (shipdaySettings.enable_pickup_time) {
+        validateField(pickupTime, "pickup_time");
       }
     }
-  }, [isBeforeProcessing]);
+  }, [
+    isBeforeProcessing,
+    shipdaySettings.enable_datetime_plugin,
+    shipdaySettings.enable_delivery_option,
+    shipdaySettings.enable_delivery_date,
+    shipdaySettings.enable_delivery_time,
+    shipdaySettings.enable_pickup_date,
+    shipdaySettings.enable_pickup_time,
+    shipdaySettings.delivery_date_mandatory,
+    shipdaySettings.delivery_time_mandatory,
+    shipdaySettings.pickup_date_mandatory,
+    shipdaySettings.pickup_time_mandatory,
+    shipdayOrderType,
+    shipdayDeliveryDate,
+    shipdayDeliveryTime,
+    shipdayPickupDate,
+    pickupTime,
+  ]);
 
-  // Set extension data when values change
   React.useEffect(() => {
-    checkoutExtensionData.setExtensionData("shipday-woo-delivery", "shipday_order_type", shipdayOrderType);
-  }, [shipdayOrderType]);
+    setShipdayOrderType(shipdaySettings.shipday_order_type);
+  }, [shipdaySettings.shipday_order_type]);
 
   React.useEffect(() => {
-    checkoutExtensionData.setExtensionData("shipday-woo-delivery", "shipday_delivery_date", shipdayDeliveryDate);
-  }, [shipdayDeliveryDate]);
+    setShipdayDeliveryDate(shipdaySettings.shipday_delivery_date);
+  }, [shipdaySettings.shipday_delivery_date]);
 
   React.useEffect(() => {
-    checkoutExtensionData.setExtensionData("shipday-woo-delivery", "shipday_delivery_time", shipdayDeliveryTime);
-  }, [shipdayDeliveryTime]);
+    setShipdayDeliveryTime(shipdaySettings.shipday_delivery_time);
+  }, [shipdaySettings.shipday_delivery_time]);
 
   React.useEffect(() => {
-    checkoutExtensionData.setExtensionData("shipday-woo-delivery", "shipday_pickup_date", shipdayPickupDate);
-  }, [shipdayPickupDate]);
+    setShipdayPickupDate(shipdaySettings.shipday_pickup_date);
+  }, [shipdaySettings.shipday_pickup_date]);
 
   React.useEffect(() => {
-    checkoutExtensionData.setExtensionData("shipday-woo-delivery", "pickup_time", pickupTime);
-  }, [pickupTime]);
+    setPickupTime(shipdaySettings.pickup_time);
+  }, [shipdaySettings.pickup_time]);
 
-  // Update state when shipdaySettings change
-  React.useEffect(() => { setShipdayOrderType(shipdaySettings.shipday_order_type); }, [shipdaySettings.shipday_order_type]);
-  React.useEffect(() => { setShipdayDeliveryDate(shipdaySettings.shipday_delivery_date); }, [shipdaySettings.shipday_delivery_date]);
-  React.useEffect(() => { setShipdayDeliveryTime(shipdaySettings.shipday_delivery_time); }, [shipdaySettings.shipday_delivery_time]);
-  React.useEffect(() => { setShipdayPickupDate(shipdaySettings.shipday_pickup_date); }, [shipdaySettings.shipday_pickup_date]);
-  React.useEffect(() => { setPickupTime(shipdaySettings.pickup_time); }, [shipdaySettings.pickup_time]);
+  const updateCheckoutSession = (namespace, data) => {
+    if (!window.wc?.blocksCheckout?.extensionCartUpdate) {
+      return Promise.resolve();
+    }
 
-  // Handle checkout errors
-  const hasCheckoutError = useSelect(store => store(checkoutStoreKey).hasError());
+    setIsProcessing(true);
 
-  // Event handlers
+    return window.wc.blocksCheckout
+      .extensionCartUpdate({
+        namespace,
+        data,
+      })
+      .finally(() => setIsProcessing(false));
+  };
+
   const handleOrderTypeChange = (event) => {
     const value = event.target.value;
-    if (value === '') {
-      event.target.classList.add('shipday-select-placeholder');
+    if (value === "") {
+      event.target.classList.add("shipday-select-placeholder");
     } else {
-      event.target.classList.remove('shipday-select-placeholder');
+      event.target.classList.remove("shipday-select-placeholder");
     }
     setShipdayOrderType(value);
     validateField(value, "shipday_order_type");
-    setIsProcessing(true);
-    wc.blocksCheckout.extensionCartUpdate({
-      namespace: "shipday_woo_delivery_order_type_change",
-      data: {
-        shipday_order_type: value
-      }
-    }).finally(() => setIsProcessing(false));
+    updateCheckoutSession("shipday_woo_delivery_order_type_change", {
+      shipday_order_type: value,
+    });
   };
 
   const handleDeliveryDateChange = (value) => {
     setShipdayDeliveryDate(value);
     validateField(value, "shipday_delivery_date");
-    setIsProcessing(true);
-    wc.blocksCheckout.extensionCartUpdate({
-      namespace: "shipday_woo_delivery_delivery_date_change",
-      data: {
-        shipday_delivery_date: value
-      }
-    }).finally(() => setIsProcessing(false));
+    updateCheckoutSession("shipday_woo_delivery_delivery_date_change", {
+      shipday_delivery_date: value,
+    });
   };
 
   const handlePickupDateChange = (value) => {
     setShipdayPickupDate(value);
     validateField(value, "shipday_pickup_date");
-    setIsProcessing(true);
-    wc.blocksCheckout.extensionCartUpdate({
-      namespace: "shipday_woo_delivery_pickup_date_change",
-      data: {
-        shipday_pickup_date: value
-      }
-    }).finally(() => setIsProcessing(false));
+    updateCheckoutSession("shipday_woo_delivery_pickup_date_change", {
+      shipday_pickup_date: value,
+    });
   };
-
 
   const handleDeliveryTimeChange = (event) => {
     const value = event.target.value;
-    if(value === ''){
-      event.target.classList.add('shipday-select-placeholder');
-    }else {
-      event.target.classList.remove('shipday-select-placeholder');
+    if (value === "") {
+      event.target.classList.add("shipday-select-placeholder");
+    } else {
+      event.target.classList.remove("shipday-select-placeholder");
     }
     setShipdayDeliveryTime(value);
     validateField(value, "shipday_delivery_time");
-    setIsProcessing(true);
-    wc.blocksCheckout.extensionCartUpdate({
-      namespace: "shipday_woo_delivery_delivery_time_change",
-      data: {
-        shipday_delivery_time: value
-      }
-    }).finally(() => setIsProcessing(false));
+    updateCheckoutSession("shipday_woo_delivery_delivery_time_change", {
+      shipday_delivery_time: value,
+    });
   };
 
-    const handlePickupTimeChange = (event) => {
-      const value = event.target.value;
-      if(value === ''){
-        event.target.classList.add('shipday-select-placeholder');
-      }else {
-        event.target.classList.remove('shipday-select-placeholder');
-      }
-      setPickupTime(value);
-      validateField(value, "pickup_time");
-      setIsProcessing(true);
-      wc.blocksCheckout.extensionCartUpdate({
-        namespace: "shipday_woo_delivery_pickup_time_change",
-        data: {
-          pickup_time: value
-        }
-      }).finally(() => setIsProcessing(false));
-    };
-
-
-  return shipdaySettings.enable_datetime_plugin && React.createElement("div", {
-    className: `shipday-woo-delivery-block-container${isProcessing ? " processing" : ""}`
-  }, 
-  React.createElement("legend", {
-    className: "screen-reader-text"
-  }, shipdaySettings.delivery_option_field_label), 
-
-  React.createElement("div", {
-    className: "wc-block-components-checkout-step__heading"
-  }, 
-    React.createElement("h2", {
-      className: "wc-block-components-title wc-block-components-checkout-step__title",
-      ariaHidden: true
-    }, shipdaySettings.delivery_heading_checkout)
-  ), 
-
-  // Order Type Component
-    shipdaySettings.enable_datetime_plugin && shipdaySettings.enable_delivery_option && React.createElement(Shipday_Woo_Order_Type, {
-    shipdaySettings: shipdaySettings,
-    handleOrderTypeChange: handleOrderTypeChange,
-    getValidationError: getValidationError
-  }), 
-
-  // Delivery Date Component
-    shipdaySettings.enable_datetime_plugin && shipdaySettings.enable_delivery_date &&
-  (!shipdaySettings.enable_delivery_option || shipdayOrderType === "Delivery") &&
-  React.createElement(Shipday_Woo_Delivery_Date, {
-    shipdaySettings: shipdaySettings,
-    handleDeliveryDateChange: handleDeliveryDateChange,
-    getValidationError: getValidationError
-  }), 
-
-  // Delivery Time Component
-    shipdaySettings.enable_datetime_plugin && shipdaySettings.enable_delivery_time &&
-  (!shipdaySettings.enable_delivery_option || shipdayOrderType === "Delivery") &&
-  React.createElement(Shipday_Woo_Delivery_Time, {
-    shipdaySettings: shipdaySettings,
-    shipdayDeliveryTime: shipdayDeliveryTime,
-    handleDeliveryTimeChange: handleDeliveryTimeChange,
-    getValidationError: getValidationError
-  }),
-
-  // Pickup Date Component
-    shipdaySettings.enable_datetime_plugin && shipdaySettings.enable_pickup_date &&
-  (!shipdaySettings.enable_delivery_option || shipdayOrderType === "Pickup") &&
-  React.createElement(Shipday_Woo_Pickup_Date, {
-    shipdaySettings: shipdaySettings,
-    handlePickupDateChange: handlePickupDateChange,
-    getValidationError: getValidationError
-  }),
-
-    // Pickup Time Component
-    shipdaySettings.enable_datetime_plugin && shipdaySettings.enable_pickup_time &&
-    (!shipdaySettings.enable_delivery_option || shipdayOrderType === "Pickup") &&
-    React.createElement(Shipday_Woo_Pickup_Time, {
-      shipdaySettings: shipdaySettings,
-      handlePickupTimeChange: handlePickupTimeChange,
-      pickupTime: pickupTime,
-      getValidationError: getValidationError
-    }),
-
-  )
-  },
-
-
-  // Format a date object to YYYY-MM-DD string
-  shipdayFormattedDate = date => {
-    let year = date.getFullYear(),
-        month = ("0" + (date.getMonth() + 1)).slice(-2),
-        day = ("0" + date.getDate()).slice(-2);
-    return `${year}-${month}-${day}`
-  },
-
-  // Get an array of enabled dates based on shipdaySettings
-  shipdayEnableDates = (numberOfDays, startDate, disabledWeekDays, disabledDates) => {
-    // Ensure numberOfDays is a number
-    numberOfDays = parseInt(numberOfDays);
-
-    let enabledDates = [],
-        currentDate = new Date(startDate);
-
-    // Loop until we have enough enabled dates
-    while (enabledDates.length < numberOfDays) {
-      let formattedCurrentDate = shipdayFormattedDate(currentDate);
-      // Add date if it's not in disabled weekdays or disabled dates
-      if (!disabledWeekDays.includes(currentDate.getDay().toString()) && 
-          !disabledDates.includes(formattedCurrentDate)) {
-        enabledDates.push(formattedCurrentDate);
-      }
-      // Move to next day
-      currentDate.setDate(currentDate.getDate() + 1);
+  const handlePickupTimeChange = (event) => {
+    const value = event.target.value;
+    if (value === "") {
+      event.target.classList.add("shipday-select-placeholder");
+    } else {
+      event.target.classList.remove("shipday-select-placeholder");
     }
+    setPickupTime(value);
+    validateField(value, "pickup_time");
+    updateCheckoutSession("shipday_woo_delivery_pickup_time_change", {
+      pickup_time: value,
+    });
+  };
 
-    return enabledDates
-  },
-  // Order Type Component
-  Shipday_Woo_Order_Type = ({
-    shipdaySettings,
-    handleOrderTypeChange,
-    getValidationError
-  }) => {
-    // Extract needed properties from shipdaySettings
-    let {
-      delivery_options: deliveryOptions,
-      shipday_order_type: shipdayOrderType
-    } = shipdaySettings;
+  if (!shipdaySettings.enable_datetime_plugin) {
+    return null;
+  }
 
-    // Get validation error if any
-    const validationError = getValidationError("shipday_woo_order_type_error");
+  return React.createElement(
+    "div",
+    {
+      className: `shipday-woo-delivery-block-container${
+        isProcessing ? " processing" : ""
+      }`,
+    },
+    React.createElement(
+      "legend",
+      {
+        className: "screen-reader-text",
+      },
+      shipdaySettings.delivery_option_field_label
+    ),
+    React.createElement(
+      "div",
+      {
+        className: "wc-block-components-checkout-step__heading",
+      },
+      React.createElement(
+        "h2",
+        {
+          className: "wc-block-components-title wc-block-components-checkout-step__title",
+          ariaHidden: true,
+        },
+        shipdaySettings.delivery_heading_checkout
+      )
+    ),
+    shipdaySettings.enable_delivery_option &&
+      React.createElement(Shipday_Woo_Order_Type, {
+        shipdaySettings,
+        shipdayOrderType,
+        handleOrderTypeChange,
+        getValidationError,
+      }),
+    shipdaySettings.enable_delivery_date &&
+      (!shipdaySettings.enable_delivery_option ||
+        shipdayOrderType === "Delivery") &&
+      React.createElement(Shipday_Woo_Delivery_Date, {
+        shipdaySettings,
+        handleDeliveryDateChange,
+        getValidationError,
+      }),
+    shipdaySettings.enable_delivery_time &&
+      (!shipdaySettings.enable_delivery_option ||
+        shipdayOrderType === "Delivery") &&
+      React.createElement(Shipday_Woo_Delivery_Time, {
+        shipdaySettings,
+        shipdayDeliveryTime,
+        handleDeliveryTimeChange,
+        getValidationError,
+      }),
+    shipdaySettings.enable_pickup_date &&
+      (!shipdaySettings.enable_delivery_option ||
+        shipdayOrderType === "Pickup") &&
+      React.createElement(Shipday_Woo_Pickup_Date, {
+        shipdaySettings,
+        handlePickupDateChange,
+        getValidationError,
+      }),
+    shipdaySettings.enable_pickup_time &&
+      (!shipdaySettings.enable_delivery_option ||
+        shipdayOrderType === "Pickup") &&
+      React.createElement(Shipday_Woo_Pickup_Time, {
+        shipdaySettings,
+        handlePickupTimeChange,
+        pickupTime,
+        getValidationError,
+      })
+  );
+};
 
-    // Generate options for the select dropdown
-    const renderOptions = () => 
-      Object.entries(deliveryOptions).map(([value, label]) => 
-        React.createElement("option", {
+const shipdayFormattedDate = (date) => {
+  const year = date.getFullYear();
+  const month = `0${date.getMonth() + 1}`.slice(-2);
+  const day = `0${date.getDate()}`.slice(-2);
+  return `${year}-${month}-${day}`;
+};
+
+const shipdayEnableDates = (numberOfDays, startDate, disabledWeekDays, disabledDates) => {
+  const totalDays = parseInt(numberOfDays, 10);
+  const enabledDates = [];
+  const currentDate = new Date(startDate);
+
+  while (enabledDates.length < totalDays) {
+    const formattedCurrentDate = shipdayFormattedDate(currentDate);
+    if (
+      !disabledWeekDays.includes(currentDate.getDay().toString()) &&
+      !disabledDates.includes(formattedCurrentDate)
+    ) {
+      enabledDates.push(formattedCurrentDate);
+    }
+    currentDate.setDate(currentDate.getDate() + 1);
+  }
+
+  return enabledDates;
+};
+
+const Shipday_Woo_Order_Type = ({
+  shipdaySettings,
+  shipdayOrderType,
+  handleOrderTypeChange,
+  getValidationError,
+}) => {
+  const deliveryOptions = shipdaySettings.delivery_options || {};
+  const validationError = getValidationError("shipday_woo_order_type_error");
+
+  const renderOptions = () =>
+    Object.entries(deliveryOptions).map(([value, label]) =>
+      React.createElement(
+        "option",
+        {
           key: value,
-          value: value,
-          selected: shipdayOrderType === value
-        }, label)
-      );
+          value,
+          selected: shipdayOrderType === value,
+        },
+        label
+      )
+    );
 
-    // Render the component
-    return React.createElement("div", {
-      className: `shipday-woo-order-type-container${validationError ? " has-error" : ""}`
-    }, 
-    React.createElement("div", {
-      className: `wc-blocks-components-select shipday-woo-delivery-select${shipdayOrderType ? "" : " not-selected"}`
-    }, 
-      React.createElement("div", {
-        className: "wc-blocks-components-select__container"
-      }, 
-        // Label
-        React.createElement("label", {
-          htmlFor: "shipday_woo_order_type",
-          className: "wc-blocks-components-select__label"
-        }, shipdaySettings.delivery_option_field_label), 
-
-        // Select dropdown
-        React.createElement("select", {
-          size: "1",
-          name: "shipday_woo_order_type",
-          className: "wc-blocks-components-select__select shipday-select-placeholder",
-          id: "shipday_woo_order_type",
-          "aria-label": shipdaySettings.delivery_option_field_label,
-          "aria-invalid": validationError ? "true" : "false",
-          onChange: handleOrderTypeChange,
-          required: shipdaySettings.enable_delivery_option
-        }, 
-          // Default empty option
-          React.createElement("option", {
-            value: "",
-            className: "shipday-select-placeholder"
-          }, shipdaySettings.select_order_type_text), 
-
-          // Delivery options
+  return React.createElement(
+    "div",
+    {
+      className: `shipday-woo-order-type-container${
+        validationError ? " has-error" : ""
+      }`,
+    },
+    React.createElement(
+      "div",
+      {
+        className: `wc-blocks-components-select shipday-woo-delivery-select${
+          shipdayOrderType ? "" : " not-selected"
+        }`,
+      },
+      React.createElement(
+        "div",
+        {
+          className: "wc-blocks-components-select__container",
+        },
+        React.createElement(
+          "label",
+          {
+            htmlFor: "shipday_woo_order_type",
+            className: "wc-blocks-components-select__label",
+          },
+          shipdaySettings.delivery_option_field_label
+        ),
+        React.createElement(
+          "select",
+          {
+            size: "1",
+            name: "shipday_woo_order_type",
+            className: "wc-blocks-components-select__select shipday-select-placeholder",
+            id: "shipday_woo_order_type",
+            "aria-label": shipdaySettings.delivery_option_field_label,
+            "aria-invalid": validationError ? "true" : "false",
+            onChange: handleOrderTypeChange,
+            required: shipdaySettings.enable_delivery_option,
+          },
+          React.createElement(
+            "option",
+            {
+              value: "",
+              className: "shipday-select-placeholder",
+            },
+            shipdaySettings.select_order_type_text
+          ),
           renderOptions()
-        ), 
-
-        // Dropdown arrow icon
-        React.createElement("svg", {
-          viewBox: "0 0 24 24",
-          xmlns: "http://www.w3.org/2000/svg",
-          width: "24",
-          height: "24",
-          className: "wc-blocks-components-select__expand",
-          "aria-hidden": "true",
-          focusable: "false"
-        }, 
+        ),
+        React.createElement(
+          "svg",
+          {
+            viewBox: "0 0 24 24",
+            xmlns: "http://www.w3.org/2000/svg",
+            width: "24",
+            height: "24",
+            className: "wc-blocks-components-select__expand",
+            "aria-hidden": "true",
+            focusable: "false",
+          },
           React.createElement("path", {
-            d: "M17.5 11.6L12 16l-5.5-4.4.9-1.2L12 14l4.5-3.6 1 1.2z"
+            d: "M17.5 11.6L12 16l-5.5-4.4.9-1.2L12 14l4.5-3.6 1 1.2z",
           })
         )
       )
-    ), 
-
-    // Error message if validation fails
-    validationError && React.createElement("div", {
-      className: "wc-block-components-validation-error",
-      role: "alert"
-    }, 
-      React.createElement("p", {}, validationError.message)
-    ))
-  },
-
-  // Delivery Date Component
-  Shipday_Woo_Delivery_Date = ({
-    shipdaySettings,
-    handleDeliveryDateChange,
-    getValidationError
-  }) => {
-    // Create a ref for the date picker input
-    const datePickerRef = React.useRef(null);
-
-    // State to track if the date field is active (has a value)
-    const [isActive, setIsActive] = React.useState(!!shipdaySettings.shipday_delivery_date);
-
-    // Flag to prevent onChange handler during initialization
-    let isInitializing = false;
-
-    // Get validation error if any
-    const validationError = getValidationError("shipday_woo_delivery_date_error");
-
-    // Get disabled days and dates from shipdaySettings
-    const disabledWeekDays = shipdaySettings.delivery_disable_week_days;
-    const disabledDates = [];
-
-    // Get enabled dates based on shipdaySettings
-    const enabledDates = shipdayEnableDates(
-      shipdaySettings.delivery_date_selectable_days, 
-      shipdaySettings.today, 
-      disabledWeekDays, 
-      disabledDates
-    );
-
-
-    let fieldLabel = shipdaySettings.delivery_date_field_label;
-
-    // Initialize flatpickr date picker
-    React.useEffect(() => {
-      // Create flatpickr instance
-      const flatpickrInstance = flatpickr(datePickerRef.current, {
-        defaultDate: shipdaySettings.shipday_delivery_date,
-        enable: enabledDates,
-        minDate: shipdaySettings.today,
-        dateFormat: "Y-m-d",
-        altInput: true,
-        altFormat: shipdaySettings.delivery_date_format,
-        locale: {
-          firstDayOfWeek: shipdaySettings.week_starts_from
+    ),
+    validationError &&
+      React.createElement(
+        "div",
+        {
+          className: "wc-block-components-validation-error",
+          role: "alert",
         },
+        React.createElement("p", {}, validationError.message)
+      )
+  );
+};
 
-        // Handle initialization
-        onReady(selectedDates, dateStr, instance) {
-          // Check if current value matches shipdaySettings
-          const expectedValue = shipdaySettings.shipday_delivery_date !== null ? shipdaySettings.shipday_delivery_date : "";
+const Shipday_Woo_Delivery_Date = ({
+  shipdaySettings,
+  handleDeliveryDateChange,
+  getValidationError,
+}) => {
+  const datePickerRef = React.useRef(null);
+  const [isActive, setIsActive] = React.useState(
+    !!shipdaySettings.shipday_delivery_date
+  );
+  let isInitializing = false;
 
-          // If they don't match, reset the picker
-          if (dateStr !== expectedValue) {
-            setIsActive(false);
-            isInitializing = true;
-            instance.clear();
-            isInitializing = false;
-          }
-        },
+  const validationError = getValidationError("shipday_woo_delivery_date_error");
+  const disabledWeekDays = shipdaySettings.delivery_disable_week_days || [];
+  const enabledDates = shipdayEnableDates(
+    shipdaySettings.delivery_date_selectable_days,
+    shipdaySettings.today,
+    disabledWeekDays,
+    []
+  );
 
-        // Handle date selection
-        onChange(selectedDates, dateStr, instance) {
-          // Skip if we're initializing
-          if (!isInitializing) {
-            handleDeliveryDateChange(dateStr);
-          }
-        },
-
-        // Update active state when picker opens/closes
-        onOpen(selectedDates, dateStr, instance) {
-          setIsActive(dateStr !== "");
-        },
-        onClose(selectedDates, dateStr, instance) {
-          setIsActive(dateStr !== "");
+  React.useEffect(() => {
+    const flatpickrInstance = flatpickr(datePickerRef.current, {
+      defaultDate: shipdaySettings.shipday_delivery_date,
+      enable: enabledDates,
+      minDate: shipdaySettings.today,
+      dateFormat: "Y-m-d",
+      altInput: true,
+      altFormat: shipdaySettings.delivery_date_format,
+      locale: {
+        firstDayOfWeek: shipdaySettings.week_starts_from,
+      },
+      onReady(selectedDates, dateStr, instance) {
+        const expectedValue =
+          shipdaySettings.shipday_delivery_date !== null
+            ? shipdaySettings.shipday_delivery_date
+            : "";
+        if (dateStr !== expectedValue) {
+          setIsActive(false);
+          isInitializing = true;
+          instance.clear();
+          isInitializing = false;
         }
-      });
-
-      // Cleanup function to destroy flatpickr instance
-      return () => {
-        if (flatpickrInstance) {
-          flatpickrInstance.destroy();
+      },
+      onChange(selectedDates, dateStr) {
+        if (!isInitializing) {
+          handleDeliveryDateChange(dateStr);
         }
-      };
-    }, [shipdaySettings]);
+      },
+      onOpen(selectedDates, dateStr) {
+        setIsActive(dateStr !== "");
+      },
+      onClose(selectedDates, dateStr) {
+        setIsActive(dateStr !== "");
+      },
+    });
 
-    // Render the component
-    return React.createElement("div", {
-      className: `shipday-woo-delivery-date-container${validationError ? " has-error" : ""}`
-    }, 
-    React.createElement("div", {
-      className: `wc-block-components-text-input shipday-woo-delivery-text-input${isActive ? " is-active" : ""}`
-    }, 
-      // Date input field
+    return () => {
+      if (flatpickrInstance) {
+        flatpickrInstance.destroy();
+      }
+    };
+  }, [shipdaySettings]);
+
+  return React.createElement(
+    "div",
+    {
+      className: `shipday-woo-delivery-date-container${
+        validationError ? " has-error" : ""
+      }`,
+    },
+    React.createElement(
+      "div",
+      {
+        className: `wc-block-components-text-input shipday-woo-delivery-text-input${
+          isActive ? " is-active" : ""
+        }`,
+      },
       React.createElement("input", {
         ref: datePickerRef,
         type: "text",
@@ -522,26 +533,23 @@ const Shipday_Woo_Delivery = ({
         id: "shipday_woo_delivery_date",
         "aria-label": shipdaySettings.delivery_date_field_label,
         "aria-invalid": validationError ? "true" : "false",
-        required: shipdaySettings.delivery_date_mandatory
-      }), 
-
-      // Field label
-      React.createElement("label", {
-        className: "shipday-woo-delivery-date-label",
-        htmlFor: "shipday_woo_delivery_date"
-      }, fieldLabel),
-      // Calendar icon (purely visual)
+        required: shipdaySettings.delivery_date_mandatory,
+      }),
+      React.createElement(
+        "label",
+        {
+          className: "shipday-woo-delivery-date-label",
+          htmlFor: "shipday_woo_delivery_date",
+        },
+        shipdaySettings.delivery_date_field_label
+      ),
       React.createElement(
         "span",
         {
           className: "shipday-woo-delivery-date-icon",
           "aria-hidden": "true",
           onClick: () => {
-            if (
-              datePickerRef &&
-              datePickerRef.current &&
-              datePickerRef.current._flatpickr
-            ) {
+            if (datePickerRef.current && datePickerRef.current._flatpickr) {
               datePickerRef.current._flatpickr.open();
             }
           },
@@ -551,372 +559,439 @@ const Shipday_Woo_Delivery = ({
         })
       )
     ),
-
-
-    // Error message if validation fails
-    validationError && React.createElement("div", {
-      className: "wc-block-components-validation-error",
-      role: "alert"
-    }, 
-      React.createElement("p", {}, validationError.message)
-    ))
-  },
-  // Delivery Time Component
-  Shipday_Woo_Delivery_Time = ({
-    shipdaySettings,
-    shipdayDeliveryTime,
-    handleDeliveryTimeChange,
-    getValidationError
-  }) => {
-    // Create a ref for the select dropdown
-    const selectRef = React.useRef(null);
-
-    // Extract time options from shipdaySettings
-    const {delivery_time_options: timeOptions} = shipdaySettings;
-
-    // Get validation error if any
-    const validationError = getValidationError("shipday_woo_delivery_time_error");
-
-    // Reset select to default option if shipdayDeliveryTime is empty
-    React.useEffect(() => {
-      if (!shipdayDeliveryTime && selectRef.current) {
-        selectRef.current.selectedIndex = 0;
-      }
-    });
-
-    let fieldLabel = shipdaySettings.delivery_time_field_label;
-
-    // Generate options for the select dropdown
-    const renderTimeOptions = () =>
-      Object.entries(timeOptions).map(([value, option]) =>
-        React.createElement("option", {
-          key: value,
-          value: value,
-          selected: shipdayDeliveryTime === value && !option.disabled,
-          disabled: option.disabled
-        }, option.title)
-      );
-
-    // Render the component
-    return React.createElement("div", {
-        className: `shipday-woo-delivery-time-container${validationError ? " has-error" : ""}`
-      },
-      React.createElement("div", {
-          className: `wc-blocks-components-select shipday-woo-delivery-select${shipdayDeliveryTime ? "" : " not-selected"}`
-        },
-        React.createElement("div", {
-            className: "wc-blocks-components-select__container"
-          },
-          // Label
-          React.createElement("label", {
-            htmlFor: "shipday_woo_delivery_time",
-            className: "wc-blocks-components-select__label"
-          }, fieldLabel),
-
-          // Select dropdown
-          React.createElement("select", {
-              ref: selectRef,
-              size: "1",
-              name: "shipday_woo_delivery_time",
-              className: "wc-blocks-components-select__select shipday-select-placeholder",
-              id: "shipday_woo_delivery_time",
-              "aria-label": shipdaySettings.delivery_time_field_label,
-              "aria-invalid": validationError ? "true" : "false",
-              onChange: handleDeliveryTimeChange,
-              required: shipdaySettings.delivery_time_mandatory
-            },
-            // Default empty option
-            React.createElement("option", {
-              value: ""
-            }, shipdaySettings.select_delivery_time_text),
-
-            // Time options
-            renderTimeOptions()
-          ),
-
-          // Dropdown arrow icon
-          React.createElement("svg", {
-              viewBox: "0 0 24 24",
-              xmlns: "http://www.w3.org/2000/svg",
-              width: "24",
-              height: "24",
-              className: "wc-blocks-components-select__expand",
-              "aria-hidden": "true",
-              focusable: "false"
-            },
-            React.createElement("path", {
-              d: "M17.5 11.6L12 16l-5.5-4.4.9-1.2L12 14l4.5-3.6 1 1.2z"
-            })
-          )
-        )
-      ),
-      // Error message if validation fails
-      validationError && React.createElement("div", {
+    validationError &&
+      React.createElement(
+        "div",
+        {
           className: "wc-block-components-validation-error",
-          role: "alert"
+          role: "alert",
         },
         React.createElement("p", {}, validationError.message)
-      ))
-    },
-      //Pickup Time Component
-      Shipday_Woo_Pickup_Time = ({
-                                     shipdaySettings,
-                                     handlePickupTimeChange,
-                                     pickupTime,
-                                     getValidationError
-                                   }) => {
-        // Create a ref for the select dropdown
-        const selectRef = React.useRef(null);
+      )
+  );
+};
 
-        // Extract time options from shipdaySettings
-        const { pickup_time_options: timeOptions } = shipdaySettings;
+const Shipday_Woo_Delivery_Time = ({
+  shipdaySettings,
+  shipdayDeliveryTime,
+  handleDeliveryTimeChange,
+  getValidationError,
+}) => {
+  const selectRef = React.useRef(null);
+  const timeOptions = shipdaySettings.delivery_time_options || {};
+  const validationError = getValidationError("shipday_woo_delivery_time_error");
 
-        // Get validation error if any
-        const validationError = getValidationError("shipday_woo_pickup_time_error");
+  React.useEffect(() => {
+    if (!shipdayDeliveryTime && selectRef.current) {
+      selectRef.current.selectedIndex = 0;
+    }
+  });
 
-        // Reset select to default option if shipdayDeliveryTime is empty
-        React.useEffect(() => {
-          if (!pickupTime && selectRef.current) {
-            selectRef.current.selectedIndex = 0;
-          }
-        });
-
-        let fieldLabel = __('Pickup time', 'shipday-for-woocommerce');
-
-        // Generate options for the select dropdown
-        const renderTimeOptions = () =>
-          Object.entries(timeOptions).map(([value, option]) =>
-            React.createElement("option", {
-              key: value,
-              value: value,
-              selected: pickupTime === value && !option.disabled,
-              disabled:  option.disabled
-            }, option.title)
-          );
-
-        // Render the component
-        return React.createElement("div", {
-            className: `shipday-woo-pickup-time-container${validationError ? " has-error" : ""}`
-          },
-          React.createElement("div", {
-              className: `wc-blocks-components-select shipday-woo-delivery-select${pickupTime ? "" : " not-selected"}`
-            },
-            React.createElement("div", {
-                className: "wc-blocks-components-select__container"
-              },
-              // Label
-              React.createElement("label", {
-                htmlFor: "shipday_woo_pickup_time",
-                className: "wc-blocks-components-select__label"
-              }, fieldLabel),
-
-              // Select dropdown
-              React.createElement("select", {
-                  ref: selectRef,
-                  size: "1",
-                  name: "shipday_woo_pickup_time",
-                  className: "wc-blocks-components-select__select shipday-select-placeholder",
-                  id: "shipday_woo_pickup_time",
-                  "aria-label": 'Shipday-pickup-time',
-                  "aria-invalid": validationError ? "true" : "false",
-                  onChange: handlePickupTimeChange,
-                  required: shipdaySettings.pickup_time_mandatory
-                },
-                // Default empty option
-                React.createElement("option", {
-                  value: ""
-                }, __('Select pickup slot', 'shipday-for-woocommerce')),
-
-                // Time options
-                renderTimeOptions()
-              ),
-
-              // Dropdown arrow icon
-              React.createElement("svg", {
-                  viewBox: "0 0 24 24",
-                  xmlns: "http://www.w3.org/2000/svg",
-                  width: "24",
-                  height: "24",
-                  className: "wc-blocks-components-select__expand",
-                  "aria-hidden": "true",
-                  focusable: "false"
-                },
-                React.createElement("path", {
-                  d: "M17.5 11.6L12 16l-5.5-4.4.9-1.2L12 14l4.5-3.6 1 1.2z"
-                })
-              )
-            )
-          ),
-
-          // Error message if validation fails
-    validationError && React.createElement("div", {
-      className: "wc-block-components-validation-error",
-      role: "alert"
-    }, 
-      React.createElement("p", {}, validationError.message)
-    ))
-  },
-
-
-  // Pickup Date Component
-  Shipday_Woo_Pickup_Date = ({
-                                 shipdaySettings,
-                                 handlePickupDateChange,
-                                 getValidationError
-                               }) => {
-    const pickupDatePickerRef = React.useRef(null);
-    const [isActive, setIsActive] = React.useState(!!shipdaySettings.shipday_pickup_date);
-    let isInitializing = false;
-    const validationError = getValidationError("shipday_woo_pickup_date_error");
-
-    let fieldLabel = shipdaySettings.pickup_date_field_label;
-
-    // Get disabled days and dates from shipdaySettings
-    const disabledWeekDays = shipdaySettings.pickup_disable_week_days;
-    const disabledDates = [];
-
-    // Get enabled dates based on shipdaySettings
-    const enabledDates = shipdayEnableDates(
-      shipdaySettings.pickup_date_selectable_days,
-      shipdaySettings.today,
-      disabledWeekDays,
-      disabledDates
+  const renderTimeOptions = () =>
+    Object.entries(timeOptions).map(([value, option]) =>
+      React.createElement(
+        "option",
+        {
+          key: value,
+          value,
+          selected: shipdayDeliveryTime === value && !option.disabled,
+          disabled: option.disabled,
+        },
+        option.title
+      )
     );
 
-    // Initialize flatpickr date picker
-    React.useEffect(() => {
-      // Create flatpickr instance
-      const flatpickrInstance = flatpickr(pickupDatePickerRef.current, {
-        defaultDate: shipdaySettings.shipday_pickup_date,
-        enable: enabledDates,
-        dateFormat: "Y-m-d",
-        altInput: true,
-        locale: {
-          firstDayOfWeek: shipdaySettings.week_starts_from
-        },
-
-        // Handle initialization
-        onReady(selectedDates, dateStr, instance) {
-          // Check if current value matches shipdaySettings
-          const expectedValue = shipdaySettings.shipday_pickup_date !== null ? shipdaySettings.shipday_pickup_date : "";
-          // If they don't match, reset the picker
-          if (dateStr !== expectedValue) {
-            setIsActive(false);
-            isInitializing = true;
-            instance.clear();
-            isInitializing = false;
-          }
-        },
-
-        // Handle date selection
-        onChange(selectedDates, dateStr, instance) {
-          // Skip if we're initializing
-          if (!isInitializing) {
-            handlePickupDateChange(dateStr);
-          }
-        },
-
-        // Update active state when picker opens/closes
-        onOpen(selectedDates, dateStr, instance) {
-          setIsActive(dateStr !== "");
-        },
-        onClose(selectedDates, dateStr, instance) {
-          setIsActive(dateStr !== "");
-        }
-      });
-      // Cleanup function to destroy flatpickr instance
-      return () => {
-        if (flatpickrInstance) {
-          flatpickrInstance.destroy();
-        }
-      };
-    }, [shipdaySettings]);
-
-    // Render the component
-    return React.createElement("div", {
-        className: `shipday-woo-delivery-date-container${validationError ? " has-error" : ""}`
+  return React.createElement(
+    "div",
+    {
+      className: `shipday-woo-delivery-time-container${
+        validationError ? " has-error" : ""
+      }`,
+    },
+    React.createElement(
+      "div",
+      {
+        className: `wc-blocks-components-select shipday-woo-delivery-select${
+          shipdayDeliveryTime ? "" : " not-selected"
+        }`,
       },
-      React.createElement("div", {
-          className: `wc-block-components-text-input shipday-woo-delivery-text-input${isActive ? " is-active" : ""}`
+      React.createElement(
+        "div",
+        {
+          className: "wc-blocks-components-select__container",
         },
-        // Date input field
-        React.createElement("input", {
-          ref: pickupDatePickerRef,
-          type: "text",
-          name: "shipday_woo_pickup_date",
-          id: "shipday_woo_pickup_date",
-          "aria-label": shipdaySettings.pickup_date_field_label,
-          "aria-invalid": validationError ? "true" : "false",
-          required: shipdaySettings.pickup_date_mandatory
-        }),
-
-        // Field label
-        React.createElement("label", {
-          className: "shipday-woo-delivery-date-label",
-          htmlFor: "shipday_woo_delivery_date"
-        }, fieldLabel),
-        // Calendar icon (purely visual)
         React.createElement(
-          "span",
+          "label",
           {
-            className: "shipday-woo-delivery-date-icon",
-            "aria-hidden": "true",
-            onClick: () => {
-              if (
-                pickupDatePickerRef &&
-                pickupDatePickerRef.current &&
-                pickupDatePickerRef.current._flatpickr
-              ) {
-                pickupDatePickerRef.current._flatpickr.open();
-              }
-            },
+            htmlFor: "shipday_woo_delivery_time",
+            className: "wc-blocks-components-select__label",
           },
-          React.createElement("span", {
-            className: "dashicons dashicons-calendar-alt",
+          shipdaySettings.delivery_time_field_label
+        ),
+        React.createElement(
+          "select",
+          {
+            ref: selectRef,
+            size: "1",
+            name: "shipday_woo_delivery_time",
+            className: "wc-blocks-components-select__select shipday-select-placeholder",
+            id: "shipday_woo_delivery_time",
+            "aria-label": shipdaySettings.delivery_time_field_label,
+            "aria-invalid": validationError ? "true" : "false",
+            onChange: handleDeliveryTimeChange,
+            required: shipdaySettings.delivery_time_mandatory,
+          },
+          React.createElement(
+            "option",
+            {
+              value: "",
+            },
+            shipdaySettings.select_delivery_time_text
+          ),
+          renderTimeOptions()
+        ),
+        React.createElement(
+          "svg",
+          {
+            viewBox: "0 0 24 24",
+            xmlns: "http://www.w3.org/2000/svg",
+            width: "24",
+            height: "24",
+            className: "wc-blocks-components-select__expand",
+            "aria-hidden": "true",
+            focusable: "false",
+          },
+          React.createElement("path", {
+            d: "M17.5 11.6L12 16l-5.5-4.4.9-1.2L12 14l4.5-3.6 1 1.2z",
           })
         )
-      ),
-
-      // Error message if validation fails
-      validationError && React.createElement("div", {
+      )
+    ),
+    validationError &&
+      React.createElement(
+        "div",
+        {
           className: "wc-block-components-validation-error",
-          role: "alert"
+          role: "alert",
         },
         React.createElement("p", {}, validationError.message)
-      ))
-  };
+      )
+  );
+};
 
+const Shipday_Woo_Pickup_Time = ({
+  shipdaySettings,
+  handlePickupTimeChange,
+  pickupTime,
+  getValidationError,
+}) => {
+  const selectRef = React.useRef(null);
+  const timeOptions = shipdaySettings.pickup_time_options || {};
+  const validationError = getValidationError("shipday_woo_pickup_time_error");
 
-  // Block metadata definition
-  shipday_woo_delivery_metadata = {
-    apiVersion: 3,
-    name: "shipday-for-woocommerce/delivery-block",
-    title: "Shipday Woocommerce",
-    category: "woocommerce",
-    icon: "calendar-alt",
-    description: "Show delivery/pickup inputs in WooCommerce checkout block",
-    supports: {
-      multiple: false
-    },
-    editorScript: "file:js/editor.js",
-    viewStyle: ["file:css/editor.css"],
-    parent: [shipday_woo_delivery_localize_settings.block_field_position],
-    attributes: {
-      lock: {
-        type: "object",
-        default: {
-          remove: true,
-          move: true
-        }
-      }
+  React.useEffect(() => {
+    if (!pickupTime && selectRef.current) {
+      selectRef.current.selectedIndex = 0;
     }
+  });
+
+  const renderTimeOptions = () =>
+    Object.entries(timeOptions).map(([value, option]) =>
+      React.createElement(
+        "option",
+        {
+          key: value,
+          value,
+          selected: pickupTime === value && !option.disabled,
+          disabled: option.disabled,
+        },
+        option.title
+      )
+    );
+
+  return React.createElement(
+    "div",
+    {
+      className: `shipday-woo-pickup-time-container${
+        validationError ? " has-error" : ""
+      }`,
+    },
+    React.createElement(
+      "div",
+      {
+        className: `wc-blocks-components-select shipday-woo-delivery-select${
+          pickupTime ? "" : " not-selected"
+        }`,
+      },
+      React.createElement(
+        "div",
+        {
+          className: "wc-blocks-components-select__container",
+        },
+        React.createElement(
+          "label",
+          {
+            htmlFor: "shipday_woo_pickup_time",
+            className: "wc-blocks-components-select__label",
+          },
+          __("Pickup time", "shipday-for-woocommerce")
+        ),
+        React.createElement(
+          "select",
+          {
+            ref: selectRef,
+            size: "1",
+            name: "shipday_woo_pickup_time",
+            className: "wc-blocks-components-select__select shipday-select-placeholder",
+            id: "shipday_woo_pickup_time",
+            "aria-label": "Shipday-pickup-time",
+            "aria-invalid": validationError ? "true" : "false",
+            onChange: handlePickupTimeChange,
+            required: shipdaySettings.pickup_time_mandatory,
+          },
+          React.createElement(
+            "option",
+            {
+              value: "",
+            },
+            __("Select pickup slot", "shipday-for-woocommerce")
+          ),
+          renderTimeOptions()
+        ),
+        React.createElement(
+          "svg",
+          {
+            viewBox: "0 0 24 24",
+            xmlns: "http://www.w3.org/2000/svg",
+            width: "24",
+            height: "24",
+            className: "wc-blocks-components-select__expand",
+            "aria-hidden": "true",
+            focusable: "false",
+          },
+          React.createElement("path", {
+            d: "M17.5 11.6L12 16l-5.5-4.4.9-1.2L12 14l4.5-3.6 1 1.2z",
+          })
+        )
+      )
+    ),
+    validationError &&
+      React.createElement(
+        "div",
+        {
+          className: "wc-block-components-validation-error",
+          role: "alert",
+        },
+        React.createElement("p", {}, validationError.message)
+      )
+  );
+};
+
+const Shipday_Woo_Pickup_Date = ({
+  shipdaySettings,
+  handlePickupDateChange,
+  getValidationError,
+}) => {
+  const pickupDatePickerRef = React.useRef(null);
+  const [isActive, setIsActive] = React.useState(
+    !!shipdaySettings.shipday_pickup_date
+  );
+  let isInitializing = false;
+
+  const validationError = getValidationError("shipday_woo_pickup_date_error");
+  const disabledWeekDays = shipdaySettings.pickup_disable_week_days || [];
+  const enabledDates = shipdayEnableDates(
+    shipdaySettings.pickup_date_selectable_days,
+    shipdaySettings.today,
+    disabledWeekDays,
+    []
+  );
+
+  React.useEffect(() => {
+    const flatpickrInstance = flatpickr(pickupDatePickerRef.current, {
+      defaultDate: shipdaySettings.shipday_pickup_date,
+      enable: enabledDates,
+      dateFormat: "Y-m-d",
+      altInput: true,
+      locale: {
+        firstDayOfWeek: shipdaySettings.week_starts_from,
+      },
+      onReady(selectedDates, dateStr, instance) {
+        const expectedValue =
+          shipdaySettings.shipday_pickup_date !== null
+            ? shipdaySettings.shipday_pickup_date
+            : "";
+        if (dateStr !== expectedValue) {
+          setIsActive(false);
+          isInitializing = true;
+          instance.clear();
+          isInitializing = false;
+        }
+      },
+      onChange(selectedDates, dateStr) {
+        if (!isInitializing) {
+          handlePickupDateChange(dateStr);
+        }
+      },
+      onOpen(selectedDates, dateStr) {
+        setIsActive(dateStr !== "");
+      },
+      onClose(selectedDates, dateStr) {
+        setIsActive(dateStr !== "");
+      },
+    });
+
+    return () => {
+      if (flatpickrInstance) {
+        flatpickrInstance.destroy();
+      }
+    };
+  }, [shipdaySettings]);
+
+  return React.createElement(
+    "div",
+    {
+      className: `shipday-woo-delivery-date-container${
+        validationError ? " has-error" : ""
+      }`,
+    },
+    React.createElement(
+      "div",
+      {
+        className: `wc-block-components-text-input shipday-woo-delivery-text-input${
+          isActive ? " is-active" : ""
+        }`,
+      },
+      React.createElement("input", {
+        ref: pickupDatePickerRef,
+        type: "text",
+        name: "shipday_woo_pickup_date",
+        id: "shipday_woo_pickup_date",
+        "aria-label": shipdaySettings.pickup_date_field_label,
+        "aria-invalid": validationError ? "true" : "false",
+        required: shipdaySettings.pickup_date_mandatory,
+      }),
+      React.createElement(
+        "label",
+        {
+          className: "shipday-woo-delivery-date-label",
+          htmlFor: "shipday_woo_pickup_date",
+        },
+        shipdaySettings.pickup_date_field_label
+      ),
+      React.createElement(
+        "span",
+        {
+          className: "shipday-woo-delivery-date-icon",
+          "aria-hidden": "true",
+          onClick: () => {
+            if (
+              pickupDatePickerRef.current &&
+              pickupDatePickerRef.current._flatpickr
+            ) {
+              pickupDatePickerRef.current._flatpickr.open();
+            }
+          },
+        },
+        React.createElement("span", {
+          className: "dashicons dashicons-calendar-alt",
+        })
+      )
+    ),
+    validationError &&
+      React.createElement(
+        "div",
+        {
+          className: "wc-block-components-validation-error",
+          role: "alert",
+        },
+        React.createElement("p", {}, validationError.message)
+      )
+  );
+};
+
+const shipdayFindCheckoutTarget = () => {
+  for (const selector of SHIPDAY_CHECKOUT_SELECTORS) {
+    const match = document.querySelector(selector);
+    if (match) {
+      return match;
+    }
+  }
+
+  return null;
+};
+
+const shipdayEnsureMountNode = (target) => {
+  const existing = document.getElementById(SHIPDAY_MOUNT_ID);
+  if (existing && target.contains(existing)) {
+    return existing;
+  }
+
+  if (existing) {
+    existing.remove();
+  }
+
+  const mountNode = document.createElement("div");
+  mountNode.id = SHIPDAY_MOUNT_ID;
+  target.appendChild(mountNode);
+  return mountNode;
+};
+
+const shipdayRenderIntoMount = (mountNode) => {
+  const element = React.createElement(Shipday_Woo_Delivery);
+
+  if (typeof wp.element.createRoot === "function") {
+    if (!mountNode.__shipdayRoot) {
+      mountNode.__shipdayRoot = wp.element.createRoot(mountNode);
+    }
+    mountNode.__shipdayRoot.render(element);
+    return;
+  }
+
+  if (typeof wp.element.render === "function") {
+    wp.element.render(element, mountNode);
+  }
+};
+
+const shipdayMountCheckoutFields = () => {
+  if (
+    !document.querySelector(".wc-block-checkout") &&
+    !document.querySelector(".wp-block-woocommerce-checkout")
+  ) {
+    return false;
+  }
+
+  const target = shipdayFindCheckoutTarget();
+  if (!target) {
+    return false;
+  }
+
+  const mountNode = shipdayEnsureMountNode(target);
+  shipdayRenderIntoMount(mountNode);
+  return true;
+};
+
+const shipdayStartMountObserver = () => {
+  const attemptMount = () => {
+    shipdayMountCheckoutFields();
   };
 
-  // Block registration options
-  shipday_woo_delivery_options = {
-    metadata: shipday_woo_delivery_metadata,
-    component: Shipday_Woo_Delivery
-  };
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", attemptMount, { once: true });
+  } else {
+    attemptMount();
+  }
 
-// Register the checkout block with WooCommerce
-wc.blocksCheckout.registerCheckoutBlock(shipday_woo_delivery_options);
+  const observer = new MutationObserver(() => {
+    attemptMount();
+  });
+
+  if (document.body) {
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+    });
+  }
+};
+
+shipdayStartMountObserver();

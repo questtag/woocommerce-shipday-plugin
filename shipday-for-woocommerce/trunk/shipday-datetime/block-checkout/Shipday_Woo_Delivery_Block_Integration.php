@@ -21,6 +21,7 @@ class Shipday_Woo_Delivery_Block_Integration implements IntegrationInterface {
      * When called invokes any initialization/setup for the integration.
      */
     public function initialize() {
+        $this->register_block_editor_scripts();
         $this->register_block_frontend_scripts();
     }
 
@@ -30,7 +31,7 @@ class Shipday_Woo_Delivery_Block_Integration implements IntegrationInterface {
      * @return string[]
      */
     public function get_script_handles() {
-        return [$this->get_name(), 'flatpickr_js'];
+        return array( Shipday_Woo_Delivery_Block::$FRONTEND_SCRIPT_HANDLE, 'flatpickr_js' );
     }
 
     /**
@@ -39,7 +40,7 @@ class Shipday_Woo_Delivery_Block_Integration implements IntegrationInterface {
      * @return string[]
      */
     public function get_editor_script_handles() {
-        return [];
+        return array( Shipday_Woo_Delivery_Block::$EDITOR_SCRIPT_HANDLE );
     }
 
     /**
@@ -57,7 +58,15 @@ class Shipday_Woo_Delivery_Block_Integration implements IntegrationInterface {
      * @return void
      */
     public function register_block_editor_scripts() {
-
+        if ( wp_script_is( Shipday_Woo_Delivery_Block::$EDITOR_SCRIPT_HANDLE, 'registered' ) ) {
+            wp_localize_script(
+                Shipday_Woo_Delivery_Block::$EDITOR_SCRIPT_HANDLE,
+                'shipdayWooDeliveryBlockData',
+                array(
+                    'blockFieldPosition' => Shipday_Woo_Delivery_Block::get_block_field_position(),
+                )
+            );
+        }
     }
 
     /**
@@ -66,9 +75,23 @@ class Shipday_Woo_Delivery_Block_Integration implements IntegrationInterface {
      * @return void
      */
     public function register_block_frontend_scripts() {
-        wp_register_script( $this->get_name(), plugin_dir_url( __FILE__ ) . 'assets/js/frontend.js', array( 'wp-plugins', 'wp-element', 'wp-components', 'wp-hooks', 'wp-i18n', 'wc-blocks-checkout', 'flatpickr_js' ), "2.0.1", true );
+        wp_register_script(
+            Shipday_Woo_Delivery_Block::$FRONTEND_SCRIPT_HANDLE,
+            plugin_dir_url( __FILE__ ) . 'assets/js/frontend.js',
+            array( 'wp-data', 'wp-plugins', 'wp-element', 'wp-components', 'wp-hooks', 'wp-i18n', 'wc-blocks-checkout', 'flatpickr_js' ),
+            '2.3.1',
+            true
+        );
 
-        wp_enqueue_style( $this->get_name(), plugin_dir_url( __FILE__ ) . 'assets/css/frontend.css', array(), "2.1.4" );
+        wp_localize_script(
+            Shipday_Woo_Delivery_Block::$FRONTEND_SCRIPT_HANDLE,
+            'shipdayWooDeliveryBlockData',
+            array(
+                'blockFieldPosition' => Shipday_Woo_Delivery_Block::get_block_field_position(),
+            )
+        );
+
+        wp_enqueue_style( Shipday_Woo_Delivery_Block::$FRONTEND_STYLE_HANDLE );
     }
 
     /**

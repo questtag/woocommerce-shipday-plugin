@@ -4,10 +4,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 // phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Included admin partial uses file-scoped template variables.
-$datetime_enabled = get_option('shipday_enable_datetime_plugin', "no") === "yes";
-$order_type_enabled = get_option('shipday_enable_delivery_option', "no") === "yes";
+$datetime_enabled     = get_option('shipday_enable_datetime_plugin', "no") === "yes";
+$order_type_enabled   = get_option('shipday_enable_delivery_option', "no") === "yes";
 $datetime_heading_label = get_option('shipday_delivery_pickup_label', "Delivery/Pickup info");
-$time_format = get_option( 'shipday_time_format', '12-hour' );
+$time_format          = get_option( 'shipday_time_format', '12-hour' );
 ?>
 <div class="sd-panel-header">
   <div class="sd-panel-title-wrap">

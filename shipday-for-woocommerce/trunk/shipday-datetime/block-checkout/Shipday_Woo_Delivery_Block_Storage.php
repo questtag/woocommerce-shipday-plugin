@@ -23,10 +23,28 @@ class Shipday_Woo_Delivery_Block_Storage {
         add_action( 'woocommerce_store_api_checkout_update_order_from_request', [$this, 'update_block_order_meta'], 10, 2 );
     }
 
+    private static function get_checkout_data( $request ) {
+        $extensions = $request->get_param( 'extensions' );
+        $data = isset( $extensions['shipday-woo-delivery'] ) && is_array( $extensions['shipday-woo-delivery'] )
+            ? $extensions['shipday-woo-delivery']
+            : array();
+
+        if ( ! empty( $data ) ) {
+            return $data;
+        }
+
+        return array(
+            'shipday_order_type'    => WC()->session ? WC()->session->get( 'shipday_order_type' ) : null,
+            'shipday_delivery_date' => WC()->session ? WC()->session->get( 'shipday_delivery_date' ) : null,
+            'shipday_delivery_time' => WC()->session ? WC()->session->get( 'shipday_delivery_time' ) : null,
+            'shipday_pickup_date'   => WC()->session ? WC()->session->get( 'shipday_pickup_date' ) : null,
+            'pickup_time'           => WC()->session ? WC()->session->get( 'pickup_time' ) : null,
+        );
+    }
+
     function update_block_order_meta( $order, $request ) {
         $settings = Shipday_Woo_DateTime_Util::get_default_settings();
-        $extensions = $request->get_param( 'extensions' );
-        $data = $extensions['shipday-woo-delivery'] ?? [];
+        $data = self::get_checkout_data( $request );
         $order_id = $order->get_id();
         $hpos = false;
         if ( class_exists( \Automattic\WooCommerce\Utilities\OrderUtil::class ) ) {
@@ -106,6 +124,10 @@ class Shipday_Woo_Delivery_Block_Storage {
 
         if ( $settings['enable_datetime_plugin'] && $settings['enable_pickup_date'] && $settings['pickup_date_mandatory'] &&  $data['shipday_order_type'] === 'Pickup' && empty( $data['shipday_pickup_date'] ) ) {
             $errors->add( 'error', $settings['checkout_date_notice'] );
+        }
+
+        if ( $settings['enable_datetime_plugin'] && $settings['enable_pickup_time'] && $settings['pickup_time_mandatory'] && $data['shipday_order_type'] === 'Pickup' && empty( $data['pickup_time'] ) ) {
+            $errors->add( 'error', $settings['checkout_pickup_time_notice'] );
         }
 
     }

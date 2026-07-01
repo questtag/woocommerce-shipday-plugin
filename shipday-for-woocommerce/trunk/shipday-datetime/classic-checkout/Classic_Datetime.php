@@ -10,9 +10,9 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Author: Hadi
  */
 
-require_once dirname(__DIR__). '../../functions/common.php';
-require_once dirname(__DIR__). '../../functions/logger.php';
-require_once dirname(__FILE__) . '../../block-checkout/Shipday_Woo_DateTime_Util.php';
+require_once dirname( __DIR__ ) . '/../functions/common.php';
+require_once dirname( __DIR__ ) . '/../functions/logger.php';
+require_once dirname( __DIR__ ) . '/block-checkout/Shipday_Woo_DateTime_Util.php';
 
 // phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedClassFound -- Legacy class name retained for backwards compatibility.
 class Classic_Datetime {

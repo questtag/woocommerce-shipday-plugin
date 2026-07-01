@@ -11,6 +11,10 @@ class Shipday_Woo_Delivery_Block {
     protected static $instance = null;
     static $IDENTIFIER = 'shipday_woo_delivery';
     static $BLOCK_NAME = 'shipday-for-woocommerce/delivery-block';
+    static $EDITOR_SCRIPT_HANDLE = 'shipday-woo-delivery-block-editor';
+    static $FRONTEND_SCRIPT_HANDLE = 'shipday-woo-delivery-block';
+    static $EDITOR_STYLE_HANDLE = 'shipday-woo-delivery-block-editor';
+    static $FRONTEND_STYLE_HANDLE = 'shipday-woo-delivery-block-style';
 
     private function __clone() {}
     public function __wakeup() {
@@ -31,7 +35,6 @@ class Shipday_Woo_Delivery_Block {
         add_action( 'woocommerce_blocks_loaded', [$this, 'add_data'] );
         add_action( 'woocommerce_blocks_loaded', [$this, 'extension_data_declaration'] );
         add_action( 'woocommerce_blocks_loaded', [$this, 'order_type_change_callback'] );
-        add_action( 'wp_footer', [$this, 'localize_settings'] );
     }
 
     function reset_session() {
@@ -42,7 +45,56 @@ class Shipday_Woo_Delivery_Block {
     }
 
     function register_woo_delivery_block() {
-        register_block_type( self::$BLOCK_NAME );
+        $asset_base_url = plugin_dir_url( __FILE__ ) . 'assets/';
+
+        wp_register_script(
+            self::$EDITOR_SCRIPT_HANDLE,
+            $asset_base_url . 'js/editor.js',
+            array( 'wp-blocks', 'wp-element', 'wp-i18n' ),
+            '2.3.1',
+            true
+        );
+
+        wp_register_style(
+            self::$EDITOR_STYLE_HANDLE,
+            $asset_base_url . 'css/editor.css',
+            array(),
+            '2.3.1'
+        );
+
+        wp_register_style(
+            self::$FRONTEND_STYLE_HANDLE,
+            $asset_base_url . 'css/frontend.css',
+            array(),
+            '2.3.1'
+        );
+
+        $script_data = array(
+            'blockFieldPosition' => self::get_block_field_position(),
+        );
+
+        wp_localize_script( self::$EDITOR_SCRIPT_HANDLE, 'shipdayWooDeliveryBlockData', $script_data );
+
+        register_block_type(
+            self::$BLOCK_NAME,
+            array(
+                'api_version'   => 3,
+                'editor_script' => self::$EDITOR_SCRIPT_HANDLE,
+                'editor_style'  => self::$EDITOR_STYLE_HANDLE,
+                'style'         => self::$FRONTEND_STYLE_HANDLE,
+                'parent'        => array( self::get_block_field_position() ),
+                'attributes'    => array(
+                    'lock' => array(
+                        'type'    => 'object',
+                        'default' => array(
+                            'remove' => true,
+                            'move'   => true,
+                        ),
+                    ),
+                ),
+                'render_callback' => '__return_empty_string',
+            )
+        );
     }
 
 
@@ -344,15 +396,16 @@ class Shipday_Woo_Delivery_Block {
     }
 
     function localize_settings() {
-
-        $shipday_block_field_position = "contact-information";
-        if ( $shipday_block_field_position === 'contact-information' ) {
-            $block_field_position = "woocommerce/checkout-contact-information-block";
-        }
-        wp_localize_script( 'shipday-woo-delivery-block', 'shipday_woo_delivery_localize_settings',
+        wp_localize_script(
+            self::$FRONTEND_SCRIPT_HANDLE,
+            'shipdayWooDeliveryBlockData',
             array(
-                'block_field_position' => "woocommerce/checkout-contact-information-block",
+                'blockFieldPosition' => self::get_block_field_position(),
             )
         );
+    }
+
+    static function get_block_field_position() {
+        return 'woocommerce/checkout-contact-information-block';
     }
 }
