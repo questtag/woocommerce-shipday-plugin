@@ -35,7 +35,7 @@ class Shipday_Menu_Settings {
 
         wp_enqueue_style( 'select2mincss', plugin_dir_url( __FILE__ ) . 'css/select2.min.css', array(), "2.0.0", 'all' );
         wp_enqueue_style( "flatpickr_css",  plugin_dir_url( __FILE__ ) . '../shipday-datetime/public/css/flatpickr.min.css', array(), "2.0.0", 'all' );
-        wp_enqueue_style( "shipday_admin_menu_css", plugin_dir_url( __FILE__ ) . 'css/shipday_admin_menu.css', array(), "2.5.72", 'all' );
+        wp_enqueue_style( "shipday_admin_menu_css", plugin_dir_url( __FILE__ ) . 'css/shipday_admin_menu.css', array(), "2.5.74", 'all' );
 
     }
 
@@ -44,7 +44,7 @@ class Shipday_Menu_Settings {
         wp_enqueue_script( 'jquery-effects-slide' );
         wp_enqueue_code_editor( array( 'type' => 'text/css' ) );
         wp_enqueue_script( "flatpickr_js",  plugin_dir_url( __FILE__ ) . 'public/js/flatpickr.min.js', [], "2.0.0", true );
-        wp_enqueue_script( "shipday_admin_menu_js", plugin_dir_url( __FILE__ ) . 'js/shipday_admin_menu.js', array( 'jquery', 'selectWoo', 'flatpickr_js' ), "2.0.60", 'all' );
+        wp_enqueue_script( "shipday_admin_menu_js", plugin_dir_url( __FILE__ ) . 'js/shipday_admin_menu.js', array( 'jquery', 'selectWoo', 'flatpickr_js' ), "2.0.61", 'all' );
         $shipday_nonce = wp_create_nonce('shipday_nonce');
         wp_localize_script("shipday_admin_menu_js", 'shipday_ajax_obj', array(
             'shipday_ajax_url' => admin_url('admin-ajax.php'),
@@ -340,6 +340,16 @@ class Shipday_Menu_Settings {
         $available_days_ = isset( $form_data['shipday_avaialble_delivery_days'] )
             ? self::sanitize_day_list( $form_data['shipday_avaialble_delivery_days'] )
             : array();
+
+        if ( 'yes' === $enable_delivery_date && empty( $available_days_ ) ) {
+            wp_send_json_error(
+                array(
+                    'message' => __( 'Please select at least one delivery day.', 'shipday-for-woocommerce' ),
+                ),
+                400
+            );
+        }
+
         $start_delivery_slot = self::sanitize_time_slot(
             $form_data['shipday_delivery_time_slot_start_hh'] ?? 9,
             $form_data['shipday_delivery_time_slot_start_mm'] ?? 0,
@@ -426,6 +436,16 @@ class Shipday_Menu_Settings {
         $available_days_ = isset( $form_data['shipday_avaialble_pickup_days'] )
             ? self::sanitize_day_list( $form_data['shipday_avaialble_pickup_days'] )
             : array();
+
+        if ( 'yes' === $enable_pickup_date && empty( $available_days_ ) ) {
+            wp_send_json_error(
+                array(
+                    'message' => __( 'Please select at least one pickup day.', 'shipday-for-woocommerce' ),
+                ),
+                400
+            );
+        }
+
         $start_pickup_slot = self::sanitize_time_slot(
             $form_data['shipday_pickup_time_slot_start_hh'] ?? 9,
             $form_data['shipday_pickup_time_slot_start_mm'] ?? 0,

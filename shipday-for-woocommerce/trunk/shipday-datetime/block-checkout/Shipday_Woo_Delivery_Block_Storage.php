@@ -25,21 +25,29 @@ class Shipday_Woo_Delivery_Block_Storage {
 
     private static function get_checkout_data( $request ) {
         $extensions = $request->get_param( 'extensions' );
-        $data = isset( $extensions['shipday-woo-delivery'] ) && is_array( $extensions['shipday-woo-delivery'] )
-            ? $extensions['shipday-woo-delivery']
-            : array();
+        $data = array();
 
-        if ( ! empty( $data ) ) {
-            return $data;
+        if ( isset( $extensions['shipday-woo-delivery'] ) && is_array( $extensions['shipday-woo-delivery'] ) ) {
+            $data = $extensions['shipday-woo-delivery'];
+        } elseif ( isset( $extensions['shipday_woo_delivery'] ) && is_array( $extensions['shipday_woo_delivery'] ) ) {
+            $data = $extensions['shipday_woo_delivery'];
         }
 
-        return array(
+        $session_data = array(
             'shipday_order_type'    => WC()->session ? WC()->session->get( 'shipday_order_type' ) : null,
             'shipday_delivery_date' => WC()->session ? WC()->session->get( 'shipday_delivery_date' ) : null,
             'shipday_delivery_time' => WC()->session ? WC()->session->get( 'shipday_delivery_time' ) : null,
             'shipday_pickup_date'   => WC()->session ? WC()->session->get( 'shipday_pickup_date' ) : null,
             'pickup_time'           => WC()->session ? WC()->session->get( 'pickup_time' ) : null,
         );
+
+        foreach ( $session_data as $key => $session_value ) {
+            if ( empty( $data[ $key ] ) && ! empty( $session_value ) ) {
+                $data[ $key ] = $session_value;
+            }
+        }
+
+        return array_merge( $session_data, $data );
     }
 
     function update_block_order_meta( $order, $request ) {

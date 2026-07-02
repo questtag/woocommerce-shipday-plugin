@@ -90,6 +90,10 @@ $datetime_enabled = get_option('shipday_enable_datetime_plugin', "no") === "yes"
   <p class="shipday-pickup-notice"><span
         class="dashicons dashicons-yes"></span><?php esc_html_e( ' Settings Changed Successfully', 'shipday-for-woocommerce' ); ?>
   </p>
+  <p class="shipday-pickup-error-notice" aria-live="polite">
+    <span class="dashicons dashicons-warning"></span>
+    <span class="shipday-notice__message"><?php esc_html_e( 'Unable to save pickup settings.', 'shipday-for-woocommerce' ); ?></span>
+  </p>
 
   <form action="" method="post" id="shipday-pickup-settings-form">
       <?php wp_nonce_field('shipday_nonce'); ?>

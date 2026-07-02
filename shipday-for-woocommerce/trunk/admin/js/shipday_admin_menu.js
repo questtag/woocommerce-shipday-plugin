@@ -125,6 +125,35 @@
     $notice.stop(true, true).show();
   }
 
+  function showPickupErrorNotice(message) {
+    const $notice = jQuery('.shipday-pickup-error-notice');
+
+    if (!$notice.length) {
+      return;
+    }
+
+    const $message = $notice.find('.shipday-notice__message');
+    const noticeMessage = message || 'Unable to save pickup settings.';
+
+    if ($message.length) {
+      $message.text(noticeMessage);
+    } else {
+      $notice.text(noticeMessage);
+    }
+
+    $notice.stop(true, true).show();
+  }
+
+  function hidePickupErrorNotice() {
+    const $notice = jQuery('.shipday-pickup-error-notice');
+
+    if (!$notice.length) {
+      return;
+    }
+
+    $notice.stop(true, true).hide();
+  }
+
   function requestDeliveryFeeFeatureStatus() {
     return jQuery.ajax({
       url: shipday_ajax_obj.shipday_ajax_url,
@@ -390,10 +419,15 @@
       },
       success: function (response) {
         if (response && response.success === false) {
-          window.alert(response.data && response.data.message ? response.data.message : 'Unable to save pickup settings.');
+          showPickupErrorNotice(
+            response.data && response.data.message
+              ? response.data.message
+              : 'Unable to save pickup settings.'
+          );
           return;
         }
 
+        hidePickupErrorNotice();
         $notice.show('slide', {
           direction: 'right'
         });
@@ -405,15 +439,7 @@
 
       },
       error: function (xhr) {
-        const message =
-          xhr &&
-          xhr.responseJSON &&
-          xhr.responseJSON.data &&
-          xhr.responseJSON.data.message
-            ? xhr.responseJSON.data.message
-            : 'Unable to save pickup settings.';
-
-        window.alert(message);
+        showPickupErrorNotice(getAjaxErrorMessage(xhr, 'Unable to save pickup settings.'));
       }
     });
   }
