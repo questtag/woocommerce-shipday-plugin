@@ -78,7 +78,7 @@ class Shipday_Woo_Delivery_Block_Integration implements IntegrationInterface {
         wp_register_script(
             Shipday_Woo_Delivery_Block::$FRONTEND_SCRIPT_HANDLE,
             plugin_dir_url( __FILE__ ) . 'assets/js/frontend.js',
-            array( 'wp-data', 'wp-plugins', 'wp-element', 'wp-components', 'wp-hooks', 'wp-i18n', 'wc-blocks-checkout', 'flatpickr_js' ),
+            array( 'wp-api-fetch', 'wp-data', 'wp-plugins', 'wp-element', 'wp-components', 'wp-hooks', 'wp-i18n', 'wc-blocks-checkout', 'flatpickr_js' ),
             '2.3.1',
             true
         );

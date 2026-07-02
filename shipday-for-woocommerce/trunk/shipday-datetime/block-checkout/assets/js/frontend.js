@@ -1,7 +1,18 @@
-const { __ } = wp.i18n;
-const React = window.React || wp.element;
+;(function (wp, wc, document) {
+  "use strict";
 
+const { __ } = wp.i18n;
+const React = wp.element;
+
+const SHIPDAY_CHECKOUT_EXTENSION_NAMESPACE = "shipday-woo-delivery";
 const SHIPDAY_MOUNT_ID = "shipday-woo-delivery-block-mount";
+const SHIPDAY_FIELD_IDS = {
+  shipday_order_type: "shipday_woo_order_type",
+  shipday_delivery_date: "shipday_woo_delivery_date",
+  shipday_delivery_time: "shipday_woo_delivery_time",
+  shipday_pickup_date: "shipday_woo_pickup_date",
+  pickup_time: "shipday_woo_pickup_time",
+};
 const SHIPDAY_CHECKOUT_SELECTORS = [
   ".wp-block-woocommerce-checkout-contact-information-block",
   ".wc-block-components-checkout-step--contact-information .wc-block-components-checkout-step__container",
@@ -49,7 +60,17 @@ const Shipday_Woo_Delivery = () => {
     store(checkoutStoreKey).isBeforeProcessing()
   );
 
+  const getFieldValue = (value, fieldType) => {
+    if (value !== undefined && value !== null && value !== "") {
+      return value;
+    }
+
+    const field = document.getElementById(SHIPDAY_FIELD_IDS[fieldType] || fieldType);
+    return field ? field.value : value;
+  };
+
   const validateField = (value, fieldType) => {
+    const fieldValue = getFieldValue(value, fieldType);
     let errorKey = `shipday_woo_${fieldType}_error`;
     let errorMessage = __("This field is mandatory", "shipday-for-woocommerce");
     let isRequired = false;
@@ -82,7 +103,7 @@ const Shipday_Woo_Delivery = () => {
         shipdaySettings.enable_pickup_time && shipdaySettings.pickup_time_mandatory;
     }
 
-    if ((!value || value === "") && isRequired) {
+    if ((!fieldValue || fieldValue === "") && isRequired) {
       setValidationErrors({
         [errorKey]: {
           message: errorMessage,
@@ -159,7 +180,9 @@ const Shipday_Woo_Delivery = () => {
   }, [shipdaySettings.shipday_order_type]);
 
   React.useEffect(() => {
-    setShipdayDeliveryDate(shipdaySettings.shipday_delivery_date);
+    if (shipdaySettings.shipday_delivery_date || !shipdayDeliveryDate) {
+      setShipdayDeliveryDate(shipdaySettings.shipday_delivery_date);
+    }
   }, [shipdaySettings.shipday_delivery_date]);
 
   React.useEffect(() => {
@@ -167,7 +190,9 @@ const Shipday_Woo_Delivery = () => {
   }, [shipdaySettings.shipday_delivery_time]);
 
   React.useEffect(() => {
-    setShipdayPickupDate(shipdaySettings.shipday_pickup_date);
+    if (shipdaySettings.shipday_pickup_date || !shipdayPickupDate) {
+      setShipdayPickupDate(shipdaySettings.shipday_pickup_date);
+    }
   }, [shipdaySettings.shipday_pickup_date]);
 
   React.useEffect(() => {
@@ -291,6 +316,7 @@ const Shipday_Woo_Delivery = () => {
         shipdayOrderType === "Delivery") &&
       React.createElement(Shipday_Woo_Delivery_Date, {
         shipdaySettings,
+        shipdayDeliveryDate,
         handleDeliveryDateChange,
         getValidationError,
       }),
@@ -308,6 +334,7 @@ const Shipday_Woo_Delivery = () => {
         shipdayOrderType === "Pickup") &&
       React.createElement(Shipday_Woo_Pickup_Date, {
         shipdaySettings,
+        shipdayPickupDate,
         handlePickupDateChange,
         getValidationError,
       }),
@@ -365,7 +392,6 @@ const Shipday_Woo_Order_Type = ({
         {
           key: value,
           value,
-          selected: shipdayOrderType === value,
         },
         label
       )
@@ -407,6 +433,7 @@ const Shipday_Woo_Order_Type = ({
             id: "shipday_woo_order_type",
             "aria-label": shipdaySettings.delivery_option_field_label,
             "aria-invalid": validationError ? "true" : "false",
+            value: shipdayOrderType || "",
             onChange: handleOrderTypeChange,
             required: shipdaySettings.enable_delivery_option,
           },
@@ -451,14 +478,15 @@ const Shipday_Woo_Order_Type = ({
 
 const Shipday_Woo_Delivery_Date = ({
   shipdaySettings,
+  shipdayDeliveryDate,
   handleDeliveryDateChange,
   getValidationError,
 }) => {
   const datePickerRef = React.useRef(null);
+  const isInitializing = React.useRef(false);
   const [isActive, setIsActive] = React.useState(
-    !!shipdaySettings.shipday_delivery_date
+    !!shipdayDeliveryDate
   );
-  let isInitializing = false;
 
   const validationError = getValidationError("shipday_woo_delivery_date_error");
   const disabledWeekDays = shipdaySettings.delivery_disable_week_days || [];
@@ -471,7 +499,7 @@ const Shipday_Woo_Delivery_Date = ({
 
   React.useEffect(() => {
     const flatpickrInstance = flatpickr(datePickerRef.current, {
-      defaultDate: shipdaySettings.shipday_delivery_date,
+      defaultDate: shipdayDeliveryDate || "",
       enable: enabledDates,
       minDate: shipdaySettings.today,
       dateFormat: "Y-m-d",
@@ -481,19 +509,18 @@ const Shipday_Woo_Delivery_Date = ({
         firstDayOfWeek: shipdaySettings.week_starts_from,
       },
       onReady(selectedDates, dateStr, instance) {
-        const expectedValue =
-          shipdaySettings.shipday_delivery_date !== null
-            ? shipdaySettings.shipday_delivery_date
-            : "";
-        if (dateStr !== expectedValue) {
+        const selectedDate = shipdayDeliveryDate || "";
+        if (dateStr !== selectedDate) {
           setIsActive(false);
-          isInitializing = true;
+          isInitializing.current = true;
           instance.clear();
-          isInitializing = false;
+          isInitializing.current = false;
         }
       },
       onChange(selectedDates, dateStr) {
-        if (!isInitializing) {
+        setIsActive(dateStr !== "");
+
+        if (!isInitializing.current) {
           handleDeliveryDateChange(dateStr);
         }
       },
@@ -510,7 +537,33 @@ const Shipday_Woo_Delivery_Date = ({
         flatpickrInstance.destroy();
       }
     };
-  }, [shipdaySettings]);
+  }, [
+    shipdaySettings.delivery_date_format,
+    shipdaySettings.today,
+    shipdaySettings.week_starts_from,
+    enabledDates.join("|"),
+  ]);
+
+  React.useEffect(() => {
+    const flatpickrInstance = datePickerRef.current?._flatpickr;
+    if (!flatpickrInstance) {
+      return;
+    }
+
+    const selectedDate = shipdayDeliveryDate || "";
+    if (flatpickrInstance.input.value === selectedDate) {
+      return;
+    }
+
+    isInitializing.current = true;
+    if (selectedDate) {
+      flatpickrInstance.setDate(selectedDate, false, "Y-m-d");
+    } else {
+      flatpickrInstance.clear();
+    }
+    isInitializing.current = false;
+    setIsActive(!!selectedDate);
+  }, [shipdayDeliveryDate]);
 
   return React.createElement(
     "div",
@@ -594,7 +647,6 @@ const Shipday_Woo_Delivery_Time = ({
         {
           key: value,
           value,
-          selected: shipdayDeliveryTime === value && !option.disabled,
           disabled: option.disabled,
         },
         option.title
@@ -638,6 +690,7 @@ const Shipday_Woo_Delivery_Time = ({
             id: "shipday_woo_delivery_time",
             "aria-label": shipdaySettings.delivery_time_field_label,
             "aria-invalid": validationError ? "true" : "false",
+            value: shipdayDeliveryTime || "",
             onChange: handleDeliveryTimeChange,
             required: shipdaySettings.delivery_time_mandatory,
           },
@@ -702,7 +755,6 @@ const Shipday_Woo_Pickup_Time = ({
         {
           key: value,
           value,
-          selected: pickupTime === value && !option.disabled,
           disabled: option.disabled,
         },
         option.title
@@ -746,6 +798,7 @@ const Shipday_Woo_Pickup_Time = ({
             id: "shipday_woo_pickup_time",
             "aria-label": "Shipday-pickup-time",
             "aria-invalid": validationError ? "true" : "false",
+            value: pickupTime || "",
             onChange: handlePickupTimeChange,
             required: shipdaySettings.pickup_time_mandatory,
           },
@@ -789,14 +842,15 @@ const Shipday_Woo_Pickup_Time = ({
 
 const Shipday_Woo_Pickup_Date = ({
   shipdaySettings,
+  shipdayPickupDate,
   handlePickupDateChange,
   getValidationError,
 }) => {
   const pickupDatePickerRef = React.useRef(null);
+  const isInitializing = React.useRef(false);
   const [isActive, setIsActive] = React.useState(
-    !!shipdaySettings.shipday_pickup_date
+    !!shipdayPickupDate
   );
-  let isInitializing = false;
 
   const validationError = getValidationError("shipday_woo_pickup_date_error");
   const disabledWeekDays = shipdaySettings.pickup_disable_week_days || [];
@@ -809,27 +863,27 @@ const Shipday_Woo_Pickup_Date = ({
 
   React.useEffect(() => {
     const flatpickrInstance = flatpickr(pickupDatePickerRef.current, {
-      defaultDate: shipdaySettings.shipday_pickup_date,
+      defaultDate: shipdayPickupDate || "",
       enable: enabledDates,
       dateFormat: "Y-m-d",
       altInput: true,
+      altFormat: shipdaySettings.pickup_date_format,
       locale: {
         firstDayOfWeek: shipdaySettings.week_starts_from,
       },
       onReady(selectedDates, dateStr, instance) {
-        const expectedValue =
-          shipdaySettings.shipday_pickup_date !== null
-            ? shipdaySettings.shipday_pickup_date
-            : "";
-        if (dateStr !== expectedValue) {
+        const selectedDate = shipdayPickupDate || "";
+        if (dateStr !== selectedDate) {
           setIsActive(false);
-          isInitializing = true;
+          isInitializing.current = true;
           instance.clear();
-          isInitializing = false;
+          isInitializing.current = false;
         }
       },
       onChange(selectedDates, dateStr) {
-        if (!isInitializing) {
+        setIsActive(dateStr !== "");
+
+        if (!isInitializing.current) {
           handlePickupDateChange(dateStr);
         }
       },
@@ -846,7 +900,33 @@ const Shipday_Woo_Pickup_Date = ({
         flatpickrInstance.destroy();
       }
     };
-  }, [shipdaySettings]);
+  }, [
+    shipdaySettings.pickup_date_format,
+    shipdaySettings.today,
+    shipdaySettings.week_starts_from,
+    enabledDates.join("|"),
+  ]);
+
+  React.useEffect(() => {
+    const flatpickrInstance = pickupDatePickerRef.current?._flatpickr;
+    if (!flatpickrInstance) {
+      return;
+    }
+
+    const selectedDate = shipdayPickupDate || "";
+    if (flatpickrInstance.input.value === selectedDate) {
+      return;
+    }
+
+    isInitializing.current = true;
+    if (selectedDate) {
+      flatpickrInstance.setDate(selectedDate, false, "Y-m-d");
+    } else {
+      flatpickrInstance.clear();
+    }
+    isInitializing.current = false;
+    setIsActive(!!selectedDate);
+  }, [shipdayPickupDate]);
 
   return React.createElement(
     "div",
@@ -908,6 +988,120 @@ const Shipday_Woo_Pickup_Date = ({
         React.createElement("p", {}, validationError.message)
       )
   );
+};
+
+const shipdayGetCurrentCheckoutData = () =>
+  Object.entries(SHIPDAY_FIELD_IDS).reduce((data, [fieldName, fieldId]) => {
+    const field = document.getElementById(fieldId);
+    data[fieldName] = field ? field.value || "" : "";
+    return data;
+  }, {});
+
+const shipdayIsCheckoutRequest = (input) => {
+  const url = typeof input === "string" ? input : input?.url || "";
+  return /\/wc\/store\/(?:v\d+\/)?checkout\/?(?:\?|$)/.test(url);
+};
+
+const shipdayMergeCheckoutExtensionData = (body) => {
+  const payload = JSON.parse(body);
+  const extensions = payload.extensions || {};
+
+  payload.extensions = {
+    ...extensions,
+    [SHIPDAY_CHECKOUT_EXTENSION_NAMESPACE]: {
+      ...(extensions[SHIPDAY_CHECKOUT_EXTENSION_NAMESPACE] || {}),
+      ...shipdayGetCurrentCheckoutData(),
+    },
+  };
+
+  return JSON.stringify(payload);
+};
+
+const shipdayPatchCheckoutFetch = () => {
+  if (window.__shipdayCheckoutFetchPatched || typeof window.fetch !== "function") {
+    return;
+  }
+
+  window.__shipdayCheckoutFetchPatched = true;
+  const originalFetch = window.fetch.bind(window);
+
+  window.fetch = async (input, init = {}) => {
+    if (!shipdayIsCheckoutRequest(input)) {
+      return originalFetch(input, init);
+    }
+
+    const method = (
+      init.method ||
+      (typeof input === "object" && input ? input.method : "") ||
+      ""
+    ).toUpperCase();
+
+    if (method && method !== "POST") {
+      return originalFetch(input, init);
+    }
+
+    try {
+      if (typeof init.body === "string") {
+        return originalFetch(input, {
+          ...init,
+          body: shipdayMergeCheckoutExtensionData(init.body),
+        });
+      }
+
+      if (typeof Request !== "undefined" && input instanceof Request) {
+        const body = await input.clone().text();
+        if (body) {
+          return originalFetch(
+            new Request(input, {
+              ...init,
+              body: shipdayMergeCheckoutExtensionData(body),
+            })
+          );
+        }
+      }
+    } catch (error) {
+      return originalFetch(input, init);
+    }
+
+    return originalFetch(input, init);
+  };
+};
+
+const shipdayPatchCheckoutApiFetch = () => {
+  if (
+    window.__shipdayCheckoutApiFetchPatched ||
+    typeof wp.apiFetch?.use !== "function"
+  ) {
+    return;
+  }
+
+  window.__shipdayCheckoutApiFetchPatched = true;
+
+  wp.apiFetch.use((options, next) => {
+    const path = options.path || options.url || "";
+    const method = (options.method || "GET").toUpperCase();
+
+    if (!shipdayIsCheckoutRequest(path) || method !== "POST") {
+      return next(options);
+    }
+
+    const data = options.data || {};
+    const extensions = data.extensions || {};
+
+    return next({
+      ...options,
+      data: {
+        ...data,
+        extensions: {
+          ...extensions,
+          [SHIPDAY_CHECKOUT_EXTENSION_NAMESPACE]: {
+            ...(extensions[SHIPDAY_CHECKOUT_EXTENSION_NAMESPACE] || {}),
+            ...shipdayGetCurrentCheckoutData(),
+          },
+        },
+      },
+    });
+  });
 };
 
 const shipdayFindCheckoutTarget = () => {
@@ -994,4 +1188,7 @@ const shipdayStartMountObserver = () => {
   }
 };
 
+shipdayPatchCheckoutFetch();
+shipdayPatchCheckoutApiFetch();
 shipdayStartMountObserver();
+})(window.wp, window.wc, document);

@@ -1,3 +1,6 @@
+;(function (wp, window) {
+  "use strict";
+
 const { __ } = wp.i18n;
 const { createElement: el } = wp.element;
 const { registerBlockType } = wp.blocks;
@@ -48,3 +51,4 @@ registerBlockType("shipday-for-woocommerce/delivery-block", {
     ),
   save: () => null,
 });
+})(window.wp, window);
