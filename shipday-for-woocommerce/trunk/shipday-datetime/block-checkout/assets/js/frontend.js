@@ -325,6 +325,7 @@ const Shipday_Woo_Delivery = () => {
         shipdayOrderType === "Delivery") &&
       React.createElement(Shipday_Woo_Delivery_Time, {
         shipdaySettings,
+        selectedDate: shipdayDeliveryDate,
         shipdayDeliveryTime,
         handleDeliveryTimeChange,
         getValidationError,
@@ -343,6 +344,7 @@ const Shipday_Woo_Delivery = () => {
         shipdayOrderType === "Pickup") &&
       React.createElement(Shipday_Woo_Pickup_Time, {
         shipdaySettings,
+        selectedDate: shipdayPickupDate,
         handlePickupTimeChange,
         pickupTime,
         getValidationError,
@@ -360,9 +362,10 @@ const shipdayFormattedDate = (date) => {
 const shipdayEnableDates = (numberOfDays, startDate, disabledWeekDays, disabledDates) => {
   const totalDays = parseInt(numberOfDays, 10);
   const enabledDates = [];
-  const currentDate = new Date(startDate);
+  const currentDate = new Date(Number(startDate.slice(0, 4)), Number(startDate.slice(5, 7)) - 1, Number(startDate.slice(8, 10)));
 
-  while (enabledDates.length < totalDays) {
+  const searchDays = totalDays * 7 + disabledDates.length + 7;
+  for (let day = 0; day < searchDays && enabledDates.length < totalDays; day++) {
     const formattedCurrentDate = shipdayFormattedDate(currentDate);
     if (
       !disabledWeekDays.includes(currentDate.getDay().toString()) &&
@@ -494,7 +497,7 @@ const Shipday_Woo_Delivery_Date = ({
     shipdaySettings.delivery_date_selectable_days,
     shipdaySettings.today,
     disabledWeekDays,
-    []
+    shipdaySettings.disable_dates || []
   );
 
   React.useEffect(() => {
@@ -624,8 +627,35 @@ const Shipday_Woo_Delivery_Date = ({
   );
 };
 
+const useShipdaySlotAvailability = (settings, selectedDate) => {
+  const [, setTick] = React.useState(0);
+  React.useEffect(() => {
+    const timer = window.setInterval(() => setTick(Date.now()), 30000);
+    return () => window.clearInterval(timer);
+  }, []);
+
+  const storeNow = Date.parse(`${settings.store_now}Z`);
+  const serverTimestamp = Number(settings.server_timestamp);
+  if (!Number.isFinite(storeNow) || !Number.isFinite(serverTimestamp)) {
+    return () => false;
+  }
+  const cutoff = new Date(storeNow + Date.now() - serverTimestamp + Number(settings.order_prep_minutes || 0) * 60000);
+  const cutoffDate = cutoff.toISOString().slice(0, 10);
+  const cutoffMinutes = cutoff.getUTCHours() * 60 + cutoff.getUTCMinutes() + cutoff.getUTCSeconds() / 60;
+  const date = selectedDate || settings.today;
+
+  return (slot) => {
+    const match = slot.match(/-\s*(\d{1,2}):(\d{2})(?:\s*(AM|PM))?\s*$/i);
+    if (!match || !date) return false;
+    let hour = Number(match[1]);
+    if (match[3]) hour = hour % 12 + (match[3].toUpperCase() === "PM" ? 12 : 0);
+    return date < cutoffDate || (date === cutoffDate && hour * 60 + Number(match[2]) <= cutoffMinutes);
+  };
+};
+
 const Shipday_Woo_Delivery_Time = ({
   shipdaySettings,
+  selectedDate,
   shipdayDeliveryTime,
   handleDeliveryTimeChange,
   getValidationError,
@@ -633,10 +663,14 @@ const Shipday_Woo_Delivery_Time = ({
   const selectRef = React.useRef(null);
   const timeOptions = shipdaySettings.delivery_time_options || {};
   const validationError = getValidationError("shipday_woo_delivery_time_error");
+  const isUnavailable = useShipdaySlotAvailability(shipdaySettings, selectedDate);
 
   React.useEffect(() => {
     if (!shipdayDeliveryTime && selectRef.current) {
       selectRef.current.selectedIndex = 0;
+    } else if (shipdayDeliveryTime && isUnavailable(shipdayDeliveryTime) && selectRef.current) {
+      selectRef.current.value = "";
+      handleDeliveryTimeChange({ target: selectRef.current });
     }
   });
 
@@ -647,7 +681,7 @@ const Shipday_Woo_Delivery_Time = ({
         {
           key: value,
           value,
-          disabled: option.disabled,
+          disabled: isUnavailable(value),
         },
         option.title
       )
@@ -734,6 +768,7 @@ const Shipday_Woo_Delivery_Time = ({
 
 const Shipday_Woo_Pickup_Time = ({
   shipdaySettings,
+  selectedDate,
   handlePickupTimeChange,
   pickupTime,
   getValidationError,
@@ -741,10 +776,14 @@ const Shipday_Woo_Pickup_Time = ({
   const selectRef = React.useRef(null);
   const timeOptions = shipdaySettings.pickup_time_options || {};
   const validationError = getValidationError("shipday_woo_pickup_time_error");
+  const isUnavailable = useShipdaySlotAvailability(shipdaySettings, selectedDate);
 
   React.useEffect(() => {
     if (!pickupTime && selectRef.current) {
       selectRef.current.selectedIndex = 0;
+    } else if (pickupTime && isUnavailable(pickupTime) && selectRef.current) {
+      selectRef.current.value = "";
+      handlePickupTimeChange({ target: selectRef.current });
     }
   });
 
@@ -755,7 +794,7 @@ const Shipday_Woo_Pickup_Time = ({
         {
           key: value,
           value,
-          disabled: option.disabled,
+          disabled: isUnavailable(value),
         },
         option.title
       )
@@ -858,7 +897,7 @@ const Shipday_Woo_Pickup_Date = ({
     shipdaySettings.pickup_date_selectable_days,
     shipdaySettings.today,
     disabledWeekDays,
-    []
+    shipdaySettings.pickup_disable_dates || []
   );
 
   React.useEffect(() => {

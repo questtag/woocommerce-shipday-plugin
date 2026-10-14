@@ -8,7 +8,7 @@ This guide covers the complete process for releasing updates to the Shipday WooC
 
 - **WordPress.org SVN Repository:** `https://plugins.svn.wordpress.org/shipday-for-woocommerce/`
 - **Plugin Name:** Shipday Integration for WordPress (WooCommerce)
-- **Main File:** `shipday-integration-for-wooCommerce.php`
+- **Main File:** `shipday-for-woocommerce.php`
 
 ## WordPress Plugin SVN Architecture
 
@@ -114,7 +114,7 @@ cp -r /path/to/your/git-development/trunk/* ./
 
 ### Step 5: Update Version Information
 
-#### In `shipday-integration-for-wooCommerce.php`:
+#### In `shipday-for-woocommerce.php`:
 ```php
 /*
 Plugin Name: Shipday Integration for Wordpress (WooCommerce)

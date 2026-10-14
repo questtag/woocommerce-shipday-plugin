@@ -127,13 +127,12 @@ class Shipday_Woo_Delivery_Block {
         $data['shipday_order_type'] = WC()->session->get( 'shipday_order_type' );
 
         $data['shipday_delivery_date'] = self::validate_and_set_date( $data, 'Delivery', WC()->session->get( 'shipday_delivery_date' ) );
-        $data['shipday_delivery_time'] = self::validate_and_set_time( $data, 'Delivery', WC()->session->get( 'shipday_delivery_time' ) );
-
         $data['shipday_pickup_date'] = self::validate_and_set_date( $data, 'Pickup', WC()->session->get( 'shipday_pickup_date' ) );
-        $data['pickup_time'] = self::validate_and_set_time( $data, 'Pickup', WC()->session->get( 'pickup_time' ) );
 
         $data['delivery_time_options'] = self::reset_time_options('Delivery', $data['delivery_time_options'] ,  $data['shipday_delivery_date']);
         $data['pickup_time_options'] = self::reset_time_options('Pickup',  $data['pickup_time_options'] ,  $data['shipday_pickup_date']);
+        $data['shipday_delivery_time'] = self::validate_and_set_time( $data, 'Delivery', WC()->session->get( 'shipday_delivery_time' ) );
+        $data['pickup_time'] = self::validate_and_set_time( $data, 'Pickup', WC()->session->get( 'pickup_time' ) );
 
         return $data;
     }
@@ -270,22 +269,27 @@ class Shipday_Woo_Delivery_Block {
         $selectable_days = max( 1, $selectable_days );
         $tz = self::get_store_timezone();
         $today = ! empty( $settings['today'] ) ? (string) $settings['today'] : wp_date( 'Y-m-d', current_time( 'timestamp', true ) );
-        $current = \DateTimeImmutable::createFromFormat( 'Y-m-d', $today, $tz );
+        $current = \DateTimeImmutable::createFromFormat( '!Y-m-d', $today, $tz );
 
         if ( ! $current instanceof \DateTimeImmutable ) {
             $current = new \DateTimeImmutable( 'today', $tz );
         }
 
-        $last_selectable_date = $current->modify( '+' . ( $selectable_days - 1 ) . ' day' );
+        $available_dates = array();
+        $search_days = ( $selectable_days * 7 ) + count( $disable_dates ) + 7;
+        for ( $day_offset = 0; $day_offset < $search_days && count( $available_dates ) < $selectable_days; $day_offset++ ) {
+            $candidate = $current->modify( '+' . $day_offset . ' day' );
+            $formatted = $candidate->format( 'Y-m-d' );
+            if ( ! in_array( $candidate->format( 'w' ), $disable_week_days, true ) && ! in_array( $formatted, $disable_dates, true ) ) {
+                $available_dates[] = $formatted;
+            }
+        }
 
         if ( !empty( $selected ) ) {
-            $selected_date = \DateTimeImmutable::createFromFormat( 'Y-m-d', (string) $selected, $tz );
+            $selected_date = \DateTimeImmutable::createFromFormat( '!Y-m-d', (string) $selected, $tz );
             if (
                 $selected_date instanceof \DateTimeImmutable
-                && $selected_date >= $current
-                && $selected_date <= $last_selectable_date
-                && ! in_array( $selected_date->format( 'w' ), $disable_week_days, true )
-                && ! in_array( $selected_date->format( 'Y-m-d' ), $disable_dates, true )
+                && in_array( $selected_date->format( 'Y-m-d' ), $available_dates, true )
             ) {
                 return $selected_date->format( "Y-m-d" );
             }
@@ -294,17 +298,9 @@ class Shipday_Woo_Delivery_Block {
         $on_change = WC()->session->get( "on_change", false );
 
         if ( $enable_date && $auto_select_first_date && !$on_change ) {
-            for ( $day_offset = 0; $day_offset < $selectable_days; $day_offset++ ) {
-                $candidate = $current->modify( '+' . $day_offset . ' day' );
-
-                if (
-                    ! in_array( $candidate->format( 'w' ), $disable_week_days, true )
-                    && ! in_array( $candidate->format( 'Y-m-d' ), $disable_dates, true )
-                ) {
-                    $formatted_date = $candidate->format( "Y-m-d" );
-                    WC()->session->set( $session_name, $formatted_date );
-                    return $formatted_date;
-                }
+            if ( ! empty( $available_dates ) ) {
+                WC()->session->set( $session_name, $available_dates[0] );
+                return $available_dates[0];
             }
         }
 
@@ -315,50 +311,10 @@ class Shipday_Woo_Delivery_Block {
     static function reset_time_options( $name, $old_time_options, $selected_date = null ) {
         $time_options = [];
 
-        // Resolve store timezone (WooCommerce) or WP as fallback
-        $tz = self::get_store_timezone();
-        $now = new \DateTimeImmutable('now', $tz);
-        $todayYmd = $now->format('Y-m-d');
-
-        // Normalize/resolve selected date to Y-m-d in store tz
-        $is_today = false;
-        if ( $selected_date ) {
-            try {
-                if ( $selected_date instanceof \DateTimeInterface ) {
-                    $sel = new \DateTimeImmutable( $selected_date->format( 'Y-m-d' ), $tz );
-                } else {
-                    // allow strings like "2025-12-02" or "today" etc.
-                    $sel = new \DateTimeImmutable( (string) $selected_date, $tz );
-                }
-                $is_today = $sel->format('Y-m-d') === $todayYmd;
-            } catch ( \Exception $e ) {
-                $is_today = false; // if parsing fails, treat as not today
-            }
-        }
-
         foreach ( is_array( $old_time_options ) ? $old_time_options : [] as $key => $value ) {
-            $disabled = false;
-
-            if ( $is_today ) {
-                // Expect formats like "10:30 AM - 12:34 PM" (tolerate extra spaces or en-dash)
-                $parts = preg_split('/\s*[-–]\s*/', (string)$key, 2); // hyphen or en dash
-                if ( is_array($parts) && count($parts) === 2 ) {
-                    $end_str  = trim($parts[1]); // "12:34 PM"
-                    $parseFmt = 'Y-m-d h:i A';
-
-                    $end_dt = \DateTimeImmutable::createFromFormat($parseFmt, $todayYmd . ' ' . $end_str, $tz);
-                    if ( $end_dt instanceof \DateTimeInterface ) {
-                        // Disable if end time is strictly earlier than now
-                        if ( $end_dt < $now ) {
-                            $disabled = true;
-                        }
-                    }
-                }
-            }
-
             $time_options[$key] = [
                 'title'    => is_array($value) ? $value['title'] : $value,
-                'disabled' => $disabled,
+                'disabled' => ! Shipday_Woo_DateTime_Util::is_slot_available( $selected_date, $key ),
             ];
         }
 
