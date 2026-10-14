@@ -926,6 +926,160 @@
    padding-right: 28px !important;
 }
 
+.shipday-off-days__hint {
+   margin: 8px 0 12px;
+   color: #667085;
+   font-size: 13px;
+}
+
+.shipday-off-days {
+   width: min(100%, 720px);
+}
+
+.shipday-off-days__entry {
+   display: flex;
+   flex-wrap: wrap;
+   align-items: center;
+   gap: 10px;
+}
+
+.shipday-off-days__range-field {
+   display: flex;
+   align-items: center;
+   gap: 10px;
+   width: min(100%, 420px);
+   min-height: 42px;
+   padding: 0 12px;
+   border: 1px solid #d0d5dd;
+   border-radius: 12px;
+   background: #fff;
+   box-sizing: border-box;
+}
+
+.shipday-off-days__range-field:focus-within {
+   border-color: #01ad85;
+   box-shadow: 0 0 0 4px rgba(1, 173, 133, 0.12);
+}
+
+.shipday-off-days__range-field .dashicons {
+   color: #667085;
+   flex: 0 0 auto;
+}
+
+.shipday-off-days__input,
+.shipday-off-days__input.flatpickr-input {
+   flex: 1;
+   width: 100%;
+   min-width: 0;
+   height: 40px;
+   border: 0;
+   outline: 0;
+   box-shadow: none;
+   background: transparent;
+   color: #101828;
+   cursor: pointer;
+   font-size: 13px;
+}
+
+.shipday-off-days__add {
+   min-height: 42px;
+   padding: 0 16px;
+   border: 1px solid #01ad85;
+   border-radius: 11px;
+   background: #01ad85;
+   color: #fff;
+   cursor: pointer;
+   font-weight: 600;
+}
+
+.shipday-off-days__add:disabled {
+   border-color: #d0d5dd;
+   background: #f2f4f7;
+   color: #98a2b3;
+   cursor: not-allowed;
+}
+
+.shipday-off-days__summary {
+   margin-top: 16px;
+}
+
+.shipday-off-days__summary-title {
+   display: flex;
+   align-items: center;
+   gap: 8px;
+   font-weight: 600;
+   color: #101828;
+}
+
+.shipday-off-days__count {
+   display: inline-flex;
+   align-items: center;
+   justify-content: center;
+   min-width: 24px;
+   height: 24px;
+   padding: 0 5px;
+   border-radius: 999px;
+   background: #e8f7f2;
+   color: #08765d;
+   box-sizing: border-box;
+}
+
+.shipday-off-days__chips {
+   display: flex;
+   flex-wrap: wrap;
+   gap: 8px;
+   margin-top: 10px;
+}
+
+.shipday-off-days__chip {
+   border: 1px solid #a9dfce;
+   border-radius: 999px;
+   background: #e8f7f2;
+   color: #08765d;
+   padding: 6px 10px;
+   cursor: pointer;
+   font-size: 12px;
+   font-weight: 600;
+}
+
+.shipday-off-days__chip:hover,
+.shipday-off-days__chip:focus-visible {
+   border-color: #01ad85;
+   background: #d8f2e9;
+}
+
+.shipday-off-days__empty {
+   color: #667085;
+   font-size: 13px;
+   margin: 10px 0 0;
+}
+
+.shipday-general-setting__control--unit {
+   display: flex;
+   align-items: center;
+   gap: 10px;
+   padding-right: 0;
+}
+
+.shipday-general-setting__control--unit .sd-text-input {
+   flex: 1;
+   min-width: 0;
+}
+
+.shipday-general-setting__unit {
+   align-self: stretch;
+   display: flex;
+   align-items: center;
+   padding: 0 14px;
+   border-left: 1px solid #e3e4eb;
+   border-radius: 0 11px 11px 0;
+   background: #f8fafb;
+   color: #667085;
+   font-size: 13px;
+   font-weight: 600;
+   white-space: nowrap;
+}
+
 @media (max-width: 782px) {
    .shipday-general-setting__control {
       width: 100%;

@@ -9,11 +9,12 @@
                 let todayDate = $('#shipday_delivery_date_datepicker').data('today_date');
                 let selectable_days = $('#shipday_delivery_date_datepicker').data('selectable_days');
                 let disable_week_days = $('#shipday_delivery_date_datepicker').data('disable_week_days');
+                let offDays = JSON.parse($('#shipday_delivery_date_datepicker').attr('data-off_days') || '[]');
                 const enabledDates = shipdayEnableDates(
                   selectable_days,
                   todayDate,
                   disable_week_days,
-                  []
+                  offDays
                 );
 
                 $('#shipday_delivery_date_datepicker').flatpickr({
@@ -35,10 +36,11 @@
             numberOfDays = parseInt(numberOfDays);
 
             let enabledDates = [],
-              currentDate = new Date(startDate);
+              currentDate = new Date(Number(startDate.slice(0, 4)), Number(startDate.slice(5, 7)) - 1, Number(startDate.slice(8, 10)));
 
             // Loop until we have enough enabled dates
-            while (enabledDates.length < numberOfDays) {
+            const searchDays = numberOfDays * 7 + disabledDates.length + 7;
+            for (let day = 0; day < searchDays && enabledDates.length < numberOfDays; day++) {
                 let formattedCurrentDate = shipdayFormattedDate(currentDate);
                 // Add date if it's not in disabled weekdays or disabled dates
                 if (!disabledWeekDays.includes(currentDate.getDay().toString()) &&
@@ -69,11 +71,12 @@
                 let todayDate = $('#shipday_pickup_date_datepicker').data('today_date');
                 let selectable_days = $('#shipday_pickup_date_datepicker').data('selectable_days');
                 let disable_week_days = $('#shipday_pickup_date_datepicker').data('disable_week_days');
+                let offDays = JSON.parse($('#shipday_pickup_date_datepicker').attr('data-off_days') || '[]');
                 const enabledDates = shipdayEnableDates(
                   selectable_days,
                   todayDate,
                   disable_week_days,
-                  []
+                  offDays
                 );
 
                 $('#shipday_pickup_date_datepicker').flatpickr({

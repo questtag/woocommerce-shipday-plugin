@@ -31,6 +31,9 @@ class Shipday_Woo_DateTime_Util {
 
         $data['enable_datetime_plugin'] = get_option('shipday_enable_datetime_plugin', "no") === "yes";
         $data['today'] = wp_date('Y-m-d', current_time('timestamp', 1));
+        $data['store_now'] = wp_date( 'Y-m-d\TH:i:s' );
+        $data['server_timestamp'] = time() * 1000;
+        $data['order_prep_minutes'] = self::get_order_prep_minutes();
 
         // Other settings
         $data['delivery_heading_checkout'] = get_option('shipday_delivery_pickup_label', __("Delivery/Pickup info", "shipday-for-woocommerce"));
@@ -82,8 +85,8 @@ class Shipday_Woo_DateTime_Util {
         $data['pickup_time_options'] =  self::get_time_slots_from_range($start_pickup_slot, $end_pickup_slot, $pickup_slot_duration);
 
         // Disable dates
-        $data['disable_dates'] = [];
-        $data['pickup_disable_dates'] = [];
+        $data['disable_dates'] = self::get_off_days();
+        $data['pickup_disable_dates'] = $data['disable_dates'];
 
         // Passed dates
         $data['disable_delivery_date_passed_time'] = [];
@@ -113,10 +116,43 @@ class Shipday_Woo_DateTime_Util {
         return $disabled_week_days;
     }
 
+    public static function get_off_days() {
+        $dates = get_option( 'shipday_off_days', array() );
+        if ( ! is_array( $dates ) ) {
+            return array();
+        }
+        $today = wp_date( 'Y-m-d' );
+        return array_values( array_filter( $dates, static function ( $date ) use ( $today ) {
+            return is_string( $date ) && preg_match( '/^\d{4}-\d{2}-\d{2}$/', $date ) && $date >= $today;
+        } ) );
+    }
+
     public static function get_configured_time_format() {
         $time_format = get_option( 'shipday_time_format', '12-hour' );
 
         return '24-hour' === $time_format ? '24-hour' : '12-hour';
+    }
+
+    public static function get_order_prep_minutes() {
+        $minutes = get_option( 'shipday_order_prep_time', 30 );
+        return is_numeric( $minutes ) ? max( 0, (int) $minutes ) : 30;
+    }
+
+    public static function is_slot_available( $date, $slot, $now = null ) {
+        if ( ! is_string( $slot ) || ! preg_match( '/^.+?\s+-\s+(\d{1,2}:\d{2}(?:\s*[AP]M)?)$/i', $slot, $matches ) ) {
+            return false;
+        }
+
+        $tz = function_exists( 'wc_timezone' ) ? wc_timezone() : wp_timezone();
+        $now = $now instanceof \DateTimeImmutable ? $now : new \DateTimeImmutable( 'now', $tz );
+        $date = $date ? (string) $date : $now->format( 'Y-m-d' );
+        if ( ! preg_match( '/^\d{4}-\d{2}-\d{2}$/', $date ) ) {
+            return false;
+        }
+
+        $format = preg_match( '/[AP]M$/i', $matches[1] ) ? '!Y-m-d h:i A' : '!Y-m-d H:i';
+        $end = \DateTimeImmutable::createFromFormat( $format, $date . ' ' . strtoupper( trim( $matches[1] ) ), $tz );
+        return $end instanceof \DateTimeImmutable && $end > $now->modify( '+' . self::get_order_prep_minutes() . ' minutes' );
     }
 
     static function validate_and_set_time( $settings, $type, $selected ) {

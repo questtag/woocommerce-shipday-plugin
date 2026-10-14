@@ -75,7 +75,7 @@ class Classic_Datetime {
         $pickup_disable_week_days = Shipday_Woo_DateTime_Util::get_disable_week_days(get_option('shipday_avaialble_pickup_days', Shipday_Woo_DateTime_Util::WEEK_DAYS));
         $pickup_auto_select_first_date = true;
 
-        echo '<div data-today_date="' . esc_attr( $today ) . '" id="shipday_woo_delivery_setting_wrapper">';
+        echo '<div data-today_date="' . esc_attr( $today ) . '" data-store-now="' . esc_attr( wp_date( 'Y-m-d\TH:i:s' ) ) . '" data-server-timestamp="' . esc_attr( time() * 1000 ) . '" data-prep-minutes="' . esc_attr( Shipday_Woo_DateTime_Util::get_order_prep_minutes() ) . '" id="shipday_woo_delivery_setting_wrapper">';
 
         $order_type_label = get_option('shipday_delivery_pickup_label', __('Delivery/Pickup info', 'shipday-for-woocommerce'));
 
@@ -113,6 +113,7 @@ class Classic_Datetime {
                         'data-today_date' => $today,
                         'data-selectable_days' => $delivery_date_selectable_days,
                         'data-disable_week_days' => json_encode($delivery_disable_week_days),
+                        'data-off_days' => wp_json_encode( Shipday_Woo_DateTime_Util::get_off_days() ),
                         'data-date_format' => $date_format,
                         'data-week_starts_from' => $week_starts_from,
                     ],
@@ -167,6 +168,7 @@ class Classic_Datetime {
                         'data-today_date' => $today,
                         'data-selectable_days' => $pickup_date_selectable_days,
                         'data-disable_week_days' => json_encode($pickup_disable_week_days),
+                        'data-off_days' => wp_json_encode( Shipday_Woo_DateTime_Util::get_off_days() ),
                         'data-date_format' => $date_format,
                         'data-week_starts_from' => $week_starts_from,
                     ],
@@ -469,8 +471,9 @@ class Classic_Datetime {
                 wp_enqueue_script( "shipday_script", plugin_dir_url( __FILE__ ) . '../public/js/shipday-woo-delivery-public-flatsome.js', array( 'jquery', 'select2', 'flatpickr_js' ), '2.0.0', true );
             } else {
                 //wp_enqueue_script( "selectWoo_js", plugin_dir_url( __FILE__ ) . 'js/selectWoo.coderockz.delivery.min.js', array('jquery'), $this->version, true );
-                wp_enqueue_script( "shipday_script", plugin_dir_url( __FILE__ ) . '../public/js/shipday-woo-delivery-public.js', array( 'jquery', 'selectWoo', 'flatpickr_js' ),'2.01.9', true );
+                wp_enqueue_script( "shipday_script", plugin_dir_url( __FILE__ ) . '../public/js/shipday-woo-delivery-public.js', array( 'jquery', 'selectWoo', 'flatpickr_js' ),'2.02.0', true );
             }
+            wp_enqueue_script( 'shipday_prep_time', plugin_dir_url( __FILE__ ) . '../public/js/shipday-prep-time.js', array( 'jquery', 'shipday_script' ), '1.0.0', true );
         }
     }
 

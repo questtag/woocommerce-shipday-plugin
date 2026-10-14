@@ -27,6 +27,87 @@
     });
   });
 
+  function initOffDayPicker() {
+    const wrapper = document.querySelector('.shipday-off-days');
+    if (!wrapper || typeof flatpickr !== 'function') return;
+
+    const input = wrapper.querySelector('.shipday-off-days__input');
+    const addButton = wrapper.querySelector('.shipday-off-days__add');
+    const values = wrapper.querySelector('input[name="shipday_off_days_json"]');
+    const chips = wrapper.querySelector('.shipday-off-days__chips');
+    const count = wrapper.querySelector('.shipday-off-days__count');
+    const empty = wrapper.querySelector('.shipday-off-days__empty');
+    const selected = JSON.parse(wrapper.dataset.selected || '[]');
+    const days = new Set(selected);
+
+    function renderDates(changed) {
+      const keys = Array.from(days).sort();
+      values.value = JSON.stringify(keys);
+      chips.replaceChildren();
+      count.textContent = keys.length;
+      empty.hidden = keys.length > 0;
+
+      const ranges = [];
+      keys.forEach(key => {
+        const last = ranges[ranges.length - 1];
+        if (last && Date.parse(`${key}T00:00:00Z`) === Date.parse(`${last.end}T00:00:00Z`) + 86400000) {
+          last.end = key;
+        } else {
+          ranges.push({ start: key, end: key });
+        }
+      });
+
+      ranges.forEach(range => {
+        const chip = document.createElement('button');
+        chip.type = 'button';
+        chip.className = 'shipday-off-days__chip';
+        const label = range.start === range.end ? range.start : `${range.start} – ${range.end}`;
+        chip.setAttribute('aria-label', `Remove ${label}`);
+        chip.textContent = `${label}  ×`;
+        chip.addEventListener('click', () => {
+          for (let time = Date.parse(`${range.start}T00:00:00Z`); time <= Date.parse(`${range.end}T00:00:00Z`); time += 86400000) {
+            days.delete(new Date(time).toISOString().slice(0, 10));
+          }
+          renderDates(true);
+        });
+        chips.appendChild(chip);
+      });
+
+      if (changed) input.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+
+    const picker = flatpickr(input, {
+      mode: 'range',
+      dateFormat: 'Y-m-d',
+      minDate: wrapper.dataset.today,
+      onChange(dates) {
+        addButton.disabled = dates.length === 0;
+      },
+    });
+
+    function addRange() {
+      if (!picker.selectedDates.length) return;
+      const dates = picker.selectedDates.map(date => picker.formatDate(date, 'Y-m-d')).sort();
+      const end = dates[1] || dates[0];
+      for (let time = Date.parse(`${dates[0]}T00:00:00Z`); time <= Date.parse(`${end}T00:00:00Z`); time += 86400000) {
+        days.add(new Date(time).toISOString().slice(0, 10));
+      }
+      picker.clear(false);
+      addButton.disabled = true;
+      renderDates(true);
+    }
+
+    addButton.addEventListener('click', addRange);
+    wrapper.shipdayCommitRange = addRange;
+    renderDates(false);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initOffDayPicker);
+  } else {
+    initOffDayPicker();
+  }
+
   function syncDeliveryFeeDependentFields() {
     const deliveryToggle = document.getElementById('shipday_enable_delivery_fee');
 
@@ -287,6 +368,8 @@
 
   function saveGeneralSettings() {
     const $form = jQuery('#shipday-general-settings-form');
+    const offDays = $form.find('.shipday-off-days')[0];
+    if (offDays && offDays.shipdayCommitRange) offDays.shipdayCommitRange();
     let formData = $form.serialize();
     jQuery.ajax({
       url: shipday_ajax_obj.shipday_ajax_url,
