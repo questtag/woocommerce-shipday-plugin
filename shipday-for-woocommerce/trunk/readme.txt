@@ -113,8 +113,9 @@ You can install shipday plugin directly from wordpress plugin repository or manu
 
 == Changelog ==
 
-= 2.4.1 =
-* Order prepTime consideration in the checkout page time slot selection
+= 2.4.2 =
+* Add configurable order preparation time to checkout time slot availability.
+* Add off-day date ranges that disable delivery and pickup dates at checkout.
 
 = 2.4.0 =
 * Delivery fee feature
